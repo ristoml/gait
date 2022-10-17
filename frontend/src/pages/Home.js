@@ -1,58 +1,160 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { Pose, POSE_CONNECTIONS } from "@mediapipe/pose"
+import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils"
 
 // const imageMimeType = /image\/(png|jpg|jpeg)/i;
+let testArray = []
+let firstRun = true
 
 function Home() {
     const [file, setFile] = useState(null);
-    const [fileDataURL, setFileDataURL] = useState(null); 
-    const [videoSrc, setVideoSrc] = useState(null)       
-
+    const [fileDataURL, setFileDataURL] = useState(null);
+    const [videoSrc, setVideoSrc] = useState(null)
+    const [poseTest, setPose] = useState(null)
+    //const [firstRun, setFirstRun] = useState(true)
+    const canvasRef = useRef(null)
     const handleGo = () => {
         setVideoSrc(fileDataURL)
     }
 
+    //const canvasCtx = document.getElementsByClassName('output_canvas')[0];
+
+    function onResults(results) {
+        //console.log(results)
+        if (results.poseLandmarks) {
+            testArray.push(results.poseLandmarks)
+
+            /*
+                        const canvasElement = canvasRef.current
+                        const canvasCtx = canvasElement.getContext("2d")
+                        canvasCtx.save()
+                        canvasCtx.clearRect(0, 0, 1280, 720)
+                        canvasCtx.translate(720, 0)
+                        canvasCtx.scale(-1, 1)
+                        canvasCtx.font = "40px Verdana"
+                        canvasCtx.fillStyle = "#bdffff"
+                        canvasCtx.drawImage(
+                            results.image,
+                            0,
+                            0,
+                            canvasCtx.width,
+                            canvasCtx.height
+                        )
+            
+                        const leftLeg = [
+                            results.poseLandmarks[24],
+                            results.poseLandmarks[23],
+                            results.poseLandmarks[25],
+                            results.poseLandmarks[27],
+                        ]
+            
+                        drawConnectors(canvasCtx, leftLeg, POSE_CONNECTIONS, {
+                            color: "#77bdff",
+                            lineWidth: 4,
+                        })
+                        drawLandmarks(canvasCtx, leftLeg, {
+                            color: "#bd77ff",
+                            lineWidth: 2,
+                        })
+            */
+        }
+        //videoElement.play()
+        return;
+        //}
+    }
+
     const changeHandler = (e) => {
+
+
+
         const file = e.target.files[0];
         // if (!file.type.match(imageMimeType)) {
         //   alert("Image mime type is not valid");
         //   return;
         // }        
         setFile(file);
-       
+
         const videoElement = document.getElementsByClassName('input_video')[0];
-        
+
         async function onFrame() {
-            if (!videoElement.paused && !videoElement.ended) {                
+            if (!videoElement.ended) {
+                videoElement.play()
+                if (firstRun) {
+                    console.log("first frame")
+                    //setFirstRun(false)
+                    firstRun = false
+                    videoElement.pause()
+                    setTimeout(onFrame, 1000)
+                }
+
+                await poseTest.send({
+                    image: videoElement
+                });
+
+
                 console.log('frame')
+                console.log(testArray)
+
                 // await pose.send({
                 //     image: videoElement
                 //   });
                 // https://stackoverflow.com/questions/65144038/how-to-use-requestanimationframe-with-promise    
-                await new Promise(requestAnimationFrame);                
-                onFrame();            }
+                await new Promise(requestAnimationFrame);
+                onFrame();
+            }
             else
                 setTimeout(onFrame, 500);
         }
-                
+
+
         videoElement.onloadeddata = (evt) => {
-            // let video = evt.target;
-            // canvasElement.width = video.videoWidth;
-            // canvasElement.height = video.videoHeight;
-            // const aspect = video.videoHeight / video.videoWidth;
-            // let width, height;
-            // if (window.innerWidth > window.innerHeight) {
-            //     height = window.innerHeight;
-            //     width = height / aspect;
+            //let video = evt.target;
+
+            //console.log(video)
+            //canvasElement.width = video.videoWidth;
+            //canvasElement.height = video.videoHeight;
+
+            //canvasRef.current.width = video.videoWidth
+            //canvasRef.current.height = video.videoHeight
+
+            //const aspect = video.videoHeight / video.videoWidth;
+            //let width, height;
+            //if (window.innerWidth > window.innerHeight) {
+            //    height = window.innerHeight;
+            //   width = height / aspect;
             // }
             // else {
-            //     width = window.innerWidth;
+            //    width = window.innerWidth;
             //     height = width * aspect;
-            // }           
+            // }
+            videoElement.playbackRate = 0.75
             videoElement.play();
             onFrame();
         };
     }
 
+    useEffect(() => {
+        console.log("pose")
+        const pose = new Pose({
+            locateFile: (file) => {
+                return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`
+            },
+        })
+
+        pose.setOptions({
+            modelComplexity: 2,
+            smoothLandmarks: true,
+            enableSegmentation: true,
+            smoothSegmentation: true,
+            minDetectionConfidence: 0.7,
+            minTrackingConfidence: 0.7,
+        })
+
+        setPose(pose)
+
+        pose.onResults(onResults)
+
+    }, [])
 
     useEffect(() => {
 
@@ -79,21 +181,29 @@ function Home() {
     }, [file]);
 
     return (
-        <><video className="input_video" src={videoSrc} type='video/mp4' muted="muted"></video>
-            <form>
-                <p>
-                    <label htmlFor='video'>Select video</label>
-                    <input
-                        type="file"
-                        id='video'
-                        accept='.mp4, .ogg'
-                        onChange={changeHandler}
-                    />
-                </p>                
-            </form>
-            {fileDataURL ?                
-                 <button type="submit" onClick={handleGo}>Go</button>
-              : null}
+
+        <>
+            <div className="container">
+                <video className="input_video" src={videoSrc} type='video/mp4' muted="muted"></video>
+                <div className="canvas-container">
+                    <canvas ref={canvasRef} className="output_canvas" width="1280px" height="720px">
+                    </canvas>
+                </div>
+                <form>
+                    <p>
+                        <label htmlFor='video'>Select video</label>
+                        <input
+                            type="file"
+                            id='video'
+                            accept='.mp4, .ogg'
+                            onChange={changeHandler}
+                        />
+                    </p>
+                </form>
+                {fileDataURL ?
+                    <button type="submit" onClick={handleGo}>Go</button>
+                    : null}
+            </div>
         </>
     );
 }
