@@ -1,18 +1,40 @@
 import { useEffect, useState, useRef } from 'react';
 import { Pose, POSE_CONNECTIONS } from "@mediapipe/pose"
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils"
+import * as angleH from "../components/home/AngleHelper"
 
 // const imageMimeType = /image\/(png|jpg|jpeg)/i;
-let testArray = []
-let firstRun = true
+let leftData = []
+let rightData = []
+let tempArray = []
+
+let rightPrevHeelX = 0
+let leftPrevHeelX = 0
+
+let rightRepeated = 0
+let leftRepeated = 0
+
+let rightLegForward = false
+let leftLegForward = false
+
+let rightPrevToeX = 0
+let leftPrevToeX = 0
+
+let rightStep = false
+let leftStep = false
+
+let calibrated = false
+
 
 function Home() {
     const [file, setFile] = useState(null);
     const [fileDataURL, setFileDataURL] = useState(null);
     const [videoSrc, setVideoSrc] = useState(null)
     const [poseTest, setPose] = useState(null)
-    //const [firstRun, setFirstRun] = useState(true)
-    const canvasRef = useRef(null)
+    // const [firstRun, setFirstRun] = useState(true)
+    // const canvasRef = useRef(null)
+    const videoRef = useRef(null)
+    
     const handleGo = () => {
         setVideoSrc(fileDataURL)
     }
@@ -22,49 +44,78 @@ function Home() {
     function onResults(results) {
         //console.log(results)
         if (results.poseLandmarks) {
-            testArray.push(results.poseLandmarks)
-
-            /*
-                        const canvasElement = canvasRef.current
-                        const canvasCtx = canvasElement.getContext("2d")
-                        canvasCtx.save()
-                        canvasCtx.clearRect(0, 0, 1280, 720)
-                        canvasCtx.translate(720, 0)
-                        canvasCtx.scale(-1, 1)
-                        canvasCtx.font = "40px Verdana"
-                        canvasCtx.fillStyle = "#bdffff"
-                        canvasCtx.drawImage(
-                            results.image,
-                            0,
-                            0,
-                            canvasCtx.width,
-                            canvasCtx.height
-                        )
+            if (!calibrated) {
+                if (results.poseWorldLandmarks[29].visibility > 0.2 && results.poseWorldLandmarks[30].visibility > 0.2) {
+                    console.log("calibrated")
+                    rightPrevHeelX = results.poseWorldLandmarks[30].x
+                    calibrated = true
+                    videoRef.current.currentTime = 0
+                    return
+                }
+            }
             
-                        const leftLeg = [
-                            results.poseLandmarks[24],
-                            results.poseLandmarks[23],
-                            results.poseLandmarks[25],
-                            results.poseLandmarks[27],
-                        ]
-            
-                        drawConnectors(canvasCtx, leftLeg, POSE_CONNECTIONS, {
-                            color: "#77bdff",
-                            lineWidth: 4,
-                        })
-                        drawLandmarks(canvasCtx, leftLeg, {
-                            color: "#bd77ff",
-                            lineWidth: 2,
-                        })
-            */
+            if (calibrated) {
+                if (rightLegForward && rightRepeated < -2 ) {
+                    console.log("Heel strike")
+                }
+                if (rightRepeated > 2) {
+                    rightLegForward = true
+                    rightRepeated = 0
+                }
+                if (rightRepeated < -2) {
+                    rightLegForward = false
+                    rightRepeated = 0
+                }                
+                if (results.poseWorldLandmarks[30].x > rightPrevHeelX) {
+                    rightRepeated++                    
+                } else {
+                    rightRepeated--                   
+                }
+                rightPrevHeelX = results.poseWorldLandmarks[30].x
+            }
         }
+
+        /*
+                    const canvasElement = canvasRef.current
+                    const canvasCtx = canvasElement.getContext("2d")
+                    canvasCtx.save()
+                    canvasCtx.clearRect(0, 0, 1280, 720)
+                    canvasCtx.translate(720, 0)
+                    canvasCtx.scale(-1, 1)
+                    canvasCtx.font = "40px Verdana"
+                    canvasCtx.fillStyle = "#bdffff"
+                    canvasCtx.drawImage(
+                        results.image,
+                        0,
+                        0,
+                        canvasCtx.width,
+                        canvasCtx.height
+                    )
+        
+                    const leftLeg = [
+                        results.poseLandmarks[24],
+                        results.poseLandmarks[23],
+                        results.poseLandmarks[25],
+                        results.poseLandmarks[27],
+                    ]
+        
+                    drawConnectors(canvasCtx, leftLeg, POSE_CONNECTIONS, {
+                        color: "#77bdff",
+                        lineWidth: 4,
+                    })
+                    drawLandmarks(canvasCtx, leftLeg, {
+                        color: "#bd77ff",
+                        lineWidth: 2,
+                    })
+        */
+
         //videoElement.play()
+        //videoRef.current.pause()
         return;
         //}
     }
 
     const changeHandler = (e) => {
-
 
 
         const file = e.target.files[0];
@@ -74,29 +125,30 @@ function Home() {
         // }        
         setFile(file);
 
-        const videoElement = document.getElementsByClassName('input_video')[0];
+        videoRef.current = document.getElementsByClassName('input_video')[0];
 
         async function onFrame() {
-            if (!videoElement.ended) {
-                videoElement.play()
-                if (firstRun) {
-                    console.log("first frame")
-                    //setFirstRun(false)
-                    firstRun = false
-                    videoElement.pause()
-                    setTimeout(onFrame, 1000)
-                }
+            if (!videoRef.current.ended) {
+                videoRef.current.play()
+                // if (firstRun) {
+                //     console.log("first frame")
+                //     //setFirstRun(false)
+                //     firstRun = false
+                //     videoRef.current.pause()
+                //     setTimeout(onFrame, 1000)
+                // }
 
                 await poseTest.send({
-                    image: videoElement
+                    image: videoRef.current
                 });
+                //videoRef.current.pause()
 
 
-                console.log('frame')
-                console.log(testArray)
+                // console.log('frame')
+                // console.log(testArray.length)
 
                 // await pose.send({
-                //     image: videoElement
+                //     image: videoRef.current
                 //   });
                 // https://stackoverflow.com/questions/65144038/how-to-use-requestanimationframe-with-promise    
                 await new Promise(requestAnimationFrame);
@@ -107,7 +159,7 @@ function Home() {
         }
 
 
-        videoElement.onloadeddata = (evt) => {
+        videoRef.current.onloadeddata = (evt) => {
             //let video = evt.target;
 
             //console.log(video)
@@ -127,8 +179,8 @@ function Home() {
             //    width = window.innerWidth;
             //     height = width * aspect;
             // }
-            videoElement.playbackRate = 0.75
-            videoElement.play();
+            videoRef.current.playbackRate = 0.2
+            videoRef.current.play();
             onFrame();
         };
     }
@@ -144,14 +196,13 @@ function Home() {
         pose.setOptions({
             modelComplexity: 2,
             smoothLandmarks: true,
-            enableSegmentation: true,
-            smoothSegmentation: true,
+            enableSegmentation: false,
+            smoothSegmentation: false,
             minDetectionConfidence: 0.7,
             minTrackingConfidence: 0.7,
         })
 
         setPose(pose)
-
         pose.onResults(onResults)
 
     }, [])
@@ -164,6 +215,7 @@ function Home() {
             fileReader.onload = (e) => {
                 const { result } = e.target;
                 if (result && !isCancel) {
+                    setVideoSrc(result)
                     setFileDataURL(result)
                 }
             }
@@ -180,15 +232,16 @@ function Home() {
 
     }, [file]);
 
+
     return (
 
         <>
             <div className="container">
-                <video className="input_video" src={videoSrc} type='video/mp4' muted="muted"></video>
-                <div className="canvas-container">
+                <video className="input_video" src={videoSrc} type='video/mp4' muted="muted" width="480" height="270"></video>
+                {/* <div className="canvas-container">
                     <canvas ref={canvasRef} className="output_canvas" width="1280px" height="720px">
                     </canvas>
-                </div>
+                </div> */}
                 <form>
                     <p>
                         <label htmlFor='video'>Select video</label>
