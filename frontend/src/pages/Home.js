@@ -1,9 +1,9 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react'
 import { Pose, POSE_CONNECTIONS } from "@mediapipe/pose"
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils"
 import * as angleH from "../components/home/AngleHelper"
 
-// const imageMimeType = /image\/(png|jpg|jpeg)/i;
+// const imageMimeType = /image\/(png|jpg|jpeg)/i
 let leftData = []
 let rightData = []
 let tempArray = []
@@ -11,8 +11,11 @@ let tempArray = []
 let rightPrevHeelX = 0
 let leftPrevHeelX = 0
 
-let rightRepeated = 0
-let leftRepeated = 0
+let rightHeelRepeated = 0
+let leftHeelRepeated = 0
+
+let rightToeRepeated = 0
+let leftToeRepeated = 0
 
 let rightLegForward = false
 let leftLegForward = false
@@ -25,53 +28,63 @@ let leftStep = false
 
 let calibrated = false
 
-
 function Home() {
-    const [file, setFile] = useState(null);
-    const [fileDataURL, setFileDataURL] = useState(null);
+    const [file, setFile] = useState(null)
+    const [fileDataURL, setFileDataURL] = useState(null)
     const [videoSrc, setVideoSrc] = useState(null)
     const [poseTest, setPose] = useState(null)
     // const [firstRun, setFirstRun] = useState(true)
     // const canvasRef = useRef(null)
     const videoRef = useRef(null)
-    
+
     const handleGo = () => {
         setVideoSrc(fileDataURL)
     }
 
-    //const canvasCtx = document.getElementsByClassName('output_canvas')[0];
+    //const canvasCtx = document.getElementsByClassName('output_canvas')[0]
 
     function onResults(results) {
         //console.log(results)
         if (results.poseLandmarks) {
             if (!calibrated) {
-                if (results.poseWorldLandmarks[29].visibility > 0.2 && results.poseWorldLandmarks[30].visibility > 0.2) {
-                    console.log("calibrated")
+                if (results.poseWorldLandmarks[30].visibility > 0.2) {
                     rightPrevHeelX = results.poseWorldLandmarks[30].x
+                    rightPrevToeX = results.poseWorldLandmarks[32].x
+                    leftPrevHeelX = results.poseWorldLandmarks[29].x
+                    leftPrevToeX = results.poseWorldLandmarks[31].x
                     calibrated = true
                     videoRef.current.currentTime = 0
+                    console.log("calibrated")
                     return
                 }
             }
-            
+
             if (calibrated) {
-                if (rightLegForward && rightRepeated < -2 ) {
+                if (rightLegForward && rightHeelRepeated < -2) {
                     console.log("Heel strike")
                 }
-                if (rightRepeated > 2) {
+                if (rightHeelRepeated > 2) {
                     rightLegForward = true
-                    rightRepeated = 0
+                    rightHeelRepeated = 0
                 }
-                if (rightRepeated < -2) {
+                if (rightHeelRepeated < -2) {
                     rightLegForward = false
-                    rightRepeated = 0
-                }                
+                    rightHeelRepeated = 0
+                }
                 if (results.poseWorldLandmarks[30].x > rightPrevHeelX) {
-                    rightRepeated++                    
+                    rightHeelRepeated++
                 } else {
-                    rightRepeated--                   
+                    rightHeelRepeated--
+                }
+                if (results.poseWorldLandmarks[29].x > leftPrevHeelX) {
+                    leftHeelRepeated++
+                } else {
+                    leftHeelRepeated--
                 }
                 rightPrevHeelX = results.poseWorldLandmarks[30].x
+                rightPrevToeX = results.poseWorldLandmarks[32].x
+                leftPrevHeelX = results.poseWorldLandmarks[29].x
+                leftPrevToeX = results.poseWorldLandmarks[31].x
             }
         }
 
@@ -120,12 +133,12 @@ function Home() {
 
         const file = e.target.files[0];
         // if (!file.type.match(imageMimeType)) {
-        //   alert("Image mime type is not valid");
-        //   return;
+        //   alert("Image mime type is not valid")
+        //   return
         // }        
-        setFile(file);
+        setFile(file)
 
-        videoRef.current = document.getElementsByClassName('input_video')[0];
+        videoRef.current = document.getElementsByClassName('input_video')[0]
 
         async function onFrame() {
             if (!videoRef.current.ended) {
@@ -140,7 +153,7 @@ function Home() {
 
                 await poseTest.send({
                     image: videoRef.current
-                });
+                })
                 //videoRef.current.pause()
 
 
@@ -149,40 +162,40 @@ function Home() {
 
                 // await pose.send({
                 //     image: videoRef.current
-                //   });
+                //   })
                 // https://stackoverflow.com/questions/65144038/how-to-use-requestanimationframe-with-promise    
-                await new Promise(requestAnimationFrame);
-                onFrame();
+                await new Promise(requestAnimationFrame)
+                onFrame()
             }
-            else
-                setTimeout(onFrame, 500);
+            else // calibrated=false tänne?
+                setTimeout(onFrame, 500)
         }
 
 
         videoRef.current.onloadeddata = (evt) => {
-            //let video = evt.target;
+            //let video = evt.target
 
             //console.log(video)
-            //canvasElement.width = video.videoWidth;
-            //canvasElement.height = video.videoHeight;
+            //canvasElement.width = video.videoWidth
+            //canvasElement.height = video.videoHeight
 
             //canvasRef.current.width = video.videoWidth
             //canvasRef.current.height = video.videoHeight
 
-            //const aspect = video.videoHeight / video.videoWidth;
-            //let width, height;
+            //const aspect = video.videoHeight / video.videoWidth
+            //let width, height
             //if (window.innerWidth > window.innerHeight) {
-            //    height = window.innerHeight;
-            //   width = height / aspect;
+            //    height = window.innerHeight
+            //   width = height / aspect
             // }
             // else {
-            //    width = window.innerWidth;
-            //     height = width * aspect;
+            //    width = window.innerWidth
+            //     height = width * aspect
             // }
             videoRef.current.playbackRate = 0.2
-            videoRef.current.play();
-            onFrame();
-        };
+            videoRef.current.play()
+            onFrame()
+        }
     }
 
     useEffect(() => {
@@ -209,28 +222,28 @@ function Home() {
 
     useEffect(() => {
 
-        let fileReader, isCancel = false;
+        let fileReader, isCancel = false
         if (file) {
-            fileReader = new FileReader();
+            fileReader = new FileReader()
             fileReader.onload = (e) => {
-                const { result } = e.target;
-                if (result && !isCancel) {
+                const { result } = e.target
+                if (result && !isCancel) { // calibrated = false tänne?
                     setVideoSrc(result)
                     setFileDataURL(result)
                 }
             }
-            fileReader.readAsDataURL(file);
+            fileReader.readAsDataURL(file)
         }
 
 
         return () => {
-            isCancel = true;
+            isCancel = true
             if (fileReader && fileReader.readyState === 1) {
-                fileReader.abort();
+                fileReader.abort()
             }
         }
 
-    }, [file]);
+    }, [file])
 
 
     return (
@@ -258,6 +271,6 @@ function Home() {
                     : null}
             </div>
         </>
-    );
+    )
 }
-export default Home;
+export default Home
