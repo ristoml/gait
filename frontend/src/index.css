@@ -11,3 +11,24 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* input[type="file"] {
+  display: none;
+} */
+
+.videoLabel {
+  color: white;
+  background-color: grey;
+  padding-left: 4ch;
+  padding-right: 4ch;
+  padding-bottom: 2ch;
+  padding-top: 2ch;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border: 2px solid #333
+}
+
+.videoLabel:hover {
+  background-color: #555;
+}
