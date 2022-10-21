@@ -61,40 +61,54 @@ function Home() {
                     leftPrevToeX = results.poseWorldLandmarks[31].x
                     calibrated = true
                     videoRef.current.currentTime = 0
+                    videoRef.current.loop = true
                     console.log("calibrated")
                     return
                 }
             }
-            
-            if (calibrated && !mediapipeCalibrated) {   
-                videoRef.current.loop = true             
-                calibrationTick++
-                if (Date.now() - startTime > 999) {
-                    if (calibrationTick < 101 && videoRef.current.playbackRate > 0.2) {
-                        if (videoRef.current.playbackRate > 0.2) {
-                            videoRef.current.playbackRate = videoRef.current.playbackRate - 0.05
-                            console.log("slowing down")
+
+            if (calibrated && !mediapipeCalibrated) {
+                calibrationTick++                
+                if (Date.now() - startTime > 1999) {
+                    if (calibrationTick < 201) {
+                        console.log(calibrationTick)
+                        if (calibrationTick / 200 > 0.2) {
+                            videoRef.current.playbackRate = calibrationTick / 200 * 1
+                            console.log('playbackrate adjusted to')
                             console.log(videoRef.current.playbackRate)
-                            console.log(calibrationTick)
+                            mediapipeCalibrated = true
+                            videoRef.current.currentTime = 0
+                            videoRef.current.loop = false
+                        } else {
+                            videoRef.current.playbackRate = 0.2
+                            console.log('playbackrate adjusted to')
+                            console.log(videoRef.current.playbackRate)
+                            mediapipeCalibrated = true
+                            videoRef.current.currentTime = 0
+                            videoRef.current.loop = false
                         }
-                        calibrationTick = 0
-                        startTime = Date.now()
-                    } else if (calibrationTick > 99 || videoRef.current.playbackRate < 0.25) {       
-                        console.log("playbackspeed calibrated:")
-                        console.log(videoRef.current.playbackRate)                 
-                        mediapipeCalibrated = true
-                        videoRef.current.currentTime = 0
-                        videoRef.current.loop = false
+                    //     if (videoRef.current.playbackRate > 0.21) {
+                    //         videoRef.current.playbackRate = videoRef.current.playbackRate - 0.05
+                    //         console.log("slowing down")
+                    //         console.log(videoRef.current.playbackRate)
+                    //         console.log(calibrationTick)
+                    //     }
+                    //     calibrationTick = 0
+                    //     startTime = Date.now()
+                    // } else if (calibrationTick > 99 || videoRef.current.playbackRate < 0.25) {
+                    //     console.log("playbackspeed calibrated:")
+                    //     console.log(videoRef.current.playbackRate)
+
                     }
                 }
             }
 
             if (calibrated && mediapipeCalibrated) {
-                //console.log('f')               
+                console.log('f')               
 
                 if (rightToeRepeated > 1) {
                     rightLegForward = true
-                    console.log("Right f")
+                    // console.log("Right f")
                     rightToeRepeated = 0
                 }
                 if (rightToeRepeated < -1) {
@@ -106,7 +120,7 @@ function Home() {
                 }
                 if (leftToeRepeated > 1) {
                     leftLegForward = true
-                    console.log("Left f")
+                    // console.log("Left f")
                     leftToeRepeated = 0
                 }
                 if (leftToeRepeated < -1) {
