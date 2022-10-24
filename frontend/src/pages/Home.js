@@ -68,36 +68,38 @@ function Home() {
             }
 
             if (calibrated && !mediapipeCalibrated) {
-                calibrationTick++                
+                if (Date.now() - startTime > 999) {
+                    calibrationTick++
+                }
                 if (Date.now() - startTime > 1999) {
-                    if (calibrationTick < 201) {
+                    if (calibrationTick < 101) {
                         console.log(calibrationTick)
-                        if (calibrationTick / 200 > 0.2) {
-                            videoRef.current.playbackRate = calibrationTick / 200 * 1
+                        if (calibrationTick / 101 > 0.1) {
+                            videoRef.current.playbackRate = calibrationTick / 101 * 1
                             console.log('playbackrate adjusted to')
                             console.log(videoRef.current.playbackRate)
                             mediapipeCalibrated = true
                             videoRef.current.currentTime = 0
                             videoRef.current.loop = false
                         } else {
-                            videoRef.current.playbackRate = 0.2
+                            videoRef.current.playbackRate = 0.1
                             console.log('playbackrate adjusted to')
                             console.log(videoRef.current.playbackRate)
                             mediapipeCalibrated = true
                             videoRef.current.currentTime = 0
                             videoRef.current.loop = false
                         }
-                    //     if (videoRef.current.playbackRate > 0.21) {
-                    //         videoRef.current.playbackRate = videoRef.current.playbackRate - 0.05
-                    //         console.log("slowing down")
-                    //         console.log(videoRef.current.playbackRate)
-                    //         console.log(calibrationTick)
-                    //     }
-                    //     calibrationTick = 0
-                    //     startTime = Date.now()
-                    // } else if (calibrationTick > 99 || videoRef.current.playbackRate < 0.25) {
-                    //     console.log("playbackspeed calibrated:")
-                    //     console.log(videoRef.current.playbackRate)
+                        //     if (videoRef.current.playbackRate > 0.21) {
+                        //         videoRef.current.playbackRate = videoRef.current.playbackRate - 0.05
+                        //         console.log("slowing down")
+                        //         console.log(videoRef.current.playbackRate)
+                        //         console.log(calibrationTick)
+                        //     }
+                        //     calibrationTick = 0
+                        //     startTime = Date.now()
+                        // } else if (calibrationTick > 99 || videoRef.current.playbackRate < 0.25) {
+                        //     console.log("playbackspeed calibrated:")
+                        //     console.log(videoRef.current.playbackRate)
 
                     }
                 }
@@ -106,42 +108,44 @@ function Home() {
             if (calibrated && mediapipeCalibrated) {
                 console.log('f')               
 
-                if (rightToeRepeated > 1) {
-                    rightLegForward = true
-                    // console.log("Right f")
-                    rightToeRepeated = 0
-                }
-                if (rightToeRepeated < -1) {
-                    if (rightLegForward) {
-                        // console.log("Right heel strike")
-                    }
-                    rightLegForward = false
-                    rightToeRepeated = 0
-                }
-                if (leftToeRepeated > 1) {
-                    leftLegForward = true
-                    // console.log("Left f")
-                    leftToeRepeated = 0
-                }
-                if (leftToeRepeated < -1) {
-                    leftLegForward = false
-                    leftToeRepeated = 0
-                }
-                if (results.poseWorldLandmarks[32].x > rightPrevToeX) {
-                    rightToeRepeated++
-                } else {
-                    rightToeRepeated--
-                }
-                if (results.poseWorldLandmarks[31].x > leftPrevToeX) {
-                    leftToeRepeated++
-                } else {
-                    leftToeRepeated--
-                }
+                // if (rightToeRepeated > 2) {
+                //     rightLegForward = true
+                //     console.log("Right f")
+                //     rightToeRepeated = 0
+                // }
+                // if (rightToeRepeated < -2) {
+                //     if (rightLegForward) {
+                //         // console.log("Right heel strike")
+                //     }
+                //     rightLegForward = false
+                //     rightToeRepeated = 0
+                // }
+                // if (leftToeRepeated > 2) {
+                //     leftLegForward = true
+                //     console.log("Left f")
+                //     leftToeRepeated = 0
+                // }
+                // if (leftToeRepeated < -2) {
+                //     leftLegForward = false
+                //     leftToeRepeated = 0
+                // }
+                // if (results.poseWorldLandmarks[32].x > rightPrevToeX) {
+                //     rightToeRepeated++
+                // } else {
+                //     rightToeRepeated--
+                // }
+                // if (results.poseWorldLandmarks[31].x > leftPrevToeX) {
+                //     leftToeRepeated++
+                // } else {
+                //     leftToeRepeated--
+                // }
 
-                rightPrevHeelX = results.poseWorldLandmarks[32].x
-                rightPrevToeX = results.poseWorldLandmarks[32].x
-                leftPrevHeelX = results.poseWorldLandmarks[29].x
-                leftPrevToeX = results.poseWorldLandmarks[31].x
+                // // rightPrevPrevToeX = rightPrevToeX
+
+                // rightPrevHeelX = results.poseWorldLandmarks[32].x
+                // rightPrevToeX = results.poseWorldLandmarks[32].x
+                // leftPrevHeelX = results.poseWorldLandmarks[29].x
+                // leftPrevToeX = results.poseWorldLandmarks[31].x
             }
         }
 
