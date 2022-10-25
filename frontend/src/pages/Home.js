@@ -1,12 +1,12 @@
 import { useEffect, useState, useRef } from 'react'
 import { Pose, POSE_CONNECTIONS } from "@mediapipe/pose"
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils"
-import * as angleH from "../components/home/AngleHelper"
+// import * as angleH from "../components/home/AngleHelper"
+import Graphs from "../components/graphs/Graphs"
+import * as dPp from "../components/graphs/DataPostprocess"
 
 // const imageMimeType = /image\/(png|jpg|jpeg)/i
-let leftData = []
-let rightData = []
-let tempArray = []
+let poseResults = []
 
 let rightPrevHeelX = 0
 let leftPrevHeelX = 0
@@ -36,6 +36,8 @@ let leftStep = false
 let calibrated = false
 let mediapipeCalibrated = false
 
+
+
 let startTime, prevTime
 let calibrationTick = 0
 let lastCalibrationTick
@@ -48,6 +50,9 @@ function Home() {
     // const [firstRun, setFirstRun] = useState(true)
     // const canvasRef = useRef(null)
     const videoRef = useRef(null)
+    const [showGraphs, setShowGraphs] = useState(false)
+    // const [leftData, setLeftData] = useState()
+    // const [rightData, setRightData] = useState()
 
     function onResults(results) {
         //console.log(results)
@@ -55,10 +60,10 @@ function Home() {
             if (!calibrated) {
                 if (results.poseWorldLandmarks[30].visibility > 0.2) {
                     startTime = Date.now()
-                    rightPrevHeelX = results.poseWorldLandmarks[30].x
-                    rightPrevToeX = results.poseWorldLandmarks[32].x
-                    leftPrevHeelX = results.poseWorldLandmarks[29].x
-                    leftPrevToeX = results.poseWorldLandmarks[31].x
+                    // rightPrevHeelX = results.poseWorldLandmarks[30].x
+                    // rightPrevToeX = results.poseWorldLandmarks[32].x
+                    // leftPrevHeelX = results.poseWorldLandmarks[29].x
+                    // leftPrevToeX = results.poseWorldLandmarks[31].x
                     calibrated = true
                     videoRef.current.currentTime = 0
                     videoRef.current.loop = true
@@ -75,14 +80,16 @@ function Home() {
                     if (calibrationTick < 101) {
                         console.log(calibrationTick)
                         if (calibrationTick / 101 > 0.1) {
-                            videoRef.current.playbackRate = calibrationTick / 101 * 1
+                            // videoRef.current.playbackRate = calibrationTick / 101 * 1 
+                            videoRef.current.playbackRate = 0.15
                             console.log('playbackrate adjusted to')
                             console.log(videoRef.current.playbackRate)
                             mediapipeCalibrated = true
                             videoRef.current.currentTime = 0
                             videoRef.current.loop = false
                         } else {
-                            videoRef.current.playbackRate = 0.1
+                            // videoRef.current.playbackRate = 0.1
+                            videoRef.current.playbackRate = 0.15
                             console.log('playbackrate adjusted to')
                             console.log(videoRef.current.playbackRate)
                             mediapipeCalibrated = true
@@ -106,8 +113,14 @@ function Home() {
             }
 
             if (calibrated && mediapipeCalibrated) {
-                console.log('f')               
+                //console.log('f')
 
+
+
+                console.log(results.poseWorldLandmarks[32].x > rightPrevToeX ? '1' : '0')
+
+                poseResults.push(results)
+                rightPrevToeX = results.poseWorldLandmarks[32].x
                 // if (rightToeRepeated > 2) {
                 //     rightLegForward = true
                 //     console.log("Right f")
@@ -156,7 +169,6 @@ function Home() {
 
     const changeHandler = (e) => {
 
-
         const file = e.target.files[0];
 
         setFile(file)
@@ -171,9 +183,15 @@ function Home() {
                 })
                 await new Promise(requestAnimationFrame)
                 onFrame()
+            } else if (videoRef.current.ended) {
+                // setRightData(tempRightData)
+                // setLeftData(tempLeftData)
+                dPp.processResults(poseResults)
+                setShowGraphs(true)
             }
-            else // calibrated=false tänne?
+            else {// calibrated=false tänne?
                 setTimeout(onFrame, 500)
+            }
         }
 
 
@@ -232,21 +250,26 @@ function Home() {
 
         <>
             <div className="container">
-                <video className="input_video" src={videoSrc} type='video/mp4' muted="muted" width="960" height="540"></video>
-                {/* <div className="canvas-container">
-                    <canvas ref={canvasRef} className="output_canvas" width="1280px" height="720px">
-                    </canvas>
-                </div> */}
-                <form>
-                    <p style={{ display: file ? 'none' : 'block' }}>
-                        <input
-                            type="file"
-                            id='video'
-                            accept='.mp4, .ogg, .webm'
-                            onChange={changeHandler}
-                        />
-                    </p>
-                </form>
+                {!showGraphs ? (
+                    <>
+                        <video className="input_video" src={videoSrc} type='video/mp4' muted="muted" width="960" height="540"></video>
+                        {/* <div className="canvas-container">
+                        <canvas ref={canvasRef} className="output_canvas" width="1280px" height="720px">
+                        </canvas>
+                    </div> */}
+                        <form>
+                            <p style={{ display: file ? 'none' : 'block' }}>
+                                <input
+                                    type="file"
+                                    id='video'
+                                    accept='.mp4, .ogg, .webm'
+                                    onChange={changeHandler}
+                                />
+                            </p>
+                        </form>
+                    </>) : (
+                    <Graphs></Graphs>)}
+
             </div>
         </>
     )
