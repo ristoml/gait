@@ -74,7 +74,7 @@ function Home() {
                 if (Date.now() - startTime > 999) {
                     calibrationTick++
                 }
-                if (Date.now() - startTime > 1999) {                   
+                if (Date.now() - startTime > 1999) {
                     console.log(calibrationTick)
                     if (calibrationTick / 101 > 0.1) {
                         videoRef.current.playbackRate = calibrationTick / 101 * 1
@@ -105,7 +105,7 @@ function Home() {
                     //     console.log("playbackspeed calibrated:")
                     //     console.log(videoRef.current.playbackRate)
 
-                    
+
                 }
             }
 
@@ -116,7 +116,7 @@ function Home() {
 
                 // console.log(results.poseWorldLandmarks[32].x > rightPrevToeX ? '1' : '0')
 
-                // poseResults.push(results)
+                poseResults.push({ data: results, time: Date.now() })
                 // rightPrevToeX = results.poseWorldLandmarks[32].x
                 // if (rightToeRepeated > 2) {
                 //     rightLegForward = true

@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
-import { XAxis, YAxis, CartesianGrid, Tooltip, Legend, LineChart, Line, ReferenceLine } from 'recharts'
+//import { XAxis, YAxis, CartesianGrid, Tooltip, Legend, LineChart, Line, ReferenceLine } from 'recharts'
 import { resampleData } from './Resample'
 
 // let leftHip = [], leftKnee = [], leftAnkle = []
@@ -9,7 +9,7 @@ function Graphs({ leftGaitData, rightGaitData }) {
 
     // const [leftData, setLeftData] = useState(leftGaitData)
     // const [rightData, setRightData] = useState(rightGaitData)
-    
+
 
 
     useEffect(() => {
