@@ -1,12 +1,5 @@
 import * as angleH from "../home/AngleHelper"
-
-let leftHip = []
-let leftKnee = []
-let leftAnkle = []
-
-let rightHip = []
-let rightKnee = []
-let rightAnkle = []
+import * as resample from "./Resample"
 
 let leftHipRE = []
 let leftKneeRE = []
@@ -26,8 +19,11 @@ let rightToeDirectionArray = []
 let rightHeelDirectionArray = []
 
 let steps = 0
+let maxSteps = 20
 
 let skippedFrames = 30
+
+let resampleTarget = 80
 
 const processResults = (results, leftData, rightData) => {
     //for (let i = 30; i < results.length; i++) {                   <------
@@ -54,67 +50,18 @@ const processResults = (results, leftData, rightData) => {
         }
 
     }
-    console.log(rightHeelDirectionArray)
     getDirectionChangeIndex(rightToeDirectionArray, rightHeelDirectionArray, rightDirectionArray)
-    //getDirectionChangeIndex(leftToeDirectionArray, leftHeelDirectionArray, leftDirectionArray)
+    getDirectionChangeIndex(leftToeDirectionArray, leftHeelDirectionArray, leftDirectionArray)    
     makeStepAngleArray(rightDirectionArray, results, rightHipRE, rightKneeRE, rightAnkleRE, false)
-    //makeStepAngleArray(leftDirectionArray, results, leftHipRE, leftKneeRE, leftAnkleRE, true)
-
-
-
-    // console.log(rightToeDirectionArray)
-    // const getDirectionChangeIndex = (dirArray, isToe) => {
-    //     let certainty = false
-    //     if (isToe) {
-    //         for (let i = 1; i < dirArray.length; i++) {
-    //             if (dirArray[i-1] === 0) {
-
-    //             }
-    //         }
-
-    //     } else {
-
-    //     }
-    // }
-
-    // rightPrevHeelX = results.poseWorldLandmarks[30].x
-    // rightPrevToeX = results.poseWorldLandmarks[32].x
-    // leftPrevHeelX = results.poseWorldLandmarks[29].x
-    // leftPrevToeX = results.poseWorldLandmarks[31].x
-    // angleH.updateAngleHelper(results)    
-
-    // tempLeftData.push({ Hip: angleH.getLeftHipAngle(), Knee: angleH.getLeftKneeAngle(), Ankle: angleH.getLeftAnkleAngle() })
-    // tempRightData.push({ Hip: angleH.getRightHipAngle(), Knee: angleH.getRightKneeAngle(), Ankle: angleH.getRightAnkleAngle() })
-
-    // for (let i = 0; i < samples; i++) { // create recharts-dataset
-    //     rechartsData.current.push({ sample: i, first: sIndexArray[0][i], second: sIndexArray[1][i], third: sIndexArray[2][i], fourth: sIndexArray[3][i], fifth: sIndexArray[4][i], sixth: sIndexArray[5][i], seventh: sIndexArray[6][i], eighth: sIndexArray[7][i], ninth: sIndexArray[8][i], tenth: sIndexArray[9][i] })
-    //   }
-
-    // leftGaitData.forEach(element => {
-    //     leftHip.current.push(element.Hip)
-    //     leftKnee.current.push(element.Knee)
-    //     leftAnkle.current.push(element.Ankle)
-    // })
-    // rightGaitData.forEach(element => {
-    //     rightHip.current.push(element.Hip)
-    //     rightKnee.current.push(element.Knee)
-    //     rightAnkle.current.push(element.Ankle)
-    // })
-    // for (let i = 0; i < leftHip.current.length; i++) { // create recharts-dataset
-    //     leftHipRE.current.push({ sample: i, Hip: leftHip.current[i] })
-    // }
-    // console.log(leftHipRE.current)
-
+    console.log(rightHipRE, rightKneeRE, rightAnkleRE, leftHipRE, leftKneeRE, leftAnkleRE)
+    makeStepAngleArray(leftDirectionArray, results, leftHipRE, leftKneeRE, leftAnkleRE, true)
 }
-
 
 const getDirectionChangeIndex = (toeDirArray, heelDirArray, dirArray) => {
     let certainty = false
     let forward = true
     let cycleCount = 0
     let start = false
-
-
 
     for (let i = 0; i < heelDirArray.length; i++) {
         if (!certainty) {
@@ -161,18 +108,14 @@ const getDirectionChangeIndex = (toeDirArray, heelDirArray, dirArray) => {
             }
         }
     }
-    //console.log(dirArray)
 }
 
 const makeStepAngleArray = (cycleArray, resultData, recHip, recKnee, recAnkle, side) => {
-    console.log(cycleArray)
-    console.log(resultData)
 
     let stepcount = -1
     let tempHipArray = []
     let tempKneeArray = []
     let tempAnkleArray = []
-
 
     for (let i = 0; i < cycleArray.length; i++) {
 
@@ -182,7 +125,7 @@ const makeStepAngleArray = (cycleArray, resultData, recHip, recKnee, recAnkle, s
             if (tempHipArray.length !== 0) {
                 recHip.push(tempHipArray)
                 recKnee.push(tempKneeArray)
-                recAnkle.push(tempAnkleArray)
+                recAnkle.push(tempAnkleArray)                
             }
             tempHipArray = []
             tempKneeArray = []
@@ -191,24 +134,52 @@ const makeStepAngleArray = (cycleArray, resultData, recHip, recKnee, recAnkle, s
 
         if (cycleArray[i].cycleCount >= 0) {
             angleH.updateAngleHelper(resultData[i + skippedFrames].data)
-            tempHipArray.push({ angle: angleH.getHipAngle(side), cycle: cycleArray[i].cycleCount })
-            tempKneeArray.push({ angle: angleH.getKneeAngle(side), cycle: cycleArray[i].cycleCount })
-            tempAnkleArray.push({ angle: angleH.getAnkleAngle(side), cycle: cycleArray[i].cycleCount })
+            tempHipArray.push(angleH.getHipAngle(side))
+            tempKneeArray.push(angleH.getKneeAngle(side))
+            tempAnkleArray.push(angleH.getAnkleAngle(side))
         }
-
-        //toka
-
-        // if (cycleArray[i - skippedFrames].cycleCount >= 0) {
-        //     angleH.updateAngleHelper(resultData[i].data)
-        //     recAnkle.push({ angle: angleH.getRightAnkleAngle(), cycle: cycleArray[i - skippedFrames].cycleCount })
-        //     recHip.push({ angle: angleH.getRightHipAngle(), cycle: cycleArray[i - skippedFrames].cycleCount })
-        //     recKnee.push({ angle: angleH.getRightKneeAngle(), cycle: cycleArray[i - skippedFrames].cycleCount })
-        // }
-
     }
-    console.log(recAnkle)
+    steps = stepcount    
 }
 
+const resampleAngleData = (array, target) => {
+    for (let i = 0; i < array.length; i++) {
+        array[i] = resample.resampleData(array[i], target)
+    }
+}
 
+const formRechartsArray = (array, steps) => {   
+//    // resampleAngleData(array, resampleTarget)   
+//     let temp = []
+//     for (let i = steps - 1; i <= maxSteps; i++) {        
+//         array[i] = array[0]
+//     }    
+//     for (let i = 0; i < resampleTarget; i++) {
+//         temp.push({ sample: i, first: array[0][i], second: array[1][i], third: array[2][i], fourth: array[3][i], fifth: array[4][i], sixth: array[5][i], seventh: array[6][i], eighth: array[7][i], ninth: array[8][i], tenth: array[9][i], eleventh: array[10][i], twelvth: array[11][i], thirteenth: array[12][i], fourteenth: array[13][i], fiftheenth: array[14][i], sixteenth: array[15][i], seventeenth: array[16][i], eightteenth: array[17][i], ninteenth: array[18][i], twentieth: array[19][i] })        
+//     }    
+    return array
+}
 
-export { processResults }
+const getLeftHipAngle = () => {
+    return formRechartsArray(leftHipRE, steps)
+}
+const getLeftKneeAngle = () => {
+    return formRechartsArray(leftKneeRE, steps)
+}
+const getLeftAnkleAngle = () => {
+    return formRechartsArray(leftAnkleRE, steps)
+}
+const getRightHipAngle = () => {
+    return formRechartsArray(rightHipRE, steps) 
+}
+const getRightKneeAngle = () => {
+    return formRechartsArray(rightKneeRE, steps)
+}
+const getRightAnkleAngle = () => {
+    return formRechartsArray(rightAnkleRE, steps)
+}
+const getSteps = () => {
+    return steps
+}
+
+export { processResults, getLeftHipAngle, getLeftKneeAngle, getLeftAnkleAngle, getRightHipAngle, getRightKneeAngle, getRightAnkleAngle, getSteps }

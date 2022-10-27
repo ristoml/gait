@@ -1,36 +1,40 @@
 import { useEffect, useState, useRef } from 'react'
-//import { XAxis, YAxis, CartesianGrid, Tooltip, Legend, LineChart, Line, ReferenceLine } from 'recharts'
-import { resampleData } from './Resample'
-
-// let leftHip = [], leftKnee = [], leftAnkle = []
-// let rightHip = [], rightKnee = [], rightAnkle = []
-
-function Graphs({ leftGaitData, rightGaitData }) {
-
-    // const [leftData, setLeftData] = useState(leftGaitData)
-    // const [rightData, setRightData] = useState(rightGaitData)
+import { XAxis, YAxis, CartesianGrid, Tooltip, Legend, LineChart, Line, ReferenceLine } from 'recharts'
 
 
 
-    useEffect(() => {
-        // data.data.map((dataobj) => {
-        //     splitAnglevalues[dataobj.counter] = temparray
-        //     if (counterNow === dataobj.counter - 1) {
-        //       counterNow = dataobj.counter
-        //       temparray = []
-        //     }
-        //     temparray.push(dataobj.angle)
-        //     return ''
-        //   })
-        console.log(leftGaitData)
+function Graphs(props) {
+ 
+    const leftHipRe = useRef(props.leftHip)
+    const leftKneeRe = useRef(props.leftKnee)
+    const leftAnkleRe = useRef(props.leftAnkle)
 
+    const rightHipRe = useRef(props.rightHip)
+    const rightKneeRe = useRef(props.rightKnee)
+    const rightAnkleRe = useRef(props.rightAnkle)
+
+    const ready = useRef(false)
+    const steps = useRef(props.steps)
+
+
+
+
+    useEffect(() => {       
+
+        console.log(steps.current)
+        console.log(leftHipRe.current)
+        console.log(leftKneeRe.current)
+        console.log(leftAnkleRe.current)
+        console.log(rightHipRe.current)
+        console.log(rightKneeRe.current)
+        console.log(rightAnkleRe.current)
 
 
     }, [])
 
     return (
         <div className="Graphs">
-            {/* {leftHip.current && (<>
+            {/* {ready && (<>
                 <LineChart width={590} height={370} data={leftHipRE.current}
                     margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
                     <XAxis dataKey='sample' />
