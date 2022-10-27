@@ -32,3 +32,11 @@ code {
 .videoLabel:hover {
   background-color: #555;
 }
+
+.Graphs {
+  display: flex;
+  flex-wrap: wrap;
+  /* flex-direction: column; */
+  height: 100vh;
+  
+}
