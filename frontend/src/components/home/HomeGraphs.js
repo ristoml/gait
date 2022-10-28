@@ -11,20 +11,17 @@ function HomeGraphs(props) {
     const rightKneeRe = useRef(props.rightKnee)
     const rightAnkleRe = useRef(props.rightAnkle) 
     const [timer, setTimer] = useState(new Date());     
-    
 
-    useEffect(() => {
-        
+    useEffect(() => {        
 
         const interval = setInterval(() => {            
             setTimer(new Date());
-        }, 1000);
+        }, 100);
 
         // This is important, you must clear your interval when component unmounts
         return () => clearInterval(interval);
 
-    }, [])
-    
+    }, [])    
 
     return (
         <>

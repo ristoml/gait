@@ -5,7 +5,6 @@ import Graphs from "../components/graphs/Graphs"
 import HomeGraphs from '../components/home/HomeGraphs'
 import * as dPp from "../components/graphs/DataPostprocess"
 import * as angleH from "../components/home/AngleHelper"
-import { ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Label, Legend, LineChart, Line, ReferenceLine } from 'recharts'
 
 // const imageMimeType = /image\/(png|jpg|jpeg)/i
 let poseResults = []
@@ -23,9 +22,7 @@ function Home() {
     const [videoSrc, setVideoSrc] = useState(null)
     const [poseTest, setPose] = useState(null)
     const [showVid, setShowVid] = useState(false)
-    const [showGraphs, setShowGraphs] = useState(false)
-    const [hipRe, setHipRe] = useState(false)
-    const [childKey, setChildKey] = useState(7)
+    const [showGraphs, setShowGraphs] = useState(false)   
     const counter = useRef(0)
     const canvasRef = useRef(null)
     const videoRef = useRef(null)
@@ -194,7 +191,7 @@ function Home() {
             }
         }
 
-    }, [file, hipRe])
+    }, [file])
 
 
     return (
@@ -245,8 +242,6 @@ function Home() {
                     rightAnkle={dPp.getRightAnkleAngle()}
                     steps={dPp.getSteps()}
                 ></Graphs>)}
-
-
         </>
     )
 }
