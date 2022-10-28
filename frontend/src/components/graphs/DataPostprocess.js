@@ -23,7 +23,7 @@ let maxSteps = 20
 
 let skippedFrames = 30
 
-let resampleTarget = 80
+let resampleTarget = 81
 
 const processResults = (results, leftData, rightData) => {
     //for (let i = 30; i < results.length; i++) {                   <------
@@ -31,30 +31,32 @@ const processResults = (results, leftData, rightData) => {
         if (results[i].data.poseWorldLandmarks[31].x > results[i - 1].data.poseWorldLandmarks[31].x) {
             leftToeDirectionArray.push(1)
         } else {
-            leftToeDirectionArray.push(0)
+            leftToeDirectionArray.push(-1)
         }
         if (results[i].data.poseWorldLandmarks[29].x > results[i - 1].data.poseWorldLandmarks[29].x) {
             leftHeelDirectionArray.push(1)
         } else {
-            leftHeelDirectionArray.push(0)
+            leftHeelDirectionArray.push(-1)
         }
         if (results[i].data.poseWorldLandmarks[32].x > results[i - 1].data.poseWorldLandmarks[32].x) {
             rightToeDirectionArray.push(1)
         } else {
-            rightToeDirectionArray.push(0)
+            rightToeDirectionArray.push(-1)
         }
         if (results[i].data.poseWorldLandmarks[30].x > results[i - 1].data.poseWorldLandmarks[30].x) {
             rightHeelDirectionArray.push(1)
         } else {
-            rightHeelDirectionArray.push(0)
+            rightHeelDirectionArray.push(-1)
         }
 
     }
+    console.log(leftToeDirectionArray, leftHeelDirectionArray, rightToeDirectionArray, rightHeelDirectionArray)
+    console.log(leftDirectionArray, rightDirectionArray)
     getDirectionChangeIndex(rightToeDirectionArray, rightHeelDirectionArray, rightDirectionArray)
     getDirectionChangeIndex(leftToeDirectionArray, leftHeelDirectionArray, leftDirectionArray)
     makeStepAngleArray(rightDirectionArray, results, rightHipRE, rightKneeRE, rightAnkleRE, false)
-    console.log(rightHipRE, rightKneeRE, rightAnkleRE, leftHipRE, leftKneeRE, leftAnkleRE)
     makeStepAngleArray(leftDirectionArray, results, leftHipRE, leftKneeRE, leftAnkleRE, true)
+    console.log(leftHipRE, leftKneeRE, leftAnkleRE, rightHipRE, rightKneeRE, rightAnkleRE)
 }
 
 const getDirectionChangeIndex = (toeDirArray, heelDirArray, dirArray) => {
@@ -73,18 +75,20 @@ const getDirectionChangeIndex = (toeDirArray, heelDirArray, dirArray) => {
             }
         }
 
-        //eteenpäin, varpaat
+        //eteenpäin, kantapää
         if (certainty && forward) {
-            if (heelDirArray[i] === 0) {
-                let battle = heelDirArray[i] + heelDirArray[i + 1] + heelDirArray[i + 2] + heelDirArray[i + 3] + heelDirArray[i + 4] + heelDirArray[i + 5] + heelDirArray[i + 6]
-                if (battle <= 1) {
+            if (heelDirArray[i] === -1) {
+                let battle = heelDirArray[i] + heelDirArray[i + 1] + heelDirArray[i + 2] + heelDirArray[i + 3] + heelDirArray[i + 4] + heelDirArray[i + 5] + heelDirArray[i + 6] + heelDirArray[i + 7] + heelDirArray[i + 8]
+                if (battle <= -2) {
                     forward = false
                     start = true
                     cycleCount++
                     dirArray.push({ state: "ground", cycleCount: cycleCount })
                     continue
-                } else {
+                } else if (start && cycleCount !== 0) {
                     dirArray.push({ state: "air", cycleCount: cycleCount })
+                } else {
+                    dirArray.push({ state: "ready", cycleCount: cycleCount - 1 })
                 }
             } else if (start && cycleCount !== 0) {
                 dirArray.push({ state: "air", cycleCount: cycleCount })
@@ -93,11 +97,11 @@ const getDirectionChangeIndex = (toeDirArray, heelDirArray, dirArray) => {
             }
         }
 
-        //taaksepäin, kantapää
+        //taaksepäin, varpaat
         if (certainty && !forward) {
             if (toeDirArray[i] === 1) {
-                let battle = toeDirArray[i] + toeDirArray[i + 1] + toeDirArray[i + 2] + toeDirArray[i + 3] + toeDirArray[i + 4] + toeDirArray[i + 5] + toeDirArray[i + 6]
-                if (battle >= 6) {
+                let battle = toeDirArray[i] + toeDirArray[i + 1] + toeDirArray[i + 2] + toeDirArray[i + 3] + toeDirArray[i + 4] + toeDirArray[i + 5] + toeDirArray[i + 6] + toeDirArray[i + 7] + toeDirArray[i + 8]
+                if (battle >= 2) {
                     forward = true
                     dirArray.push({ state: "air", cycleCount: cycleCount })
                 } else {

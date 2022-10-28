@@ -74,8 +74,8 @@ const getHipAngle = (side) => {
         temp = ((Math.atan2(rightKneeY - rightHipY, rightKneeX - rightHipX) - Math.atan2(rightShoulderY - rightKneeY, rightShoulderX - rightKneeX)) * (180 / Math.PI))
     }
 
-    if (temp >= 0) return (temp - 180)
-    else return (temp + 180)
+    if (temp >= 0) return (180 - temp)
+    else return (180 + temp)
     //return ((Math.atan2(leftKneeY - leftHipY, leftKneeX - leftHipX) - Math.atan2(leftShoulderY - leftKneeY, leftShoulderX - leftKneeX)) * (180 / Math.PI))
 }
 
@@ -88,8 +88,8 @@ const getAnkleAngle = (side) => {
         temp = (Math.atan2(rightFootIndexY - rightHeelY, rightFootIndexX - rightHeelX) - Math.atan2(rightKneeY - rightAnkleY, rightKneeX - rightAnkleX)) * (180 / Math.PI)
     }
 
-    if (temp >= 0) return (temp - 90)
-    else return (temp + 90)
+    if (temp >= 0) return (90 - temp)
+    else return (90 + temp)
     //return (Math.atan2(leftFootIndexY - leftHeelY, leftFootIndexX - leftHeelX) - Math.atan2(leftKneeY - leftAnkleY, leftKneeX - leftAnkleX)) * (180 / Math.PI)
 }
 

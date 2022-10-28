@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 import { Pose, POSE_CONNECTIONS } from "@mediapipe/pose"
-//import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils"
+import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils"
 import Graphs from "../components/graphs/Graphs"
 import * as dPp from "../components/graphs/DataPostprocess"
 
@@ -19,13 +19,17 @@ function Home() {
     //const [fileDataURL, setFileDataURL] = useState(null) //poista?
     const [videoSrc, setVideoSrc] = useState(null)
     const [poseTest, setPose] = useState(null)
-
-    // const canvasRef = useRef(null)
+    const [showVid, setShowVid] = useState(false)
+    const canvasRef = useRef(null)
     const videoRef = useRef(null)
     const [showGraphs, setShowGraphs] = useState(false)
 
 
+
     function onResults(results) {
+        const canvasElement = canvasRef.current
+        const canvasCtx = canvasElement.getContext("2d")
+
         //console.log(results)
         if (results.poseLandmarks) {
             if (!calibrated) {
@@ -40,6 +44,11 @@ function Home() {
             }
 
             if (calibrated && !mediapipeCalibrated) {
+                const videoWidth = videoRef.current.videoWidth
+                const videoHeight = videoRef.current.videoHeight
+                canvasRef.current.width = videoWidth / 2
+                canvasRef.current.height = videoHeight / 2
+                canvasCtx.clearRect(0, 0, videoWidth, videoHeight)
                 if (Date.now() - startTime > 999) {
                     calibrationTick++
                 }
@@ -53,6 +62,7 @@ function Home() {
                         mediapipeCalibrated = true
                         videoRef.current.currentTime = 0
                         videoRef.current.loop = false
+                        setShowVid(true)
                     } else {
                         // videoRef.current.playbackRate = 0.1
                         videoRef.current.playbackRate = 0.15
@@ -61,14 +71,29 @@ function Home() {
                         mediapipeCalibrated = true
                         videoRef.current.currentTime = 0
                         videoRef.current.loop = false
+                        setShowVid(true)
                     }
                 }
             }
             if (calibrated && mediapipeCalibrated) {
+                canvasCtx.drawImage(
+                    results.image,
+                    0,
+                    0,
+                    canvasElement.width,
+                    canvasElement.height
+                )
+                drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {
+                    color: "#77bdff",
+                    lineWidth: 2,
+                });
+                drawLandmarks(canvasCtx, results.poseLandmarks, {
+                    color: "#bd77ff",
+                    lineWidth: 1,
+                });
                 poseResults.push({ data: results, time: Date.now() })
             }
         }
-        return;
     }
 
     const changeHandler = (e) => {
@@ -116,8 +141,8 @@ function Home() {
             smoothLandmarks: true,
             enableSegmentation: false,
             smoothSegmentation: false,
-            minDetectionConfidence: 0.7,
-            minTrackingConfidence: 0.7,
+            minDetectionConfidence: 0.1,
+            minTrackingConfidence: 0.1,
         })
 
         setPose(pose)
@@ -154,21 +179,26 @@ function Home() {
             <div className="container">
                 {!showGraphs ? (
                     <>
-                        <video className="input_video" src={videoSrc} type='video/mp4' muted="muted" width="960" height="540"></video>
-                        {/* <div className="canvas-container">
-                        <canvas ref={canvasRef} className="output_canvas" width="1280px" height="720px">
-                        </canvas>
-                    </div> */}
-                        <form>
-                            <p style={{ display: file ? 'none' : 'block' }}>
-                                <input
-                                    type="file"
-                                    id='video'
-                                    accept='.mp4, .ogg, .webm'
-                                    onChange={changeHandler}
-                                />
-                            </p>
-                        </form>
+                        <h1 style={{ display: file && !showVid ? 'block' : 'none' }}>Loading... </h1>
+                        <div className='homeContainer'>
+                            <div className='canvasDiv'>
+                                <video style={{ display: 'none' }} className="input_video" src={videoSrc} type='video/mp4' muted="muted" width="960" height="540"></video>
+                                <div className="canvas-container">
+                                    <canvas ref={canvasRef} className="output_canvas" width="1280px" height="720px">
+                                    </canvas>
+                                </div>
+                            </div>
+                            <form>
+                                <p style={{ display: file ? 'none' : 'block' }}>
+                                    <input
+                                        type="file"
+                                        id='video'
+                                        accept='.mp4, .ogg, .webm'
+                                        onChange={changeHandler}
+                                    />
+                                </p>
+                            </form>
+                        </div>
                     </>) : (
                     <Graphs leftHip={dPp.getLeftHipAngle()}
                         leftKnee={dPp.getLeftKneeAngle()}
