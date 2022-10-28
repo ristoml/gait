@@ -2,7 +2,10 @@ import { useEffect, useState, useRef } from 'react'
 import { Pose, POSE_CONNECTIONS } from "@mediapipe/pose"
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils"
 import Graphs from "../components/graphs/Graphs"
+import HomeGraphs from '../components/home/HomeGraphs'
 import * as dPp from "../components/graphs/DataPostprocess"
+import * as angleH from "../components/home/AngleHelper"
+import { ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Label, Legend, LineChart, Line, ReferenceLine } from 'recharts'
 
 // const imageMimeType = /image\/(png|jpg|jpeg)/i
 let poseResults = []
@@ -20,10 +23,20 @@ function Home() {
     const [videoSrc, setVideoSrc] = useState(null)
     const [poseTest, setPose] = useState(null)
     const [showVid, setShowVid] = useState(false)
+    const [showGraphs, setShowGraphs] = useState(false)
+    const [hipRe, setHipRe] = useState(false)
+    const [childKey, setChildKey] = useState(7)
+    const counter = useRef(0)
     const canvasRef = useRef(null)
     const videoRef = useRef(null)
-    const [showGraphs, setShowGraphs] = useState(false)
 
+    const leftHipRe = useRef([])
+    const leftKneeRe = useRef([])
+    const leftAnkleRe = useRef([])
+
+    const rightHipRe = useRef([])
+    const rightKneeRe = useRef([])
+    const rightAnkleRe = useRef([])
 
 
     function onResults(results) {
@@ -46,8 +59,8 @@ function Home() {
             if (calibrated && !mediapipeCalibrated) {
                 const videoWidth = videoRef.current.videoWidth
                 const videoHeight = videoRef.current.videoHeight
-                canvasRef.current.width = videoWidth / 2
-                canvasRef.current.height = videoHeight / 2
+                canvasRef.current.width = videoWidth / 1.33
+                canvasRef.current.height = videoHeight / 1.33
                 canvasCtx.clearRect(0, 0, videoWidth, videoHeight)
                 if (Date.now() - startTime > 999) {
                     calibrationTick++
@@ -76,6 +89,7 @@ function Home() {
                 }
             }
             if (calibrated && mediapipeCalibrated) {
+                counter.current++
                 canvasCtx.drawImage(
                     results.image,
                     0,
@@ -92,6 +106,16 @@ function Home() {
                     lineWidth: 1,
                 });
                 poseResults.push({ data: results, time: Date.now() })
+                if (counter.current % 5 === 0) {
+                    angleH.updateAngleHelper(results)
+                    leftHipRe.current.push({ angle: angleH.getHipAngle(true) })
+                    leftKneeRe.current.push({ angle: angleH.getKneeAngle(true) })
+                    leftAnkleRe.current.push({ angle: angleH.getAnkleAngle(true) })
+
+                    rightHipRe.current.push({ angle: angleH.getHipAngle(false) })
+                    rightKneeRe.current.push({ angle: angleH.getKneeAngle(false) })
+                    rightAnkleRe.current.push({ angle: angleH.getAnkleAngle(false) })
+                }
             }
         }
     }
@@ -170,46 +194,59 @@ function Home() {
             }
         }
 
-    }, [file])
+    }, [file, hipRe])
 
 
     return (
 
         <>
-            <div className="container">
-                {!showGraphs ? (
-                    <>
-                        <h1 style={{ display: file && !showVid ? 'block' : 'none' }}>Loading... </h1>
+
+            {!showGraphs ? (
+
+                <> <form>
+                    <p style={{ display: file ? 'none' : 'block' }} >
+                        <input
+                            className='videoLabel'
+                            type="file"
+                            id='video'
+                            accept='.mp4, .ogg, .webm'
+                            onChange={changeHandler}
+                        />
+                    </p>
+                </form>
+                    <div className="container">
+                        <h1 className='loading' style={{ display: file && !showVid ? 'block' : 'none' }}>Loading... </h1>
                         <div className='homeContainer'>
                             <div className='canvasDiv'>
                                 <video style={{ display: 'none' }} className="input_video" src={videoSrc} type='video/mp4' muted="muted" width="960" height="540"></video>
-                                <div className="canvas-container">
-                                    <canvas ref={canvasRef} className="output_canvas" width="1280px" height="720px">
+                                <div style={{ display: showVid ? 'block' : 'none' }} className="canvas-container" >
+                                    <canvas ref={canvasRef} className="output_canvas" >
                                     </canvas>
                                 </div>
                             </div>
-                            <form>
-                                <p style={{ display: file ? 'none' : 'block' }}>
-                                    <input
-                                        type="file"
-                                        id='video'
-                                        accept='.mp4, .ogg, .webm'
-                                        onChange={changeHandler}
-                                    />
-                                </p>
-                            </form>
-                        </div>
-                    </>) : (
-                    <Graphs leftHip={dPp.getLeftHipAngle()}
-                        leftKnee={dPp.getLeftKneeAngle()}
-                        leftAnkle={dPp.getLeftAnkleAngle()}
-                        rightHip={dPp.getRightHipAngle()}
-                        rightKnee={dPp.getRightKneeAngle()}
-                        rightAnkle={dPp.getRightAnkleAngle()}
-                        steps={dPp.getSteps()}
-                    ></Graphs>)}
 
-            </div>
+                            <div style={{ display: showVid ? 'block' : 'none' }}>
+                                <HomeGraphs
+                                    leftHip={leftHipRe.current}
+                                    leftKnee={leftKneeRe.current}
+                                    leftAnkle={leftAnkleRe.current}
+                                    rightHip={rightHipRe.current}
+                                    rightKnee={rightKneeRe.current}
+                                    rightAnkle={rightAnkleRe.current}></HomeGraphs>
+                            </div>
+                        </div>
+                    </div>
+                </>) : (
+                <Graphs leftHip={dPp.getLeftHipAngle()}
+                    leftKnee={dPp.getLeftKneeAngle()}
+                    leftAnkle={dPp.getLeftAnkleAngle()}
+                    rightHip={dPp.getRightHipAngle()}
+                    rightKnee={dPp.getRightKneeAngle()}
+                    rightAnkle={dPp.getRightAnkleAngle()}
+                    steps={dPp.getSteps()}
+                ></Graphs>)}
+
+
         </>
     )
 }

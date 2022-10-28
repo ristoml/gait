@@ -15,6 +15,18 @@ code {
 /* input[type="file"] {
   display: none;
 } */
+.homeContainer {
+  margin: 5vh;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+
+}
+
+.output_canvas {
+  margin: 10px
+}
 .canvasDiv {
   display: flex;
   flex-wrap: wrap;
@@ -22,14 +34,19 @@ code {
   /* height: 100vh; */
 
 }
+.loading {
+  margin-top: 40vh;
+}
 
-.videoLabel {
+.videoLabel { 
+
   color: white;
   background-color: grey;
   padding-left: 4ch;
   padding-right: 4ch;
   padding-bottom: 2ch;
   padding-top: 2ch;
+  margin-top: 40vh;
   justify-content: center;
   align-items: center;
   cursor: pointer;
