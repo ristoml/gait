@@ -22,7 +22,7 @@ function Home() {
     const [videoSrc, setVideoSrc] = useState(null)
     const [poseTest, setPose] = useState(null)
     const [showVid, setShowVid] = useState(false)
-    const [showGraphs, setShowGraphs] = useState(false)   
+    const [showGraphs, setShowGraphs] = useState(false)
     const counter = useRef(0)
     const canvasRef = useRef(null)
     const videoRef = useRef(null)
@@ -35,11 +35,14 @@ function Home() {
     const rightKneeRe = useRef([])
     const rightAnkleRe = useRef([])
 
+    const canvasCtxx = useRef()
+
 
     function onResults(results) {
         const canvasElement = canvasRef.current
         const canvasCtx = canvasElement.getContext("2d")
-
+        canvasCtxx.current = canvasCtx
+        canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
         //console.log(results)
         if (results.poseLandmarks) {
             if (!calibrated) {
@@ -94,14 +97,16 @@ function Home() {
                     canvasElement.width,
                     canvasElement.height
                 )
-                drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {
-                    color: "#77bdff",
-                    lineWidth: 2,
-                });
-                drawLandmarks(canvasCtx, results.poseLandmarks, {
-                    color: "#bd77ff",
-                    lineWidth: 1,
-                });
+
+                drawCircles(results)
+                // drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {
+                //     color: "#77bdff",
+                //     lineWidth: 2,
+                // });
+                // drawLandmarks(canvasCtx, results.poseLandmarks, {
+                //     color: "#bd77ff",
+                //     lineWidth: 1,
+                // });
                 poseResults.push({ data: results, time: Date.now() })
                 if (counter.current % 5 === 0) {
                     angleH.updateAngleHelper(results)
@@ -115,6 +120,72 @@ function Home() {
                 }
             }
         }
+    }
+
+    //first version of drawing pose
+    const drawCircles = (results) => {
+
+        const leftHipCircle = new Path2D()
+        const leftKneeCircle = new Path2D()
+        const leftAnkleCircle = new Path2D()
+        const leftHeelCircle = new Path2D()
+        const leftFootCircle = new Path2D()
+
+        const rightHipCircle = new Path2D()
+        const rightKneeCircle = new Path2D()
+        const rightAnkleCircle = new Path2D()
+        const rightHeelCircle = new Path2D()
+        const rightFootCircle = new Path2D()
+
+        leftHipCircle.arc(results.poseLandmarks[23].x * canvasRef.current.width, results.poseLandmarks[23].y * canvasRef.current.height, 6, 0, 2 * Math.PI)
+        leftKneeCircle.arc(results.poseLandmarks[25].x * canvasRef.current.width, results.poseLandmarks[25].y * canvasRef.current.height, 6, 0, 2 * Math.PI)
+        leftAnkleCircle.arc(results.poseLandmarks[27].x * canvasRef.current.width, results.poseLandmarks[27].y * canvasRef.current.height, 6, 0, 2 * Math.PI)
+        leftHeelCircle.arc(results.poseLandmarks[29].x * canvasRef.current.width, results.poseLandmarks[29].y * canvasRef.current.height, 6, 0, 2 * Math.PI)
+        leftFootCircle.arc(results.poseLandmarks[31].x * canvasRef.current.width, results.poseLandmarks[31].y * canvasRef.current.height, 6, 0, 2 * Math.PI)
+
+        rightHipCircle.arc(results.poseLandmarks[24].x * canvasRef.current.width, results.poseLandmarks[24].y * canvasRef.current.height, 6, 0, 2 * Math.PI)
+        rightKneeCircle.arc(results.poseLandmarks[26].x * canvasRef.current.width, results.poseLandmarks[26].y * canvasRef.current.height, 6, 0, 2 * Math.PI)
+        rightAnkleCircle.arc(results.poseLandmarks[28].x * canvasRef.current.width, results.poseLandmarks[28].y * canvasRef.current.height, 6, 0, 2 * Math.PI)
+        rightHeelCircle.arc(results.poseLandmarks[30].x * canvasRef.current.width, results.poseLandmarks[30].y * canvasRef.current.height, 6, 0, 2 * Math.PI)
+        rightFootCircle.arc(results.poseLandmarks[32].x * canvasRef.current.width, results.poseLandmarks[32].y * canvasRef.current.height, 6, 0, 2 * Math.PI)
+
+        canvasCtxx.current.beginPath();
+        canvasCtxx.current.moveTo(results.poseLandmarks[23].x * canvasRef.current.width, results.poseLandmarks[23].y * canvasRef.current.height)
+        canvasCtxx.current.lineTo(results.poseLandmarks[25].x * canvasRef.current.width, results.poseLandmarks[25].y * canvasRef.current.height)
+        canvasCtxx.current.moveTo(results.poseLandmarks[25].x * canvasRef.current.width, results.poseLandmarks[25].y * canvasRef.current.height)
+        canvasCtxx.current.lineTo(results.poseLandmarks[27].x * canvasRef.current.width, results.poseLandmarks[27].y * canvasRef.current.height)
+        canvasCtxx.current.moveTo(results.poseLandmarks[27].x * canvasRef.current.width, results.poseLandmarks[27].y * canvasRef.current.height)
+        canvasCtxx.current.lineTo(results.poseLandmarks[29].x * canvasRef.current.width, results.poseLandmarks[29].y * canvasRef.current.height)
+        canvasCtxx.current.moveTo(results.poseLandmarks[27].x * canvasRef.current.width, results.poseLandmarks[27].y * canvasRef.current.height)
+        canvasCtxx.current.lineTo(results.poseLandmarks[31].x * canvasRef.current.width, results.poseLandmarks[31].y * canvasRef.current.height)
+        canvasCtxx.current.moveTo(results.poseLandmarks[29].x * canvasRef.current.width, results.poseLandmarks[29].y * canvasRef.current.height)
+        canvasCtxx.current.lineTo(results.poseLandmarks[31].x * canvasRef.current.width, results.poseLandmarks[31].y * canvasRef.current.height)
+
+        canvasCtxx.current.moveTo(results.poseLandmarks[24].x * canvasRef.current.width, results.poseLandmarks[24].y * canvasRef.current.height)
+        canvasCtxx.current.lineTo(results.poseLandmarks[26].x * canvasRef.current.width, results.poseLandmarks[26].y * canvasRef.current.height)
+        canvasCtxx.current.moveTo(results.poseLandmarks[26].x * canvasRef.current.width, results.poseLandmarks[26].y * canvasRef.current.height)
+        canvasCtxx.current.lineTo(results.poseLandmarks[28].x * canvasRef.current.width, results.poseLandmarks[28].y * canvasRef.current.height)
+        canvasCtxx.current.moveTo(results.poseLandmarks[28].x * canvasRef.current.width, results.poseLandmarks[28].y * canvasRef.current.height)
+        canvasCtxx.current.lineTo(results.poseLandmarks[30].x * canvasRef.current.width, results.poseLandmarks[30].y * canvasRef.current.height)
+        canvasCtxx.current.moveTo(results.poseLandmarks[28].x * canvasRef.current.width, results.poseLandmarks[28].y * canvasRef.current.height)
+        canvasCtxx.current.lineTo(results.poseLandmarks[32].x * canvasRef.current.width, results.poseLandmarks[32].y * canvasRef.current.height)
+        canvasCtxx.current.moveTo(results.poseLandmarks[30].x * canvasRef.current.width, results.poseLandmarks[30].y * canvasRef.current.height)
+        canvasCtxx.current.lineTo(results.poseLandmarks[32].x * canvasRef.current.width, results.poseLandmarks[32].y * canvasRef.current.height)
+
+        canvasCtxx.current.stroke()
+
+        canvasCtxx.current.fill(leftHipCircle)
+        canvasCtxx.current.fill(leftKneeCircle)
+        canvasCtxx.current.fill(leftAnkleCircle)
+        canvasCtxx.current.fill(leftHeelCircle)
+        canvasCtxx.current.fill(leftFootCircle)
+
+        canvasCtxx.current.fill(rightHipCircle)
+        canvasCtxx.current.fill(rightKneeCircle)
+        canvasCtxx.current.fill(rightAnkleCircle)
+        canvasCtxx.current.fill(rightHeelCircle)
+        canvasCtxx.current.fill(rightFootCircle)
+
     }
 
     const changeHandler = (e) => {
@@ -202,8 +273,8 @@ function Home() {
 
                 <> <form>
                     <p style={{ display: file ? 'none' : 'block' }} >
+                        <label className="videoLabel" htmlFor='video'>Select video</label>
                         <input
-                            className='videoLabel'
                             type="file"
                             id='video'
                             accept='.mp4, .ogg, .webm'
@@ -241,7 +312,8 @@ function Home() {
                     rightKnee={dPp.getRightKneeAngle()}
                     rightAnkle={dPp.getRightAnkleAngle()}
                     steps={dPp.getSteps()}
-                ></Graphs>)}
+                ></Graphs>)
+            }
         </>
     )
 }

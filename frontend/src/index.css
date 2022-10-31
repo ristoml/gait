@@ -27,6 +27,7 @@ code {
 .output_canvas {
   margin: 10px
 }
+
 .canvasDiv {
   display: flex;
   flex-wrap: wrap;
@@ -34,11 +35,12 @@ code {
   /* height: 100vh; */
 
 }
+
 .loading {
   margin-top: 40vh;
 }
 
-.videoLabel { 
+.videoLabel {
 
   color: white;
   background-color: grey;
@@ -63,5 +65,8 @@ code {
   justify-content: center;
   /* flex-direction: column; */
   height: 100vh;
+}
 
+input[type="file"] {
+  display: none;
 }
