@@ -22,11 +22,15 @@ code {
   justify-content: center;
   align-items: center;
 
+
 }
 
 .output_canvas {
-  margin: 10px
+  margin: 10px;
+  /* animation: 0.25s anim-lineUp ease-out; */
+  animation: fadeIn 0.5s;
 }
+
 .canvasDiv {
   display: flex;
   flex-wrap: wrap;
@@ -34,14 +38,82 @@ code {
   /* height: 100vh; */
 
 }
+
 .loading {
   margin-top: 40vh;
+  animation: 2s anim-flipY ease infinite;  
+  font-size: 300%;
+
+  
+}
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
 }
 
-.videoLabel { 
+@keyframes anim-flipX {
+  0% {
+    opacity: 0;
+    transform: rotateX(90def);
+  }
+  50% {
+    opacity: 1;
+    transform: rotateX(720deg);
+  }
+  100% {
+    /* animate nothing to pause animation at the end */
+    opacity: 1;
+    transform: rotateX(720deg);
+  }
+}
+
+@keyframes anim-flipY {
+  0% {
+    opacity: 0;
+    transform: rotateY(90def);
+  }
+
+  50% {
+    opacity: 1;
+    transform: rotateY(720deg);
+  }
+
+  100% {
+    /* animate nothing to pause animation at the end */
+    opacity: 1;
+    transform: rotateY(720deg);
+  }
+}
+
+@keyframes anim-lineUp {
+  0% {
+    opacity: 0;
+    transform: translateY(80%);
+  }
+
+  20% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateY(0%);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0%);
+  }
+}
+
+
+.videoLabel {
 
   color: white;
   background-color: grey;
+  margin-left: 40%;
+  margin-right: 40%;
+  display: flex;
   padding-left: 4ch;
   padding-right: 4ch;
   padding-bottom: 2ch;
@@ -50,17 +122,31 @@ code {
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  border: 2px solid #333
+  border: 2px solid #333;
+  /* animation: 2s anim-lineUp ease-out; */
+  animation: fadeIn 1s;
 }
 
 .videoLabel:hover {
   background-color: #555;
 }
 
+.continueBtn {
+  display: flex;
+  margin-bottom: 10px;
+  align-items: center;
+  justify-content: center;
+  animation: 2s anim-lineUp ease-out;
+}
+
 .graphs {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   /* flex-direction: column; */
   height: 100vh;
+}
 
+input[type="file"] {
+  display: none;
 }
