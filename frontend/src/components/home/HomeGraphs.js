@@ -25,7 +25,7 @@ function HomeGraphs(props) {
   useEffect(() => {
     const interval = setInterval(() => {
       setTimer(new Date());
-    }, 1000);
+    }, 99999);
 
     // This is important, you must clear your interval when component unmounts
     return () => clearInterval(interval);
