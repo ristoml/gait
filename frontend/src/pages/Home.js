@@ -121,16 +121,16 @@ function Home() {
         //   lineWidth: 1,
         // });
         poseResults.push({ data: results, time: Date.now() })
-        if (counter.current % 5 === 0) {
-          angleH.updateAngleHelper(results)
-          leftHipRe.current.push({ angle: angleH.getHipAngle(true) })
-          leftKneeRe.current.push({ angle: angleH.getKneeAngle(true) })
-          leftAnkleRe.current.push({ angle: angleH.getAnkleAngle(true) })
+        // if (counter.current % 5 === 0) {
+        //   angleH.updateAngleHelper(results)
+        //   leftHipRe.current.push({ angle: angleH.getHipAngle(true) })
+        //   leftKneeRe.current.push({ angle: angleH.getKneeAngle(true) })
+        //   leftAnkleRe.current.push({ angle: angleH.getAnkleAngle(true) })
 
-          rightHipRe.current.push({ angle: angleH.getHipAngle(false) })
-          rightKneeRe.current.push({ angle: angleH.getKneeAngle(false) })
-          rightAnkleRe.current.push({ angle: angleH.getAnkleAngle(false) })
-        }
+        //   rightHipRe.current.push({ angle: angleH.getHipAngle(false) })
+        //   rightKneeRe.current.push({ angle: angleH.getKneeAngle(false) })
+        //   rightAnkleRe.current.push({ angle: angleH.getAnkleAngle(false) })
+        // }
       }
     }
   }
@@ -476,14 +476,14 @@ function Home() {
               </div>
 
               <div style={{ display: showVid ? "block" : "none" }}>
-                <HomeGraphs
+                {/* <HomeGraphs
                   leftHip={leftHipRe.current}
                   leftKnee={leftKneeRe.current}
                   leftAnkle={leftAnkleRe.current}
                   rightHip={rightHipRe.current}
                   rightKnee={rightKneeRe.current}
                   rightAnkle={rightAnkleRe.current}
-                ></HomeGraphs>
+                ></HomeGraphs> */}
               </div>
             </div>
             <br />

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react"
 import {
   XAxis,
   YAxis,
@@ -7,7 +7,7 @@ import {
   Label,
   LineChart,
   Line,
-} from "recharts";
+} from "recharts"
 
 const lineNames = [
   "1st",
@@ -30,7 +30,7 @@ const lineNames = [
   "18th",
   "19th",
   "20th",
-];
+]
 const dataNames = [
   "first",
   "second",
@@ -52,7 +52,7 @@ const dataNames = [
   "eighteenth",
   "ninteenth",
   "twentieth",
-];
+]
 const lineColours = [
   "#a340d9",
   "#2ba14b",
@@ -74,28 +74,28 @@ const lineColours = [
   "#0800ff",
   "#f5a742",
   "#00fffb",
-];
+]
 
 function refresh() {
-  window.location.reload("Refresh");
+  window.location.reload("Refresh")
 }
 
 function Graphs(props) {
-  const leftHipRe = useRef(props.leftHip);
-  const leftKneeRe = useRef(props.leftKnee);
-  const leftAnkleRe = useRef(props.leftAnkle);
+  const leftHipRe = useRef(props.leftHip)
+  const leftKneeRe = useRef(props.leftKnee)
+  const leftAnkleRe = useRef(props.leftAnkle)
 
-  const rightHipRe = useRef(props.rightHip);
-  const rightKneeRe = useRef(props.rightKnee);
-  const rightAnkleRe = useRef(props.rightAnkle);
+  const rightHipRe = useRef(props.rightHip)
+  const rightKneeRe = useRef(props.rightKnee)
+  const rightAnkleRe = useRef(props.rightAnkle)
 
-  const steps = useRef(props.steps);
+  const steps = useRef(props.steps)
 
   // console.log(leftHipRe.current)
 
   useEffect(() => {
     //
-  }, []);
+  }, [])
 
   return (
     <div>
@@ -123,7 +123,7 @@ function Graphs(props) {
           />
 
           {(() => {
-            let rows = [];
+            let rows = []
             for (let i = 0; i < steps.current; i++) {
               rows.push(
                 <Line
@@ -135,9 +135,9 @@ function Graphs(props) {
                   stroke={lineColours[i]}
                   activeDot={{ r: 5 }}
                 />
-              );
+              )
             }
-            return rows;
+            return rows
           })()}
         </LineChart>
         <LineChart
@@ -164,7 +164,7 @@ function Graphs(props) {
           />
 
           {(() => {
-            let rows = [];
+            let rows = []
             for (let i = 0; i < steps.current; i++) {
               rows.push(
                 <Line
@@ -176,9 +176,9 @@ function Graphs(props) {
                   stroke={lineColours[i]}
                   activeDot={{ r: 5 }}
                 />
-              );
+              )
             }
-            return rows;
+            return rows
           })()}
         </LineChart>
         <LineChart
@@ -205,7 +205,7 @@ function Graphs(props) {
           />
 
           {(() => {
-            let rows = [];
+            let rows = []
             for (let i = 0; i < steps.current; i++) {
               rows.push(
                 <Line
@@ -217,9 +217,9 @@ function Graphs(props) {
                   stroke={lineColours[i]}
                   activeDot={{ r: 5 }}
                 />
-              );
+              )
             }
-            return rows;
+            return rows
           })()}
         </LineChart>
         <LineChart
@@ -243,7 +243,7 @@ function Graphs(props) {
           />
 
           {(() => {
-            let rows = [];
+            let rows = []
             for (let i = 0; i < steps.current; i++) {
               rows.push(
                 <Line
@@ -255,9 +255,9 @@ function Graphs(props) {
                   stroke={lineColours[i]}
                   activeDot={{ r: 5 }}
                 />
-              );
+              )
             }
-            return rows;
+            return rows
           })()}
         </LineChart>
         <LineChart
@@ -284,7 +284,7 @@ function Graphs(props) {
           />
 
           {(() => {
-            let rows = [];
+            let rows = []
             for (let i = 0; i < steps.current; i++) {
               rows.push(
                 <Line
@@ -296,9 +296,9 @@ function Graphs(props) {
                   stroke={lineColours[i]}
                   activeDot={{ r: 5 }}
                 />
-              );
+              )
             }
-            return rows;
+            return rows
           })()}
         </LineChart>
         <LineChart
@@ -325,7 +325,7 @@ function Graphs(props) {
           />
 
           {(() => {
-            let rows = [];
+            let rows = []
             for (let i = 0; i < steps.current; i++) {
               rows.push(
                 <Line
@@ -337,9 +337,9 @@ function Graphs(props) {
                   stroke={lineColours[i]}
                   activeDot={{ r: 5 }}
                 />
-              );
+              )
             }
-            return rows;
+            return rows
           })()}
         </LineChart>
       </div>
@@ -347,11 +347,11 @@ function Graphs(props) {
         type="button"
         value="Go back"
         onClick={() => {
-          refresh(this);
+          refresh(this)
         }}
       />
     </div>
-  );
+  )
 }
 
-export default Graphs;
+export default Graphs
