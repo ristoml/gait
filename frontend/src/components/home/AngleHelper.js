@@ -96,8 +96,55 @@ const updateAngleHelper = (results) => {
   // leftHipKneeDot = leftHipZ*leftKneeZ
 
 }
+// const getLeftDepth = () => {
+//   return (Math.acos(((leftHipX - leftKneeX) * (leftAnkleX - leftKneeX) + (leftHipY - leftKneeY) * (leftAnkleY - leftKneeY) + (leftHipZ - leftKneeZ) * (leftAnkleZ - leftKneeZ)) / (Math.sqrt(Math.pow((leftHipX - leftKneeX), 2)) + Math.pow((leftHipY - leftKneeY), 2) + Math.pow((leftHipZ - leftKneeZ), 2)) * Math.sqrt(Math.pow((leftAnkleX - leftKneeX), 2) + Math.pow((leftAnkleY - leftKneeY), 2) + Math.pow((leftAnkleZ - leftKneeZ), 2)))) * (180 / Math.PI)
+// }
+const getLeftZ = () => {
+  return leftKneeZ
+}
+
+const getRightZ = () => {
+  return rightKneeZ
+}
 const getLeftDepth = () => {
-  return (Math.acos(((leftHipX - leftKneeX) * (leftAnkleX - leftKneeX) + (leftHipY - leftKneeY) * (leftAnkleY - leftKneeY) + (leftHipZ - leftKneeZ) * (leftAnkleZ - leftKneeZ)) / (Math.sqrt(Math.pow((leftHipX - leftKneeX), 2)) + Math.pow((leftHipY - leftKneeY), 2) + Math.pow((leftHipZ - leftKneeZ), 2)) * Math.sqrt(Math.pow((leftAnkleX - leftKneeX), 2) + Math.pow((leftAnkleY - leftKneeY), 2) + Math.pow((leftAnkleZ - leftKneeZ), 2)))) * 180 / Math.PI
+  let temp =
+    Math.acos(
+      ((leftHipX - leftKneeX) * (leftAnkleX - leftKneeX) +
+        (leftHipY - leftKneeY) * (leftAnkleY - leftKneeY) +
+        (leftHipZ - leftKneeZ) * (leftAnkleZ - leftKneeZ)) /
+      (Math.sqrt(
+        Math.pow(leftHipX - leftKneeX, 2) +
+        Math.pow(leftHipY - leftKneeY, 2) +
+        Math.pow(leftHipZ - leftKneeZ, 2)
+      ) *
+        Math.sqrt(
+          Math.pow(leftAnkleX - leftKneeX, 2) +
+          Math.pow(leftAnkleY - leftKneeY, 2) +
+          Math.pow(leftAnkleZ - leftKneeZ, 2)
+        ))
+    ) *
+    (180 / Math.PI)  
+  return 180-temp
+}
+const getRightDepth = () => {
+  let temp =
+    Math.acos(
+      ((rightHipX - rightKneeX) * (rightAnkleX - rightKneeX) +
+        (rightHipY - rightKneeY) * (rightAnkleY - rightKneeY) +
+        (rightHipZ - rightKneeZ) * (rightAnkleZ - rightKneeZ)) /
+      (Math.sqrt(
+        Math.pow(rightHipX - rightKneeX, 2) +
+        Math.pow(rightHipY - rightKneeY, 2) +
+        Math.pow(rightHipZ - rightKneeZ, 2)
+      ) *
+        Math.sqrt(
+          Math.pow(rightAnkleX - rightKneeX, 2) +
+          Math.pow(rightAnkleY - rightKneeY, 2) +
+          Math.pow(rightAnkleZ - rightKneeZ, 2)
+        ))
+    ) *
+    (180 / Math.PI)  
+  return 180-temp
 }
 
 const getKneeAngle = (side, direction) => {
@@ -255,4 +302,4 @@ const getAnkleAngle = (side, direction) => {
   //return (Math.atan2(leftFootIndexY - leftHeelY, leftFootIndexX - leftHeelX) - Math.atan2(leftKneeY - leftAnkleY, leftKneeX - leftAnkleX)) * (180 / Math.PI)
 }
 
-export { updateAngleHelper, getHipAngle, getKneeAngle, getAnkleAngle, getLeftDepth }
+export { updateAngleHelper, getHipAngle, getKneeAngle, getAnkleAngle, getLeftDepth, getRightDepth, getLeftZ, getRightZ }

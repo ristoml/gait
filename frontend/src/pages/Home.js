@@ -27,6 +27,8 @@ let uusiToe
 let toeSet = false
 let startTime
 let calibrationTick = 0
+let rightMaxZ = -999
+let leftMaxZ = -999
 
 function Home() {
   const [file, setFile] = useState(null)
@@ -124,8 +126,18 @@ function Home() {
         // });
         poseResults.push({ data: results, time: Date.now() })
         // if (counter.current % 5 === 0) {
-        // angleH.updateAngleHelper(results)
-        // console.log(angleH.getLeftDepth())
+        angleH.updateAngleHelper(results)
+        // if (angleH.getLeftZ() > leftMaxZ) {
+        //   leftMaxZ = angleH.getLeftZ()
+        // }
+        // if (angleH.getRightZ() > rightMaxZ) {
+        //   rightMaxZ = angleH.getRightZ()
+        // }
+        console.log("l: " + angleH.getLeftZ())
+        console.log("r: " + angleH.getRightZ())
+        // console.log("l: " + angleH.getLeftDepth())
+        // console.log("r: " + angleH.getRightDepth())
+
         //   leftHipRe.current.push({ angle: angleH.getHipAngle(true) })
         //   leftKneeRe.current.push({ angle: angleH.getKneeAngle(true) })
         //   leftAnkleRe.current.push({ angle: angleH.getAnkleAngle(true) })
