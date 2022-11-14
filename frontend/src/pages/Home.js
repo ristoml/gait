@@ -23,7 +23,8 @@ let poseResults = []
 
 let calibrated = false
 let mediapipeCalibrated = false
-
+let uusiToe
+let toeSet = false
 let startTime
 let calibrationTick = 0
 
@@ -57,8 +58,9 @@ function Home() {
     canvasCtxx.current = canvasCtx
     canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height)
 
+
     //console.log(results)
-    if (results.poseLandmarks) {
+    if (results.poseLandmarks) {      
       if (!calibrated) {
         if (results.poseWorldLandmarks[30].visibility > 0.2) {
           startTime = Date.now()
@@ -83,7 +85,7 @@ function Home() {
           console.log(calibrationTick)
           if (calibrationTick / 101 > 0.1) {
             videoRef.current.playbackRate = (calibrationTick / 101) * 1
-            // videoRef.current.playbackRate = 0.15
+            // videoRef.current.playbackRate = 0.1
             console.log("playbackrate adjusted to")
             console.log(videoRef.current.playbackRate)
             mediapipeCalibrated = true
@@ -122,7 +124,8 @@ function Home() {
         // });
         poseResults.push({ data: results, time: Date.now() })
         // if (counter.current % 5 === 0) {
-        //   angleH.updateAngleHelper(results)
+        // angleH.updateAngleHelper(results)
+        // console.log(angleH.getLeftDepth())
         //   leftHipRe.current.push({ angle: angleH.getHipAngle(true) })
         //   leftKneeRe.current.push({ angle: angleH.getKneeAngle(true) })
         //   leftAnkleRe.current.push({ angle: angleH.getAnkleAngle(true) })
@@ -190,18 +193,18 @@ function Home() {
 
     leftHipCircle.arc(
       ((results.poseLandmarks[23].x + results.poseLandmarks[24].x) / 2) *
-        canvasRef.current.width,
+      canvasRef.current.width,
       ((results.poseLandmarks[23].y + results.poseLandmarks[24].y) / 2) *
-        canvasRef.current.height,
+      canvasRef.current.height,
       6,
       0,
       2 * Math.PI
     )
     leftHipCircle.arc(
       ((results.poseLandmarks[11].x + results.poseLandmarks[12].x) / 2) *
-        canvasRef.current.width,
+      canvasRef.current.width,
       ((results.poseLandmarks[11].y + results.poseLandmarks[12].y) / 2) *
-        canvasRef.current.height,
+      canvasRef.current.height,
       6,
       0,
       2 * Math.PI
@@ -259,21 +262,38 @@ function Home() {
       0,
       2 * Math.PI
     )
-    rightFootCircle.arc(
-      results.poseLandmarks[32].x * canvasRef.current.width,
-      results.poseLandmarks[32].y * canvasRef.current.height,
-      6,
-      0,
-      2 * Math.PI
-    )
+    if (!toeSet && results.poseLandmarks[32].y - results.poseLandmarks[30].y <= 0.03 && results.poseLandmarks[32].y - results.poseLandmarks[30].y >= -0.03) {
+      uusiToe = (results.poseLandmarks[32].x - results.poseLandmarks[30].x) - 0.67 * (results.poseLandmarks[32].x - results.poseLandmarks[30].x)
+      toeSet = true
+    }
+    if (results.poseLandmarks[32].x < results.poseLandmarks[23].x) {
+      rightFootCircle.arc(
+        (results.poseLandmarks[32].x - uusiToe) * canvasRef.current.width,
+        results.poseLandmarks[32].y * canvasRef.current.height,
+        6,
+        0,
+        2 * Math.PI
+      )
+
+    } else {
+      rightFootCircle.arc(
+        (results.poseLandmarks[32].x) * canvasRef.current.width,
+        results.poseLandmarks[32].y * canvasRef.current.height,
+        6,
+        0,
+        2 * Math.PI
+      )
+    }
+
+
 
     canvasCtxx.current.beginPath()
     //
     canvasCtxx.current.moveTo(
       ((results.poseLandmarks[23].x + results.poseLandmarks[24].x) / 2) *
-        canvasRef.current.width,
+      canvasRef.current.width,
       ((results.poseLandmarks[23].y + results.poseLandmarks[24].y) / 2) *
-        canvasRef.current.height
+      canvasRef.current.height
     )
 
     //canvasCtxx.current.moveTo(results.poseLandmarks[23].x * canvasRef.current.width, results.poseLandmarks[23].y * canvasRef.current.height)
@@ -316,9 +336,9 @@ function Home() {
 
     canvasCtxx.current.moveTo(
       ((results.poseLandmarks[23].x + results.poseLandmarks[24].x) / 2) *
-        canvasRef.current.width,
+      canvasRef.current.width,
       ((results.poseLandmarks[23].y + results.poseLandmarks[24].y) / 2) *
-        canvasRef.current.height
+      canvasRef.current.height
     )
 
     //canvasCtxx.current.moveTo(results.poseLandmarks[24].x * canvasRef.current.width, results.poseLandmarks[24].y * canvasRef.current.height)
@@ -354,22 +374,29 @@ function Home() {
       results.poseLandmarks[30].x * canvasRef.current.width,
       results.poseLandmarks[30].y * canvasRef.current.height
     )
-    canvasCtxx.current.lineTo(
-      results.poseLandmarks[32].x * canvasRef.current.width,
-      results.poseLandmarks[32].y * canvasRef.current.height
-    )
+    if (results.poseLandmarks[32].x < results.poseLandmarks[23].x) {
+      canvasCtxx.current.lineTo(
+        (results.poseLandmarks[32].x - uusiToe) * canvasRef.current.width,
+        results.poseLandmarks[32].y * canvasRef.current.height
+      )
+    } else {
+      canvasCtxx.current.lineTo(
+        (results.poseLandmarks[32].x) * canvasRef.current.width,
+        results.poseLandmarks[32].y * canvasRef.current.height
+      )
+    }
 
     canvasCtxx.current.moveTo(
       ((results.poseLandmarks[23].x + results.poseLandmarks[24].x) / 2) *
-        canvasRef.current.width,
+      canvasRef.current.width,
       ((results.poseLandmarks[23].y + results.poseLandmarks[24].y) / 2) *
-        canvasRef.current.height
+      canvasRef.current.height
     )
     canvasCtxx.current.lineTo(
       ((results.poseLandmarks[11].x + results.poseLandmarks[12].x) / 2) *
-        canvasRef.current.width,
+      canvasRef.current.width,
       ((results.poseLandmarks[11].y + results.poseLandmarks[12].y) / 2) *
-        canvasRef.current.height
+      canvasRef.current.height
     )
 
     canvasCtxx.current.stroke()
