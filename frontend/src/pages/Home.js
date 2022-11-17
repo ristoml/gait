@@ -23,7 +23,17 @@ let poseResults = []
 
 let calibrated = false
 let mediapipeCalibrated = false
-let uusiToe
+let didPlay = false
+let useAnkleFix = true
+let useHipFix = true
+let toeXOffsetValue = 0
+// let hipXOffsetMultiplier = 0.96
+// let hipYOffsetMultiplier = 0.98
+let hipXOffsetMultiplier = 1
+let hipYOffsetMultiplier = 1 
+let toeXOffSetMultiplier = 0.8
+// let toeYOffset = -0.02   
+let toeYOffset = 0
 let toeSet = false
 let startTime
 let calibrationTick = 0
@@ -53,6 +63,7 @@ function Home() {
   const rightAnkleRe = useRef([])
 
   const canvasCtxx = useRef()
+  
 
   function onResults(results) {
     const canvasElement = canvasRef.current
@@ -62,15 +73,26 @@ function Home() {
 
 
     //console.log(results)
-    if (results.poseLandmarks) {      
+    if (results.poseLandmarks) {
       if (!calibrated) {
+        
         if (results.poseWorldLandmarks[30].visibility > 0.2) {
-          startTime = Date.now()
-          calibrated = true
-          videoRef.current.currentTime = 0
-          videoRef.current.loop = true
-          console.log("calibrated")
-          return
+          if (useAnkleFix && results.poseLandmarks[32].y - results.poseLandmarks[30].y <= 0.03 && results.poseLandmarks[32].y - results.poseLandmarks[30].y >= -0.03) {
+            toeXOffsetValue = (results.poseLandmarks[32].x - results.poseLandmarks[30].x) - toeXOffSetMultiplier * (results.poseLandmarks[32].x - results.poseLandmarks[30].x)
+            console.log("ToeXOffset: " + toeXOffsetValue)
+            startTime = Date.now()
+            calibrated = true
+            videoRef.current.currentTime = 0
+            
+            console.log("Mediapipe initialized")
+            // return
+          } else if (!useAnkleFix) {
+            startTime = Date.now()
+            calibrated = true
+            videoRef.current.currentTime = 0
+            
+            console.log("Mediapipe initialized")
+          }
         }
       }
 
@@ -80,33 +102,32 @@ function Home() {
         canvasRef.current.width = videoWidth / 1.33
         canvasRef.current.height = videoHeight / 1.33
         canvasCtx.clearRect(0, 0, videoWidth, videoHeight)
-        if (Date.now() - startTime > 999) {
+        if (Date.now() - startTime > 1999) {
           calibrationTick++
         }
-        if (Date.now() - startTime > 1999) {
-          console.log(calibrationTick)
-          if (calibrationTick / 101 > 0.1) {
-            videoRef.current.playbackRate = (calibrationTick / 101) * 1
-            // videoRef.current.playbackRate = 0.1
-            console.log("playbackrate adjusted to")
-            console.log(videoRef.current.playbackRate)
+        if (Date.now() - startTime > 4999) {
+          console.log("calibration ticks: " + calibrationTick)
+          if (calibrationTick / 303 > 0.1) {
+            videoRef.current.playbackRate = (calibrationTick / 303) * 1.15
+            // videoRef.current.playbackRate = 1.2
+            console.log("playbackrate adjusted to: " + videoRef.current.playbackRate)            
             mediapipeCalibrated = true
             videoRef.current.currentTime = 0
-            videoRef.current.loop = false
+           
             setShowVid(true)
           } else {
             // videoRef.current.playbackRate = 0.1
             videoRef.current.playbackRate = 0.15
-            console.log("playbackrate adjusted to")
-            console.log(videoRef.current.playbackRate)
+            console.log("playbackrate adjusted to: " + videoRef.current.playbackRate)            
             mediapipeCalibrated = true
             videoRef.current.currentTime = 0
-            videoRef.current.loop = false
+            
             setShowVid(true)
           }
         }
       }
       if (calibrated && mediapipeCalibrated) {
+        didPlay = true
         counter.current++
         canvasCtx.drawImage(
           results.image,
@@ -115,7 +136,6 @@ function Home() {
           canvasElement.width,
           canvasElement.height
         )
-        drawCircles(results)
         // drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {
         //   color: "#77bdff",
         //   lineWidth: 2,
@@ -124,17 +144,34 @@ function Home() {
         //   color: "#bd77ff",
         //   lineWidth: 1,
         // });
+        if (useHipFix) {
+          results.poseLandmarks[23].x *= hipXOffsetMultiplier
+          results.poseLandmarks[23].y *= hipYOffsetMultiplier
+          results.poseLandmarks[24].x *= hipXOffsetMultiplier
+          results.poseLandmarks[24].y *= hipYOffsetMultiplier
+        }
+        if (useAnkleFix) {
+          results.poseLandmarks[31].y -= toeYOffset
+          results.poseLandmarks[32].y -= toeYOffset
+          if (results.poseLandmarks[27].x < results.poseLandmarks[25].x) {
+            results.poseLandmarks[31].x -= toeXOffsetValue
+          }
+          if (results.poseLandmarks[28].x < results.poseLandmarks[26].x) {
+            results.poseLandmarks[32].x -= toeXOffsetValue
+          }
+        }
+        drawCircles(results)
         poseResults.push({ data: results, time: Date.now() })
         // if (counter.current % 5 === 0) {
-        angleH.updateAngleHelper(results)
+        // angleH.updateAngleHelper(results)
         // if (angleH.getLeftZ() > leftMaxZ) {
         //   leftMaxZ = angleH.getLeftZ()
         // }
         // if (angleH.getRightZ() > rightMaxZ) {
         //   rightMaxZ = angleH.getRightZ()
         // }
-        console.log("l: " + angleH.getLeftZ())
-        console.log("r: " + angleH.getRightZ())
+        // console.log("l: " + angleH.getLeftZ())
+        // console.log("r: " + angleH.getRightZ())
         // console.log("l: " + angleH.getLeftDepth())
         // console.log("r: " + angleH.getRightDepth())
 
@@ -152,6 +189,7 @@ function Home() {
 
   const changeHandler = (e) => {
     const file = e.target.files[0]
+    
 
     setFile(file)
 
@@ -164,7 +202,7 @@ function Home() {
         })
         await new Promise(requestAnimationFrame)
         onFrame()
-      } else if (videoRef.current.ended) {
+      } else if (videoRef.current.ended && didPlay) {
         dPp.processResults(poseResults)
         setShowGraphsButton(true)
         setShowContinueBtn(true)
@@ -274,28 +312,16 @@ function Home() {
       0,
       2 * Math.PI
     )
-    if (!toeSet && results.poseLandmarks[32].y - results.poseLandmarks[30].y <= 0.03 && results.poseLandmarks[32].y - results.poseLandmarks[30].y >= -0.03) {
-      uusiToe = (results.poseLandmarks[32].x - results.poseLandmarks[30].x) - 0.67 * (results.poseLandmarks[32].x - results.poseLandmarks[30].x)
-      toeSet = true
-    }
-    if (results.poseLandmarks[32].x < results.poseLandmarks[23].x) {
-      rightFootCircle.arc(
-        (results.poseLandmarks[32].x - uusiToe) * canvasRef.current.width,
-        results.poseLandmarks[32].y * canvasRef.current.height,
-        6,
-        0,
-        2 * Math.PI
-      )
 
-    } else {
-      rightFootCircle.arc(
-        (results.poseLandmarks[32].x) * canvasRef.current.width,
-        results.poseLandmarks[32].y * canvasRef.current.height,
-        6,
-        0,
-        2 * Math.PI
-      )
-    }
+
+    rightFootCircle.arc(
+      results.poseLandmarks[32].x * canvasRef.current.width,
+      results.poseLandmarks[32].y * canvasRef.current.height,
+      6,
+      0,
+      2 * Math.PI
+    )
+
 
 
 
@@ -386,17 +412,12 @@ function Home() {
       results.poseLandmarks[30].x * canvasRef.current.width,
       results.poseLandmarks[30].y * canvasRef.current.height
     )
-    if (results.poseLandmarks[32].x < results.poseLandmarks[23].x) {
-      canvasCtxx.current.lineTo(
-        (results.poseLandmarks[32].x - uusiToe) * canvasRef.current.width,
-        results.poseLandmarks[32].y * canvasRef.current.height
-      )
-    } else {
-      canvasCtxx.current.lineTo(
-        (results.poseLandmarks[32].x) * canvasRef.current.width,
-        results.poseLandmarks[32].y * canvasRef.current.height
-      )
-    }
+
+    canvasCtxx.current.lineTo(
+      results.poseLandmarks[32].x * canvasRef.current.width,
+      results.poseLandmarks[32].y * canvasRef.current.height
+    )
+
 
     canvasCtxx.current.moveTo(
       ((results.poseLandmarks[23].x + results.poseLandmarks[24].x) / 2) *
@@ -437,9 +458,9 @@ function Home() {
       modelComplexity: 2,
       smoothLandmarks: true,
       enableSegmentation: false,
-      smoothSegmentation: false,
-      minDetectionConfidence: 0.1,
-      minTrackingConfidence: 0.1,
+      smoothSegmentation: false,      
+      minDetectionConfidence: 0.7,
+      minTrackingConfidence: 0.1
     })
 
     setPose(pose)
@@ -540,16 +561,18 @@ function Home() {
         </>
       ) : (
         <Graphs
-          leftHip={dPp.getLeftHipAngle()}
-          leftKnee={dPp.getLeftKneeAngle()}
-          leftAnkle={dPp.getLeftAnkleAngle()}
-          rightHip={dPp.getRightHipAngle()}
-          rightKnee={dPp.getRightKneeAngle()}
-          rightAnkle={dPp.getRightAnkleAngle()}
+          leftHip={dPp.getLeftHipAngle(false)}
+          leftKnee={dPp.getLeftKneeAngle(false)}
+          leftAnkle={dPp.getLeftAnkleAngle(false)}
+          rightHip={dPp.getRightHipAngle(false)}
+          rightKnee={dPp.getRightKneeAngle(false)}
+          rightAnkle={dPp.getRightAnkleAngle(false)}
           steps={dPp.getSteps()}
+          median={dPp.getMedian()}
         ></Graphs>
       )}
     </>
   )
 }
 export default Home
+

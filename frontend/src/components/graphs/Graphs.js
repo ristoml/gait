@@ -54,26 +54,26 @@ const dataNames = [
   "twentieth",
 ]
 const lineColours = [
-  "#a340d9",
-  "#2ba14b",
-  "#0800ff",
-  "#f5a742",
-  "#00fffb",
-  "#a340d9",
-  "#2ba14b",
-  "#0800ff",
-  "#f5a742",
-  "#00fffb",
-  "#a340d9",
-  "#2ba14b",
-  "#0800ff",
-  "#f5a742",
-  "#00fffb",
-  "#a340d9",
-  "#2ba14b",
-  "#0800ff",
-  "#f5a742",
-  "#00fffb",
+  // "#a340d9",
+  // "#2ba14b",
+  // "#0800ff",
+  // "#f5a742",
+  // "#00fffb",
+  // "#a340d9",
+  // "#2ba14b",
+  // "#0800ff",
+  // "#f5a742",
+  // "#00fffb",
+  // "#a340d9",
+  // "#2ba14b",
+  // "#0800ff",
+  // "#f5a742",
+  // "#00fffb",
+  // "#a340d9",
+  // "#2ba14b",
+  // "#0800ff",
+  // "#f5a742",
+  // "#00fffb",
 ]
 
 function refresh() {
@@ -89,11 +89,14 @@ function Graphs(props) {
   const rightKneeRe = useRef(props.rightKnee)
   const rightAnkleRe = useRef(props.rightAnkle)
 
+  const median = useRef(props.median)
   const steps = useRef(props.steps)
+  if (median.current) steps.current = 1
 
   // console.log(leftHipRe.current)
 
   useEffect(() => {
+
     //
   }, [])
 
@@ -111,9 +114,9 @@ function Graphs(props) {
             <Label value="Left Hip Angle" offset={320} position="top" />
           </XAxis>
           <YAxis
-            domain={[-30, 20]}
+            domain={[-30, 25]}
             allowDataOverflow={true}
-            ticks={[-30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20]}
+            ticks={[-30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25]}
           />
           <CartesianGrid strokeDasharray="3 3" />
 
@@ -134,6 +137,7 @@ function Graphs(props) {
                   dot={false}
                   stroke={lineColours[i]}
                   activeDot={{ r: 5 }}
+                  strokeWidth={1}
                 />
               )
             }
@@ -232,9 +236,9 @@ function Graphs(props) {
             <Label value="Right Hip Angle" offset={320} position="top" />
           </XAxis>
           <YAxis
-            domain={[-30, 20]}
+            domain={[-30, 25]}
             allowDataOverflow={true}
-            ticks={[-30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20]}
+            ticks={[-30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25]}
           />
           <CartesianGrid strokeDasharray="3 3" />
           <Tooltip
