@@ -27,10 +27,10 @@ let didPlay = false
 let useAnkleFix = true
 let useHipFix = true
 let toeXOffsetValue = 0
-// let hipXOffsetMultiplier = 0.96
-// let hipYOffsetMultiplier = 0.98
+// let hipXOffsetMultiplier = 1.03
+// let hipYOffsetMultiplier = 0.95
 let hipXOffsetMultiplier = 1
-let hipYOffsetMultiplier = 1 
+let hipYOffsetMultiplier = 1
 let toeXOffSetMultiplier = 0.8
 // let toeYOffset = -0.02   
 let toeYOffset = 0
@@ -39,6 +39,8 @@ let startTime
 let calibrationTick = 0
 let rightMaxZ = -999
 let leftMaxZ = -999
+
+let completeTime = 0
 
 function Home() {
   const [file, setFile] = useState(null)
@@ -52,6 +54,7 @@ function Home() {
 
   const counter = useRef(0)
   const canvasRef = useRef(null)
+  const canvasRef2 = useRef(null)
   const videoRef = useRef(null)
 
   const leftHipRe = useRef([])
@@ -63,19 +66,26 @@ function Home() {
   const rightAnkleRe = useRef([])
 
   const canvasCtxx = useRef()
-  
+  const canvasCtxx2 = useRef()
+
+
 
   function onResults(results) {
     const canvasElement = canvasRef.current
     const canvasCtx = canvasElement.getContext("2d")
+
+    const canvasElement2 = canvasRef2.current
+    const canvasCtx2 = canvasElement2.getContext("2d")
+
     canvasCtxx.current = canvasCtx
-    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height)
+    canvasCtxx2.current = canvasCtx2
+    // canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height)
 
 
     //console.log(results)
     if (results.poseLandmarks) {
       if (!calibrated) {
-        
+
         if (results.poseWorldLandmarks[30].visibility > 0.2) {
           if (useAnkleFix && results.poseLandmarks[32].y - results.poseLandmarks[30].y <= 0.03 && results.poseLandmarks[32].y - results.poseLandmarks[30].y >= -0.03) {
             toeXOffsetValue = (results.poseLandmarks[32].x - results.poseLandmarks[30].x) - toeXOffSetMultiplier * (results.poseLandmarks[32].x - results.poseLandmarks[30].x)
@@ -83,14 +93,12 @@ function Home() {
             startTime = Date.now()
             calibrated = true
             videoRef.current.currentTime = 0
-            
             console.log("Mediapipe initialized")
             // return
           } else if (!useAnkleFix) {
             startTime = Date.now()
             calibrated = true
             videoRef.current.currentTime = 0
-            
             console.log("Mediapipe initialized")
           }
         }
@@ -99,29 +107,32 @@ function Home() {
       if (calibrated && !mediapipeCalibrated) {
         const videoWidth = videoRef.current.videoWidth
         const videoHeight = videoRef.current.videoHeight
-        canvasRef.current.width = videoWidth / 1.33
-        canvasRef.current.height = videoHeight / 1.33
-        canvasCtx.clearRect(0, 0, videoWidth, videoHeight)
+        canvasRef.current.width = videoWidth <= 600 ? videoWidth / 1.33 : videoWidth / 2.66
+        canvasRef.current.height = videoWidth <=600 ? videoHeight / 1.33 : videoHeight / 2.66
+        canvasRef2.current.width = 1000
+        canvasRef2.current.height = 100
+        // canvasCtx.clearRect(0, 0, videoWidth, videoHeight)
+        completeTime = 0
         if (Date.now() - startTime > 1999) {
           calibrationTick++
         }
         if (Date.now() - startTime > 4999) {
           console.log("calibration ticks: " + calibrationTick)
           if (calibrationTick / 303 > 0.1) {
-            videoRef.current.playbackRate = (calibrationTick / 303) * 1.15
-            // videoRef.current.playbackRate = 1.2
-            console.log("playbackrate adjusted to: " + videoRef.current.playbackRate)            
+            // videoRef.current.playbackRate = (calibrationTick / 303) * 1.15
+            videoRef.current.playbackRate = 1.1
+            console.log("playbackrate adjusted to: " + videoRef.current.playbackRate)
             mediapipeCalibrated = true
             videoRef.current.currentTime = 0
-           
+
             setShowVid(true)
           } else {
             // videoRef.current.playbackRate = 0.1
             videoRef.current.playbackRate = 0.15
-            console.log("playbackrate adjusted to: " + videoRef.current.playbackRate)            
+            console.log("playbackrate adjusted to: " + videoRef.current.playbackRate)
             mediapipeCalibrated = true
             videoRef.current.currentTime = 0
-            
+
             setShowVid(true)
           }
         }
@@ -136,6 +147,7 @@ function Home() {
           canvasElement.width,
           canvasElement.height
         )
+        canvasCtx2.clearRect(0, 0, 1000, 100)
         // drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {
         //   color: "#77bdff",
         //   lineWidth: 2,
@@ -189,7 +201,7 @@ function Home() {
 
   const changeHandler = (e) => {
     const file = e.target.files[0]
-    
+
 
     setFile(file)
 
@@ -201,6 +213,11 @@ function Home() {
           image: videoRef.current,
         })
         await new Promise(requestAnimationFrame)
+        if (videoRef.current.currentTime / videoRef.current.duration > 0.99) {
+          completeTime = 1
+        } else {
+          completeTime = videoRef.current.currentTime / videoRef.current.duration
+        }
         onFrame()
       } else if (videoRef.current.ended && didPlay) {
         dPp.processResults(poseResults)
@@ -238,10 +255,68 @@ function Home() {
     const rightHeelCircle = new Path2D()
     const rightFootCircle = new Path2D()
 
+    const progressArc1 = new Path2D()
+    const progressArc2 = new Path2D()
+    const beginProgressArc = new Path2D()
+    const endProgressArc = new Path2D()
+
     const hipCircle = new Path2D()
     const shoulderCircle = new Path2D()
 
-    leftHipCircle.arc(
+    canvasCtxx2.current.fillStyle = "#e1f5fe"
+    beginProgressArc.arc(
+      canvasRef2.current.width * 0.10,
+      50,
+      25,
+      0,
+      2 * Math.PI
+    )
+    endProgressArc.arc(
+      canvasRef2.current.width * 0.10 + canvasRef2.current.width * 0.80,
+      50,
+      25,
+      0,
+      2 * Math.PI
+    )
+
+
+    canvasCtxx2.current.fillRect(canvasRef2.current.width * 0.10, 25, canvasRef2.current.width * 0.80, 50)
+
+    canvasCtxx2.current.fill(endProgressArc)
+    canvasCtxx2.current.fill(beginProgressArc)
+
+    canvasCtxx2.current.fillStyle = "#039be5"
+
+    progressArc1.arc(
+      canvasRef2.current.width * 0.10,
+      50,
+      20,
+      0,
+      2 * Math.PI
+    )
+    progressArc2.arc(
+      canvasRef2.current.width * 0.10 + completeTime * (canvasRef2.current.width * 0.80),
+      50,
+      20,
+      0,
+      2 * Math.PI
+    )
+
+    canvasCtxx2.current.fillRect(canvasRef2.current.width * 0.10, 30, completeTime * canvasRef2.current.width * 0.8, 40)
+    canvasCtxx2.current.fill(progressArc2)
+    canvasCtxx2.current.fill(progressArc1)
+
+
+    canvasCtxx2.current.beginPath()
+
+    canvasCtxx2.current.fillStyle = "#000000"
+
+    canvasCtxx2.current.font = "30px Segoe UI"
+    canvasCtxx2.current.fillText((completeTime * 100).toFixed(2) + "%", canvasRef2.current.width * 0.10 + completeTime * canvasRef2.current.width * 0.8 - 27, 22)
+
+
+
+    hipCircle.arc(
       ((results.poseLandmarks[23].x + results.poseLandmarks[24].x) / 2) *
       canvasRef.current.width,
       ((results.poseLandmarks[23].y + results.poseLandmarks[24].y) / 2) *
@@ -250,7 +325,7 @@ function Home() {
       0,
       2 * Math.PI
     )
-    leftHipCircle.arc(
+    shoulderCircle.arc(
       ((results.poseLandmarks[11].x + results.poseLandmarks[12].x) / 2) *
       canvasRef.current.width,
       ((results.poseLandmarks[11].y + results.poseLandmarks[12].y) / 2) *
@@ -260,7 +335,8 @@ function Home() {
       2 * Math.PI
     )
 
-    //leftHipCircle.arc(results.poseLandmarks[23].x * canvasRef.current.width, results.poseLandmarks[23].y * canvasRef.current.height, 6, 0, 2 * Math.PI)
+    leftHipCircle.arc(results.poseLandmarks[23].x * canvasRef.current.width, results.poseLandmarks[23].y * canvasRef.current.height, 6, 0, 2 * Math.PI)
+    rightHipCircle.arc(results.poseLandmarks[24].x * canvasRef.current.width, results.poseLandmarks[24].y * canvasRef.current.height, 6, 0, 2 * Math.PI)
     leftKneeCircle.arc(
       results.poseLandmarks[25].x * canvasRef.current.width,
       results.poseLandmarks[25].y * canvasRef.current.height,
@@ -321,8 +397,6 @@ function Home() {
       0,
       2 * Math.PI
     )
-
-
 
 
     canvasCtxx.current.beginPath()
@@ -434,13 +508,15 @@ function Home() {
 
     canvasCtxx.current.stroke()
 
-    canvasCtxx.current.fill(leftHipCircle)
+    canvasCtxx.current.fill(shoulderCircle)
+    canvasCtxx.current.fill(hipCircle)
+    // canvasCtxx.current.fill(leftHipCircle)
     canvasCtxx.current.fill(leftKneeCircle)
     canvasCtxx.current.fill(leftAnkleCircle)
     canvasCtxx.current.fill(leftHeelCircle)
     canvasCtxx.current.fill(leftFootCircle)
 
-    canvasCtxx.current.fill(rightHipCircle)
+    // canvasCtxx.current.fill(rightHipCircle)
     canvasCtxx.current.fill(rightKneeCircle)
     canvasCtxx.current.fill(rightAnkleCircle)
     canvasCtxx.current.fill(rightHeelCircle)
@@ -458,8 +534,8 @@ function Home() {
       modelComplexity: 2,
       smoothLandmarks: true,
       enableSegmentation: false,
-      smoothSegmentation: false,      
-      minDetectionConfidence: 0.7,
+      smoothSegmentation: false,
+      minDetectionConfidence: 0.1,
       minTrackingConfidence: 0.1
     })
 
@@ -532,6 +608,8 @@ function Home() {
                   className="canvas-container"
                 >
                   <canvas ref={canvasRef} className="output_canvas"></canvas>
+                  <br />
+                  <canvas ref={canvasRef2} className="output_canvas"></canvas>
                 </div>
               </div>
 
@@ -569,6 +647,8 @@ function Home() {
           rightAnkle={dPp.getRightAnkleAngle(false)}
           steps={dPp.getSteps()}
           median={dPp.getMedian()}
+          leftSwing={dPp.getLeftSwingIndex()}
+          rightSwing={dPp.getRightSwingIndex()}
         ></Graphs>
       )}
     </>

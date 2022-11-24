@@ -7,6 +7,7 @@ import {
   Label,
   LineChart,
   Line,
+  ReferenceLine
 } from "recharts"
 
 const lineNames = [
@@ -43,10 +44,10 @@ const dataNames = [
   "ninth",
   "tenth",
   "eleventh",
-  "twelveth",
+  "twelvth",
   "thirteenth",
   "fourteenth",
-  "fifteenth",
+  "fiftheenth",
   "sixteenth",
   "seventeeth",
   "eighteenth",
@@ -75,7 +76,6 @@ const lineColours = [
   // "#f5a742",
   // "#00fffb",
 ]
-
 function refresh() {
   window.location.reload("Refresh")
 }
@@ -90,9 +90,15 @@ function Graphs(props) {
   const rightAnkleRe = useRef(props.rightAnkle)
 
   const median = useRef(props.median)
-  const steps = useRef(props.steps)
   if (median.current) steps.current = 1
 
+  const steps = useRef(props.steps)
+  const leftSwing = useRef(props.leftSwing)
+  const rightSwing = useRef(props.rightSwing)
+
+
+
+  
   // console.log(leftHipRe.current)
 
   useEffect(() => {
@@ -114,12 +120,12 @@ function Graphs(props) {
             <Label value="Left Hip Angle" offset={320} position="top" />
           </XAxis>
           <YAxis
-            domain={[-30, 25]}
+            domain={[-30, 35]}
             allowDataOverflow={true}
-            ticks={[-30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25]}
+            ticks={[-30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30, 35]}
           />
           <CartesianGrid strokeDasharray="3 3" />
-
+          <ReferenceLine x={leftSwing.current} stroke="red" label="Swing" strokeDasharray="3 3" strokeWidth={1}/>
           <Tooltip
             formatter={(value) => value.toFixed(2)}
             wrapperStyle={{ top: -120, left: 150 }}
@@ -143,6 +149,7 @@ function Graphs(props) {
             }
             return rows
           })()}
+          
         </LineChart>
         <LineChart
           width={590}
@@ -162,6 +169,7 @@ function Graphs(props) {
             ]}
           />
           <CartesianGrid strokeDasharray="3 3" />
+          <ReferenceLine x={leftSwing.current} stroke="red" label="Swing" strokeDasharray="3 3" strokeWidth={1}/>
           <Tooltip
             formatter={(value) => value.toFixed(2)}
             wrapperStyle={{ top: -120, left: 150 }}
@@ -203,6 +211,7 @@ function Graphs(props) {
             ]}
           />
           <CartesianGrid strokeDasharray="3 3" />
+          <ReferenceLine x={leftSwing.current} stroke="red" label="Swing" strokeDasharray="3 3" strokeWidth={1}/>
           <Tooltip
             formatter={(value) => value.toFixed(2)}
             wrapperStyle={{ top: -120, left: 150 }}
@@ -236,10 +245,11 @@ function Graphs(props) {
             <Label value="Right Hip Angle" offset={320} position="top" />
           </XAxis>
           <YAxis
-            domain={[-30, 25]}
+            domain={[-30, 35]}
             allowDataOverflow={true}
-            ticks={[-30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25]}
+            ticks={[-30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30, 35]}
           />
+          <ReferenceLine x={rightSwing.current} stroke="red" label="Swing" strokeDasharray="3 3" strokeWidth={1}/>
           <CartesianGrid strokeDasharray="3 3" />
           <Tooltip
             formatter={(value) => value.toFixed(2)}
@@ -281,6 +291,7 @@ function Graphs(props) {
               55, 60, 65, 70, 75, 80, 85, 90, 95, 100,
             ]}
           />
+          <ReferenceLine x={rightSwing.current} stroke="red" label="Swing" strokeDasharray="3 3" strokeWidth={1}/>
           <CartesianGrid strokeDasharray="3 3" />
           <Tooltip
             formatter={(value) => value.toFixed(2)}
@@ -322,6 +333,7 @@ function Graphs(props) {
               35, 40,
             ]}
           />
+          <ReferenceLine x={rightSwing.current} stroke="red" label="Swing"  strokeDasharray="3 3" strokeWidth={1}/>
           <CartesianGrid strokeDasharray="3 3" />
           <Tooltip
             formatter={(value) => value.toFixed(2)}

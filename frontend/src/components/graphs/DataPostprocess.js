@@ -25,6 +25,8 @@ let rightAnkleDirectionArray = []
 let steps = 0
 let medianGraphs = false
 let maxSteps = 20
+let leftSwingIndex = -1
+let rightSwingIndex = -1
 
 let skippedFrames = 30
 
@@ -38,7 +40,6 @@ const processResults = (results) => {
   let backwardCount = 0
   //for (let i = 30; i < results.length; i++) {                   <------
   for (let i = skippedFrames; i < results.length; i++) {
-
     if (results[i].data.poseLandmarks[31].x > results[i - 1].data.poseLandmarks[31].x) {
       leftToeDirectionArray.push(1)
     } else {
@@ -69,7 +70,6 @@ const processResults = (results) => {
     } else {
       rightAnkleDirectionArray.push(-1)
     }
-
   }
   for (let i = skippedFrames; i < results.length; i++) {
     if (rightHeelDirectionArray[i] === 1) {
@@ -78,34 +78,36 @@ const processResults = (results) => {
       backwardCount++
     }
   }
-  if (forwardCount > backwardCount) {
-    direction = false
-    for (let i = 0; i < rightHeelDirectionArray.length; i++) {
-      if (rightHeelDirectionArray[i] === 1) {
-        rightHeelDirectionArray[i] = -1
-      } else if (rightHeelDirectionArray[i] === -1) rightHeelDirectionArray[i] = 1
+  // if (forwardCount > backwardCount) {
+  //   direction = false
+  //   for (let i = 0; i < rightHeelDirectionArray.length; i++) {
+  //     if (rightHeelDirectionArray[i] === 1) {
+  //       rightHeelDirectionArray[i] = -1
+  //     } else if (rightHeelDirectionArray[i] === -1) rightHeelDirectionArray[i] = 1
 
-      if (rightToeDirectionArray[i] === 1) {
-        rightToeDirectionArray[i] = -1
-      } else if (rightToeDirectionArray[i] === -1) rightToeDirectionArray[i] = 1
+  //     if (rightToeDirectionArray[i] === 1) {
+  //       rightToeDirectionArray[i] = -1
+  //     } else if (rightToeDirectionArray[i] === -1) rightToeDirectionArray[i] = 1
 
-      if (leftHeelDirectionArray[i] === 1) {
-        leftHeelDirectionArray[i] = -1
-      } else if (leftHeelDirectionArray[i] === -1) leftHeelDirectionArray[i] = 1
+  //     if (leftHeelDirectionArray[i] === 1) {
+  //       leftHeelDirectionArray[i] = -1
+  //     } else if (leftHeelDirectionArray[i] === -1) leftHeelDirectionArray[i] = 1
 
-      if (leftToeDirectionArray[i] === 1) {
-        leftToeDirectionArray[i] = -1
-      } else if (leftToeDirectionArray[i] === -1) leftToeDirectionArray[i] = 1
-    }
-  }
+  //     if (leftToeDirectionArray[i] === 1) {
+  //       leftToeDirectionArray[i] = -1
+  //     } else if (leftToeDirectionArray[i] === -1) leftToeDirectionArray[i] = 1
+  //   }
+  // }
   // console.log(leftToeDirectionArray, leftHeelDirectionArray, rightToeDirectionArray, rightHeelDirectionArray)
   // console.log(leftDirectionArray, rightDirectionArray)
   console.log(leftHeelDirectionArray, leftAnkleDirectionArray)
   getDirectionChangeIndex(rightToeDirectionArray, rightHeelDirectionArray, rightAnkleDirectionArray, rightDirectionArray)
   getDirectionChangeIndex(leftToeDirectionArray, leftHeelDirectionArray, leftAnkleDirectionArray, leftDirectionArray)
+  rightSwingIndex = getSwingIndex(rightDirectionArray)
+  leftSwingIndex = getSwingIndex(leftDirectionArray)
   makeStepAngleArray(rightDirectionArray, results, rightHipRE, rightKneeRE, rightAnkleRE, false)
   makeStepAngleArray(leftDirectionArray, results, leftHipRE, leftKneeRE, leftAnkleRE, true)
-  
+
   for (let i = 0; i < 5; i++) {
     rightHipRE = filterArray(rightHipRE, 4)
     rightKneeRE = filterArray(rightKneeRE, 4)
@@ -235,6 +237,40 @@ const getDirectionChangeIndex = (toeDirArray, heelDirArray, ankleDirArray, dirAr
     }
   }
 }
+const getSwingIndex = (array) => {
+  let groundTemp = []
+  let airTemp = []
+  let saved = false
+  let first = 0
+  let firstSet = false
+  for (let i = 0; i < array.length; i++) {
+    if (!saved && array[i].state === "ground") {
+      if (!firstSet) {
+        groundTemp.push(0)
+        first = i
+        firstSet = true
+      } else {
+        groundTemp.push(i - first)
+      }
+      saved = true
+    } else if (saved && array[i].state === "air") {
+      airTemp.push(i - first)
+      saved = false
+    }
+  }
+  console.log(groundTemp)
+  console.log(airTemp)
+
+  let sum = 0
+  let avg = 0
+  for (let i = groundTemp.length; i > 2; i--) {
+    //console.log((airTemp[i - 2] - groundTemp[i - 2]) / (groundTemp[i - 1] - groundTemp[i - 2]))
+    sum += (airTemp[i - 2] - groundTemp[i - 2]) / (groundTemp[i - 1] - groundTemp[i - 2])
+
+  }
+  avg = sum / (groundTemp.length - 2)
+  return Math.floor(avg * 100)    
+}
 
 const makeStepAngleArray = (cycleArray, resultData, recHip, recKnee, recAnkle, side) => {
   let stepcount = -1
@@ -258,6 +294,7 @@ const makeStepAngleArray = (cycleArray, resultData, recHip, recKnee, recAnkle, s
 
     if (cycleArray[i].cycleCount >= 0) {
       angleH.updateAngleHelper(resultData[i + skippedFrames].data)
+      // console.log(resultData[i + skippedFrames].data)
       tempHipArray.push(angleH.getHipAngle(side, direction))
       tempKneeArray.push(angleH.getKneeAngle(side, direction))
       tempAnkleArray.push(angleH.getAnkleAngle(side, direction))
@@ -266,25 +303,19 @@ const makeStepAngleArray = (cycleArray, resultData, recHip, recKnee, recAnkle, s
   steps = stepcount
 }
 
-// const modifiedWords = words.filter((word, index, arr) => {
-//   arr[index + 1] += ' extra';
-//   return word.length < 6;
-// });
-
 const filterArray = (array, tresh) => {
   let treshold = tresh
 
   for (let i = 0; i < array.length; i++) {
-    // const filtered = array[i].map((element, index, arr) => {
     for (let j = 0; j < array[i].length; j++) {
       if (array[i][j] - array[i][j + 1] < 0) {
         if (array[i][j] - array[i][j + 1] < treshold * -1) {
-          if (i < array.length - 1) {
+          if (j < array.length - 2) {
             array[i][j + 1] = (array[i][j] + array[i][j + 2]) / 2
           }
         }
       } else if (array[i][j] - array[i][j + 1] > treshold) {
-        if (i < array.length - 1) {
+        if (j < array.length - 2) {
           array[i][j + 1] = (array[i][j] + array[i][j + 2]) / 2
         }
       }
@@ -370,6 +401,7 @@ const formRechartsArray = (array, steps, median) => {
   } else {
     for (let i = steps - 1; i <= maxSteps; i++) {
       reArray[i] = reArray[0]
+      // console.log(reArray[i])
     }
     for (let i = 0; i < 101; i++) {
       temp.push({
@@ -485,6 +517,12 @@ const getSteps = () => {
 const getMedian = () => {
   return medianGraphs
 }
+const getLeftSwingIndex = () => {
+  return leftSwingIndex
+}
+const getRightSwingIndex = () => {
+  return rightSwingIndex
+}
 
 export {
   processResults,
@@ -495,7 +533,9 @@ export {
   getRightKneeAngle,
   getRightAnkleAngle,
   getSteps,
-  getMedian
+  getMedian,
+  getLeftSwingIndex,
+  getRightSwingIndex
   // getLeftHipAvgAngle,
   // getLeftKneeAvgAngle,
   // getLeftAnkleAvgAngle,

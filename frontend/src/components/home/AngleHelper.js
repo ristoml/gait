@@ -123,8 +123,8 @@ const getLeftDepth = () => {
           Math.pow(leftAnkleZ - leftKneeZ, 2)
         ))
     ) *
-    (180 / Math.PI)  
-  return 180-temp
+    (180 / Math.PI)
+  return 180 - temp
 }
 const getRightDepth = () => {
   let temp =
@@ -143,22 +143,40 @@ const getRightDepth = () => {
           Math.pow(rightAnkleZ - rightKneeZ, 2)
         ))
     ) *
-    (180 / Math.PI)  
-  return 180-temp
+    (180 / Math.PI)
+  return 180 - temp
 }
 
 const getKneeAngle = (side, direction) => {
   let temp
   if (side && direction) {
-    temp =
-      (Math.atan2(leftAnkleY - leftKneeY, leftAnkleX - leftKneeX) -
-        Math.atan2(
-          (leftHipY + rightHipY) / 2 - leftKneeY,
-          (leftHipX + rightHipX) / 2 - leftKneeX
-        )) *
+    // temp =
+    //   (Math.atan2(leftAnkleY - leftKneeY, leftAnkleX - leftKneeX) -
+    //     Math.atan2(
+    //       (leftHipY + rightHipY) / 2 - leftKneeY,
+    //       (leftHipX + rightHipX) / 2 - leftKneeX
+    //     )) *
+    //   (180 / Math.PI)
+    // if (temp >= 0) return temp - 180
+    // else return temp + 180
+    let temp =
+      Math.acos(
+        ((leftHipX - leftKneeX) * (leftAnkleX - leftKneeX) +
+          (leftHipY - leftKneeY) * (leftAnkleY - leftKneeY) +
+          (leftHipZ - leftKneeZ) * (leftAnkleZ - leftKneeZ)) /
+        (Math.sqrt(
+          Math.pow(leftHipX - leftKneeX, 2) +
+          Math.pow(leftHipY - leftKneeY, 2) +
+          Math.pow(leftHipZ - leftKneeZ, 2)
+        ) *
+          Math.sqrt(
+            Math.pow(leftAnkleX - leftKneeX, 2) +
+            Math.pow(leftAnkleY - leftKneeY, 2) +
+            Math.pow(leftAnkleZ - leftKneeZ, 2)
+          ))
+      ) *
       (180 / Math.PI)
-    if (temp >= 0) return temp - 180
-    else return temp + 180
+    return 180 - temp
   } else if (!side && direction) {
     temp =
       (Math.atan2(rightAnkleY - rightKneeY, rightAnkleX - rightKneeX) -
@@ -196,18 +214,54 @@ const getKneeAngle = (side, direction) => {
 const getHipAngle = (side, direction) => {
   let temp
   if (side && direction) {
-    temp =
-      (Math.atan2(
-        leftKneeY - (leftHipY + rightHipY) / 2,
-        leftKneeX - (leftHipX + rightHipX) / 2
-      ) -
-        Math.atan2(
-          (leftShoulderY + rightShoulderY) / 2 - leftKneeY,
-          (leftShoulderX + rightShoulderX) / 2 - leftKneeX
-        )) *
-      (180 / Math.PI)
-    if (temp >= 0) return 180 - temp
-    else return 180 + temp
+    // temp =
+    //   (Math.atan2(
+    //     leftKneeY - (leftHipY + rightHipY) / 2,
+    //     leftKneeX - (leftHipX + rightHipX) / 2
+    //   ) -
+    //     Math.atan2(
+    //       (leftShoulderY + rightShoulderY) / 2 - leftKneeY,
+    //       (leftShoulderX + rightShoulderX) / 2 - leftKneeX
+    //     )) *
+    //   (180 / Math.PI)
+    // if (temp >= 0) return 180 - temp 
+    // else return 180 + temp
+    let temp =
+      Math.acos(
+        ((leftKneeX - leftHipX) * (leftHipX - leftShoulderX) +
+          (leftKneeY - leftHipY) * (leftHipY - leftShoulderY) +
+          (leftKneeZ - leftHipZ) * (leftHipZ - leftShoulderZ)) /
+        (Math.sqrt(
+          Math.pow(leftKneeX - leftHipX, 2) +
+          Math.pow(leftKneeY - leftHipY, 2) +
+          Math.pow(leftKneeZ - leftHipZ, 2)
+        ) *
+          Math.sqrt(
+            Math.pow(leftHipX - leftShoulderX, 2) +
+            Math.pow(leftHipY - leftShoulderY, 2) +
+            Math.pow(leftHipZ - leftShoulderZ, 2)
+          ))
+      ) *
+      180 / Math.PI
+    return temp
+    //   let temp =
+    //   Math.acos(
+    //     ((leftKneeX - leftHipX) * ((leftHipX + rightHipX) / 2 - (leftShoulderX + rightShoulderX) / 2) +
+    //       (leftKneeY - leftHipY) * ((leftHipY + rightHipY) / 2 - (leftShoulderY + rightShoulderY) / 2) +
+    //       (leftKneeZ - leftHipZ) * ((leftHipZ + rightHipZ) / 2 - (leftShoulderZ + rightShoulderZ) / 2)) /
+    //     (Math.sqrt(
+    //       Math.pow(leftKneeX - leftHipX, 2) +
+    //       Math.pow(leftKneeY - leftHipY, 2) +
+    //       Math.pow(leftKneeZ - leftHipZ, 2)
+    //     ) *
+    //       Math.sqrt(
+    //         Math.pow((leftHipX + rightHipX) / 2 - (leftShoulderX + rightShoulderX) / 2, 2) +
+    //         Math.pow((leftHipY + rightHipY) / 2 - (leftShoulderY + rightShoulderY) / 2, 2) +
+    //         Math.pow((leftHipZ + rightHipZ) / 2 - (leftShoulderZ + rightShoulderZ) / 2, 2)
+    //       ))
+    //   ) *
+    //   (180 / Math.PI)
+    // return temp
   } else if (!side && direction) {
     temp =
       (Math.atan2(
