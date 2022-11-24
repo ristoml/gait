@@ -107,20 +107,20 @@ function Home() {
       if (calibrated && !mediapipeCalibrated) {
         const videoWidth = videoRef.current.videoWidth
         const videoHeight = videoRef.current.videoHeight
-        canvasRef.current.width = videoWidth <= 600 ? videoWidth / 1.33 : videoWidth / 2.66
-        canvasRef.current.height = videoWidth <=600 ? videoHeight / 1.33 : videoHeight / 2.66
+        canvasRef.current.width = videoWidth <= 600 ? videoWidth / 1.4 : videoWidth / 2.66
+        canvasRef.current.height = videoWidth <=600 ? videoHeight / 1.4 : videoHeight / 2.66
         canvasRef2.current.width = 1000
         canvasRef2.current.height = 100
         // canvasCtx.clearRect(0, 0, videoWidth, videoHeight)
         completeTime = 0
-        if (Date.now() - startTime > 1999) {
+        if (Date.now() - startTime > 2999) {
           calibrationTick++
         }
-        if (Date.now() - startTime > 4999) {
+        if (Date.now() - startTime > 5999) {
           console.log("calibration ticks: " + calibrationTick)
           if (calibrationTick / 303 > 0.1) {
-            // videoRef.current.playbackRate = (calibrationTick / 303) * 1.15
-            videoRef.current.playbackRate = 1.1
+            videoRef.current.playbackRate = (calibrationTick / 303) * 1.15
+            // videoRef.current.playbackRate = 1.1
             console.log("playbackrate adjusted to: " + videoRef.current.playbackRate)
             mediapipeCalibrated = true
             videoRef.current.currentTime = 0
