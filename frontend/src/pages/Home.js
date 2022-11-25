@@ -31,7 +31,7 @@ let toeXOffsetValue = 0
 // let hipYOffsetMultiplier = 0.95
 let hipXOffsetMultiplier = 1
 let hipYOffsetMultiplier = 1
-let toeXOffSetMultiplier = 0.8
+let toeXOffSetMultiplier = 1
 // let toeYOffset = -0.02   
 let toeYOffset = 0
 let toeSet = false
@@ -108,7 +108,7 @@ function Home() {
         const videoWidth = videoRef.current.videoWidth
         const videoHeight = videoRef.current.videoHeight
         canvasRef.current.width = videoWidth <= 600 ? videoWidth / 1.4 : videoWidth / 2.66
-        canvasRef.current.height = videoWidth <=600 ? videoHeight / 1.4 : videoHeight / 2.66
+        canvasRef.current.height = videoWidth <= 600 ? videoHeight / 1.4 : videoHeight / 2.66
         canvasRef2.current.width = 1000
         canvasRef2.current.height = 100
         // canvasCtx.clearRect(0, 0, videoWidth, videoHeight)

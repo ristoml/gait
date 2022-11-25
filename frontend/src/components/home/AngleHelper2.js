@@ -95,7 +95,6 @@ const getKneeAngle = (side, direction) => {
           (rightHipX + leftHipY) / 2 - rightKneeX
         )) *
       (180 / Math.PI)
-    console.log(temp)
     temp = 180 - temp
     return temp
   }

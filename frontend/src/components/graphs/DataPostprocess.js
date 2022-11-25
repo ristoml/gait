@@ -33,7 +33,7 @@ let skippedFrames = 30
 let resampleTarget = 51
 
 //direction is true if you walk from left to right in video otherwise its false --- default true
-let direction = true
+let directionRight = true
 
 const processResults = (results) => {
   let forwardCount = 0
@@ -71,36 +71,29 @@ const processResults = (results) => {
       rightAnkleDirectionArray.push(-1)
     }
   }
-  for (let i = skippedFrames; i < results.length; i++) {
+  for (let i = 0; i < rightHeelDirectionArray.length; i++) {
     if (rightHeelDirectionArray[i] === 1) {
       forwardCount++
     } else {
       backwardCount++
     }
   }
-  // if (forwardCount > backwardCount) {
-  //   direction = false
-  //   for (let i = 0; i < rightHeelDirectionArray.length; i++) {
-  //     if (rightHeelDirectionArray[i] === 1) {
-  //       rightHeelDirectionArray[i] = -1
-  //     } else if (rightHeelDirectionArray[i] === -1) rightHeelDirectionArray[i] = 1
+  if (forwardCount > backwardCount) {
+    directionRight = false
+    for (let i = 0; i < rightHeelDirectionArray.length; i++) {
+      rightHeelDirectionArray[i] *= -1
+      rightToeDirectionArray[i] *= -1
+      leftHeelDirectionArray[i] *= -1
+      leftToeDirectionArray[i] *= -1
+      leftAnkleDirectionArray[i] *= -1
+      rightAnkleDirectionArray[i] *= -1
+    }
 
-  //     if (rightToeDirectionArray[i] === 1) {
-  //       rightToeDirectionArray[i] = -1
-  //     } else if (rightToeDirectionArray[i] === -1) rightToeDirectionArray[i] = 1
-
-  //     if (leftHeelDirectionArray[i] === 1) {
-  //       leftHeelDirectionArray[i] = -1
-  //     } else if (leftHeelDirectionArray[i] === -1) leftHeelDirectionArray[i] = 1
-
-  //     if (leftToeDirectionArray[i] === 1) {
-  //       leftToeDirectionArray[i] = -1
-  //     } else if (leftToeDirectionArray[i] === -1) leftToeDirectionArray[i] = 1
-  //   }
-  // }
+  }
   // console.log(leftToeDirectionArray, leftHeelDirectionArray, rightToeDirectionArray, rightHeelDirectionArray)
   // console.log(leftDirectionArray, rightDirectionArray)
-  console.log(leftHeelDirectionArray, leftAnkleDirectionArray)
+  // console.log(leftHeelDirectionArray, leftAnkleDirectionArray)
+
   getDirectionChangeIndex(rightToeDirectionArray, rightHeelDirectionArray, rightAnkleDirectionArray, rightDirectionArray)
   getDirectionChangeIndex(leftToeDirectionArray, leftHeelDirectionArray, leftAnkleDirectionArray, leftDirectionArray)
   rightSwingIndex = getSwingIndex(rightDirectionArray)
@@ -258,8 +251,8 @@ const getSwingIndex = (array) => {
       saved = false
     }
   }
-  console.log(groundTemp)
-  console.log(airTemp)
+  // console.log(groundTemp)
+  // console.log(airTemp)
 
   let sum = 0
   let avg = 0
@@ -269,7 +262,7 @@ const getSwingIndex = (array) => {
 
   }
   avg = sum / (groundTemp.length - 2)
-  return Math.floor(avg * 100)    
+  return Math.floor(avg * 100)
 }
 
 const makeStepAngleArray = (cycleArray, resultData, recHip, recKnee, recAnkle, side) => {
@@ -295,9 +288,9 @@ const makeStepAngleArray = (cycleArray, resultData, recHip, recKnee, recAnkle, s
     if (cycleArray[i].cycleCount >= 0) {
       angleH.updateAngleHelper(resultData[i + skippedFrames].data)
       // console.log(resultData[i + skippedFrames].data)
-      tempHipArray.push(angleH.getHipAngle(side, direction))
-      tempKneeArray.push(angleH.getKneeAngle(side, direction))
-      tempAnkleArray.push(angleH.getAnkleAngle(side, direction))
+      tempHipArray.push(angleH.getHipAngle(side, directionRight))
+      tempKneeArray.push(angleH.getKneeAngle(side, directionRight))
+      tempAnkleArray.push(angleH.getAnkleAngle(side, directionRight))
     }
   }
   steps = stepcount
@@ -371,7 +364,7 @@ const formRechartsArray = (array, steps, median) => {
   if (median) medianGraphs = true
   let reArray = resampleAngleData(array, resampleTarget, median)
   let temp = []
-  console.log(reArray)
+  // console.log(reArray)
   if (median) {
     for (let i = 0; i < 101; i++) {
       temp.push({
