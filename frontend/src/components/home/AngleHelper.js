@@ -3,6 +3,7 @@
 
 // let leftShoulderHipMag, leftHipKneeMag, leftKneeAnkleMag, leftAnkleFootMag
 // let rightShoulderHipMag, rightHipKneeMag, rightKneeMag, rightAnkleFootMag
+import * as mathjs from 'mathjs'
 
 let leftHipX,
   leftHipY,
@@ -21,7 +22,19 @@ let leftHipX,
   leftFootIndexZ,
   leftShoulderX,
   leftShoulderY,
-  leftShoulderZ
+  leftShoulderZ,
+  vLeftAnkle1,
+  vLeftAnkle2,
+  vLeftHip1,
+  vLeftHip2,
+  vLeftFoot1,
+  vLeftfoot2,
+  vLeftAnkle1_proj,
+  vLeftAnkle2_proj,
+  vLeftHip1_proj,
+  vLeftHip2_proj,
+  vLeftFoot1_proj,
+  vLeftfoot2_proj
 
 let rightHipX,
   rightHipY,
@@ -40,7 +53,22 @@ let rightHipX,
   rightFootIndexZ,
   rightShoulderY,
   rightShoulderX,
-  rightShoulderZ
+  rightShoulderZ,
+  vRightAnkle1,
+  vRightAnkle2,
+  vRightHip1,
+  vRightHip2,
+  vRightFoot1,
+  vRightFoot2,
+  vRightAnkle1_proj,
+  vRightAnkle2_proj,
+  vRightHip1_proj,
+  vRightHip2_proj,
+  vRightFoot1_proj,
+  vRightFoot2_proj
+
+let n, v, e1, e2, A, vOrigo
+
 
 // leftHipX = -4.0
 // leftHipY = -8.0
@@ -92,6 +120,52 @@ const updateAngleHelper = (results) => {
   rightFootIndexY = results.poseWorldLandmarks[32].y
   rightFootIndexZ = results.poseWorldLandmarks[32].z
 
+  n = [rightHipX - leftHipX, rightHipY - leftHipY, rightHipZ - leftHipZ]
+
+  v = [1, 0, 0]
+
+  e1 = mathjs.cross(v, n)
+  console.log(e1)
+  e1 = e1 / mathjs.norm(e1, 'fro')
+  console.log(e1)
+
+  e2 = mathjs.cross(e1, n)
+  e2 = e2 / mathjs.norm(e2, 'fro')
+
+  A = [e1, e2]
+
+  vOrigo = [(rightHipX + leftHipX) / 2, (rightHipY + leftHipY) / 2, (rightHipZ + leftHipZ) / 2]
+
+  vLeftAnkle1 = [leftAnkleX - leftKneeX, leftAnkleY - leftKneeY, leftAnkleZ - leftKneeZ]
+  // vLeftAnkle2 = [(rightHipX + leftHipX) / 2 - leftKneeX, (rightHipY + leftHipY) / 2 - leftKneeY, (rightHipZ + leftHipZ) / 2 - leftKneeZ]
+  vLeftAnkle2 = [leftKneeX, leftKneeY, leftKneeZ]
+
+  vRightAnkle1 = [rightAnkleX - rightKneeX, rightAnkleY - rightKneeY, rightAnkleZ - rightKneeZ]
+  //vRightAnkle2 = [(rightHipX + leftHipX) / 2 - rightKneeX, (rightHipY + leftHipY) / 2 - rightKneeY, (rightHipZ + leftHipZ) / 2 - rightKneeZ]
+  vRightAnkle2 = [rightKneeX, rightKneeY, rightKneeZ]
+
+  vLeftHip1 = [(rightShoulderX + leftShoulderX) / 2 - leftHipX, (rightShoulderY + leftShoulderY) / 2 - leftHipY, (rightShoulderZ + leftShoulderZ) / 2 - leftHipZ]
+  vLeftHip2 = [leftKneeX - leftHipX, leftKneeY - leftHipY, leftKneeZ - leftHipZ]
+
+  vRightHip1 = [(rightShoulderX + leftShoulderX) / 2 - rightHipX, (rightShoulderY + leftShoulderY) / 2 - rightHipY, (rightShoulderZ + leftShoulderZ) / 2 - rightHipZ]
+  vRightHip2 = [rightKneeX - rightHipX, rightKneeY - rightHipY, rightKneeZ - rightHipZ]
+
+  vLeftAnkle1_proj = mathjs.multiply(A,vLeftAnkle1)
+  vLeftAnkle2_proj = mathjs.multiply(A,vLeftAnkle2)
+  
+  vRightAnkle1_proj = mathjs.multiply(A,vRightAnkle1)
+  vRightAnkle2_proj = mathjs.multiply(A,vRightAnkle2)
+  
+  vLeftHip1_proj = mathjs.multiply(A,vLeftHip1)
+  vLeftHip2_proj = mathjs.multiply(A,vLeftHip2)
+  
+  vRightHip1_proj = mathjs.multiply(A,vRightHip1)
+  vRightHip2_proj = mathjs.multiply(A,vRightHip2)
+
+  // vLeftFoot1 = 
+
+
+
   // leftShoulderHipDot = leftShoulderZ*leftHipZ
   // leftHipKneeDot = leftHipZ*leftKneeZ
 
@@ -106,46 +180,6 @@ const getLeftZ = () => {
 const getRightZ = () => {
   return rightKneeZ
 }
-const getLeftDepth = () => {
-  let temp =
-    Math.acos(
-      ((leftHipX - leftKneeX) * (leftAnkleX - leftKneeX) +
-        (leftHipY - leftKneeY) * (leftAnkleY - leftKneeY) +
-        (leftHipZ - leftKneeZ) * (leftAnkleZ - leftKneeZ)) /
-      (Math.sqrt(
-        Math.pow(leftHipX - leftKneeX, 2) +
-        Math.pow(leftHipY - leftKneeY, 2) +
-        Math.pow(leftHipZ - leftKneeZ, 2)
-      ) *
-        Math.sqrt(
-          Math.pow(leftAnkleX - leftKneeX, 2) +
-          Math.pow(leftAnkleY - leftKneeY, 2) +
-          Math.pow(leftAnkleZ - leftKneeZ, 2)
-        ))
-    ) *
-    (180 / Math.PI)
-  return 180 - temp
-}
-const getRightDepth = () => {
-  let temp =
-    Math.acos(
-      ((rightHipX - rightKneeX) * (rightAnkleX - rightKneeX) +
-        (rightHipY - rightKneeY) * (rightAnkleY - rightKneeY) +
-        (rightHipZ - rightKneeZ) * (rightAnkleZ - rightKneeZ)) /
-      (Math.sqrt(
-        Math.pow(rightHipX - rightKneeX, 2) +
-        Math.pow(rightHipY - rightKneeY, 2) +
-        Math.pow(rightHipZ - rightKneeZ, 2)
-      ) *
-        Math.sqrt(
-          Math.pow(rightAnkleX - rightKneeX, 2) +
-          Math.pow(rightAnkleY - rightKneeY, 2) +
-          Math.pow(rightAnkleZ - rightKneeZ, 2)
-        ))
-    ) *
-    (180 / Math.PI)
-  return 180 - temp
-}
 
 const getKneeAngle = (side, direction) => {
   let temp
@@ -159,24 +193,8 @@ const getKneeAngle = (side, direction) => {
     //   (180 / Math.PI)
     // if (temp >= 0) return temp - 180
     // else return temp + 180
-    let temp =
-      Math.acos(
-        ((leftHipX - leftKneeX) * (leftAnkleX - leftKneeX) +
-          (leftHipY - leftKneeY) * (leftAnkleY - leftKneeY) +
-          (leftHipZ - leftKneeZ) * (leftAnkleZ - leftKneeZ)) /
-        (Math.sqrt(
-          Math.pow(leftHipX - leftKneeX, 2) +
-          Math.pow(leftHipY - leftKneeY, 2) +
-          Math.pow(leftHipZ - leftKneeZ, 2)
-        ) *
-          Math.sqrt(
-            Math.pow(leftAnkleX - leftKneeX, 2) +
-            Math.pow(leftAnkleY - leftKneeY, 2) +
-            Math.pow(leftAnkleZ - leftKneeZ, 2)
-          ))
-      ) *
-      (180 / Math.PI)
-    return 180 - temp
+   
+    return 180 - Math.acos(mathjs.dot(vLeftAnkle1_proj, vLeftAnkle2_proj)/(mathjs.norm(vLeftAnkle1_proj) * mathjs.norm(vLeftAnkle2_proj))) * 180 / Math.PI
   } else if (!side && direction) {
     temp =
       (Math.atan2(rightAnkleY - rightKneeY, rightAnkleX - rightKneeX) -
@@ -356,4 +374,4 @@ const getAnkleAngle = (side, direction) => {
   //return (Math.atan2(leftFootIndexY - leftHeelY, leftFootIndexX - leftHeelX) - Math.atan2(leftKneeY - leftAnkleY, leftKneeX - leftAnkleX)) * (180 / Math.PI)
 }
 
-export { updateAngleHelper, getHipAngle, getKneeAngle, getAnkleAngle, getLeftDepth, getRightDepth, getLeftZ, getRightZ }
+export { updateAngleHelper, getHipAngle, getKneeAngle, getAnkleAngle, getLeftZ, getRightZ }

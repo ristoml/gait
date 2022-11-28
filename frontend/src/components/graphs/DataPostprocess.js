@@ -1,4 +1,4 @@
-import * as angleH from "../home/AngleHelper2"
+import * as angleH from "../home/AngleHelper"
 import * as resample from "./Resample"
 
 let leftHipRE = []
@@ -297,6 +297,7 @@ const makeStepAngleArray = (cycleArray, resultData, recHip, recKnee, recAnkle, s
 }
 
 const filterArray = (array, tresh) => {
+  console.log(array)
   let treshold = tresh
 
   for (let i = 0; i < array.length; i++) {
