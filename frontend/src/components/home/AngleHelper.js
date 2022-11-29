@@ -120,17 +120,20 @@ const updateAngleHelper = (results) => {
   rightFootIndexY = results.poseWorldLandmarks[32].y
   rightFootIndexZ = results.poseWorldLandmarks[32].z
 
-  n = [rightHipX - leftHipX, rightHipY - leftHipY, rightHipZ - leftHipZ]
-
+  //normaali vektori
+  // n = [rightHipX - leftHipX, rightHipY - leftHipY, rightHipZ - leftHipZ]
+  n = [leftHipX - rightHipX, leftHipY - rightHipY, leftHipZ - rightHipZ]
+  //apuvektori
   v = [1, 0, 0]
 
   e1 = mathjs.cross(v, n)
-  console.log(e1)
-  e1 = e1 / mathjs.norm(e1, 'fro')
-  console.log(e1)
+
+  //e1 / mathjs.norm(e1, 'fro')  
+  e1 = mathjs.divide(e1, mathjs.norm(e1))
+
 
   e2 = mathjs.cross(e1, n)
-  e2 = e2 / mathjs.norm(e2, 'fro')
+  e2 = mathjs.divide(e2, mathjs.norm(e2))
 
   A = [e1, e2]
 
@@ -138,11 +141,13 @@ const updateAngleHelper = (results) => {
 
   vLeftAnkle1 = [leftAnkleX - leftKneeX, leftAnkleY - leftKneeY, leftAnkleZ - leftKneeZ]
   // vLeftAnkle2 = [(rightHipX + leftHipX) / 2 - leftKneeX, (rightHipY + leftHipY) / 2 - leftKneeY, (rightHipZ + leftHipZ) / 2 - leftKneeZ]
-  vLeftAnkle2 = [leftKneeX, leftKneeY, leftKneeZ]
+  vLeftAnkle2 = [leftHipX - leftKneeX, leftHipY - leftKneeY, leftHipZ - leftKneeZ]
+  //vLeftAnkle2 = [leftKneeX, leftKneeY, leftKneeZ]
 
   vRightAnkle1 = [rightAnkleX - rightKneeX, rightAnkleY - rightKneeY, rightAnkleZ - rightKneeZ]
-  //vRightAnkle2 = [(rightHipX + leftHipX) / 2 - rightKneeX, (rightHipY + leftHipY) / 2 - rightKneeY, (rightHipZ + leftHipZ) / 2 - rightKneeZ]
-  vRightAnkle2 = [rightKneeX, rightKneeY, rightKneeZ]
+  // vRightAnkle2 = [(rightHipX + leftHipX) / 2 - rightKneeX, (rightHipY + leftHipY) / 2 - rightKneeY, (rightHipZ + leftHipZ) / 2 - rightKneeZ]
+  vRightAnkle2 = [rightHipX - rightKneeX, rightHipY - rightKneeY, rightHipZ - rightKneeZ]
+  //vRightAnkle2 = [rightKneeX, rightKneeY, rightKneeZ]
 
   vLeftHip1 = [(rightShoulderX + leftShoulderX) / 2 - leftHipX, (rightShoulderY + leftShoulderY) / 2 - leftHipY, (rightShoulderZ + leftShoulderZ) / 2 - leftHipZ]
   vLeftHip2 = [leftKneeX - leftHipX, leftKneeY - leftHipY, leftKneeZ - leftHipZ]
@@ -150,17 +155,20 @@ const updateAngleHelper = (results) => {
   vRightHip1 = [(rightShoulderX + leftShoulderX) / 2 - rightHipX, (rightShoulderY + leftShoulderY) / 2 - rightHipY, (rightShoulderZ + leftShoulderZ) / 2 - rightHipZ]
   vRightHip2 = [rightKneeX - rightHipX, rightKneeY - rightHipY, rightKneeZ - rightHipZ]
 
-  vLeftAnkle1_proj = mathjs.multiply(A,vLeftAnkle1)
-  vLeftAnkle2_proj = mathjs.multiply(A,vLeftAnkle2)
-  
-  vRightAnkle1_proj = mathjs.multiply(A,vRightAnkle1)
-  vRightAnkle2_proj = mathjs.multiply(A,vRightAnkle2)
-  
-  vLeftHip1_proj = mathjs.multiply(A,vLeftHip1)
-  vLeftHip2_proj = mathjs.multiply(A,vLeftHip2)
-  
-  vRightHip1_proj = mathjs.multiply(A,vRightHip1)
-  vRightHip2_proj = mathjs.multiply(A,vRightHip2)
+  console.log(vLeftAnkle1)
+
+  vLeftAnkle1_proj = mathjs.multiply(A, vLeftAnkle1)
+  vLeftAnkle2_proj = mathjs.multiply(A, vLeftAnkle2)
+
+  console.log(vLeftAnkle1_proj)
+  vRightAnkle1_proj = mathjs.multiply(A, vRightAnkle1)
+  vRightAnkle2_proj = mathjs.multiply(A, vRightAnkle2)
+
+  vLeftHip1_proj = mathjs.multiply(A, vLeftHip1)
+  vLeftHip2_proj = mathjs.multiply(A, vLeftHip2)
+
+  vRightHip1_proj = mathjs.multiply(A, vRightHip1)
+  vRightHip2_proj = mathjs.multiply(A, vRightHip2)
 
   // vLeftFoot1 = 
 
@@ -193,38 +201,41 @@ const getKneeAngle = (side, direction) => {
     //   (180 / Math.PI)
     // if (temp >= 0) return temp - 180
     // else return temp + 180
-   
-    return 180 - Math.acos(mathjs.dot(vLeftAnkle1_proj, vLeftAnkle2_proj)/(mathjs.norm(vLeftAnkle1_proj) * mathjs.norm(vLeftAnkle2_proj))) * 180 / Math.PI
+
+    //
+    return 180 - (Math.acos(mathjs.divide(mathjs.dot(vLeftAnkle1_proj, vLeftAnkle2_proj), (mathjs.norm(vLeftAnkle1_proj) * mathjs.norm(vLeftAnkle2_proj)))) * 180 / Math.PI)
   } else if (!side && direction) {
-    temp =
-      (Math.atan2(rightAnkleY - rightKneeY, rightAnkleX - rightKneeX) -
-        Math.atan2(
-          (rightHipY + leftHipY) / 2 - rightKneeY,
-          (rightHipX + leftHipY) / 2 - rightKneeX
-        )) *
-      (180 / Math.PI)
-    if (temp >= 0) return temp - 180
-    else return temp + 180
-  } else if (side && !direction) {
-    temp =
-      (Math.atan2(leftAnkleY - leftKneeY, leftAnkleX - leftKneeX) -
-        Math.atan2(
-          (leftHipY + rightHipY) / 2 - leftKneeY,
-          (leftHipX + rightHipX) / 2 - leftKneeX
-        )) *
-      (180 / Math.PI)
-    if (temp >= 180) return 180 - temp
-    else return 180 - temp
-  } else if (!side && !direction) {
-    temp =
-      (Math.atan2(rightAnkleY - rightKneeY, rightAnkleX - rightKneeX) -
-        Math.atan2(
-          (rightHipY + leftHipY) / 2 - rightKneeY,
-          (rightHipX + leftHipY) / 2 - rightKneeX
-        )) *
-      (180 / Math.PI)
-    return 180 - temp
+    // temp =
+    //   (Math.atan2(rightAnkleY - rightKneeY, rightAnkleX - rightKneeX) -
+    //     Math.atan2(
+    //       (rightHipY + leftHipY) / 2 - rightKneeY,
+    //       (rightHipX + leftHipY) / 2 - rightKneeX
+    //     )) *
+    //   (180 / Math.PI)
+    // if (temp >= 0) return temp - 180
+    // else return temp + 180
+    return 180 - (Math.acos(mathjs.divide(mathjs.dot(vRightAnkle1_proj, vRightAnkle2_proj), (mathjs.norm(vRightAnkle1_proj) * mathjs.norm(vRightAnkle2_proj)))) * 180 / Math.PI)
   }
+  // else if (side && !direction) {
+  //   temp =
+  //     (Math.atan2(leftAnkleY - leftKneeY, leftAnkleX - leftKneeX) -
+  //       Math.atan2(
+  //         (leftHipY + rightHipY) / 2 - leftKneeY,
+  //         (leftHipX + rightHipX) / 2 - leftKneeX
+  //       )) *
+  //     (180 / Math.PI)
+  //   if (temp >= 180) return 180 - temp
+  //   else return 180 - temp
+  // } else if (!side && !direction) {
+  //   temp =
+  //     (Math.atan2(rightAnkleY - rightKneeY, rightAnkleX - rightKneeX) -
+  //       Math.atan2(
+  //         (rightHipY + leftHipY) / 2 - rightKneeY,
+  //         (rightHipX + leftHipY) / 2 - rightKneeX
+  //       )) *
+  //     (180 / Math.PI)
+  //   return 180 - temp
+  // }
 
   //return (Math.atan2(leftAnkleY - leftKneeY, leftAnkleX - leftKneeX) - Math.atan2(leftHipY - leftKneeY, leftHipX - leftKneeX)) * (180 / Math.PI)
 }

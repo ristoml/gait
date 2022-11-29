@@ -101,14 +101,14 @@ const processResults = (results) => {
   makeStepAngleArray(rightDirectionArray, results, rightHipRE, rightKneeRE, rightAnkleRE, false)
   makeStepAngleArray(leftDirectionArray, results, leftHipRE, leftKneeRE, leftAnkleRE, true)
 
-  for (let i = 0; i < 5; i++) {
-    rightHipRE = filterArray(rightHipRE, 4)
-    rightKneeRE = filterArray(rightKneeRE, 4)
-    rightAnkleRE = filterArray(rightAnkleRE, 4)
-    leftHipRE = filterArray(leftHipRE, 4)
-    leftKneeRE = filterArray(leftKneeRE, 4)
-    leftAnkleRE = filterArray(leftAnkleRE, 4)
-  }
+  // for (let i = 0; i < 5; i++) {
+  //   rightHipRE = filterArray(rightHipRE, 4)
+  //   rightKneeRE = filterArray(rightKneeRE, 4)
+  //   rightAnkleRE = filterArray(rightAnkleRE, 4)
+  //   leftHipRE = filterArray(leftHipRE, 4)
+  //   leftKneeRE = filterArray(leftKneeRE, 4)
+  //   leftAnkleRE = filterArray(leftAnkleRE, 4)
+  // }
 
   console.log(leftHipRE, leftKneeRE, leftAnkleRE, rightHipRE, rightKneeRE, rightAnkleRE)
 
