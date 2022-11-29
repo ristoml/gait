@@ -120,7 +120,7 @@ function Home() {
         if (Date.now() - startTime > 5999) {
           console.log("calibration ticks: " + calibrationTick)
           if (calibrationTick / 303 > 0.1) {
-            videoRef.current.playbackRate = (calibrationTick / 303) * 1.15
+            videoRef.current.playbackRate = (calibrationTick / 303) * 1.5
             // videoRef.current.playbackRate = 1.1
             console.log("playbackrate adjusted to: " + videoRef.current.playbackRate)
             mediapipeCalibrated = true
@@ -517,11 +517,11 @@ function Home() {
     canvasCtxx.current.fill(leftHeelCircle)
     canvasCtxx.current.fill(leftFootCircle)
 
-    canvasCtxx.current.fill(rightHipCircle)
-    canvasCtxx.current.fill(rightKneeCircle)
-    canvasCtxx.current.fill(rightAnkleCircle)
-    canvasCtxx.current.fill(rightHeelCircle)
-    canvasCtxx.current.fill(rightFootCircle)
+    // canvasCtxx.current.fill(rightHipCircle)
+    // canvasCtxx.current.fill(rightKneeCircle)
+    // canvasCtxx.current.fill(rightAnkleCircle)
+    // canvasCtxx.current.fill(rightHeelCircle)
+    // canvasCtxx.current.fill(rightFootCircle)
   }
 
   useEffect(() => {
