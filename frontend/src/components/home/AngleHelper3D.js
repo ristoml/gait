@@ -69,17 +69,6 @@ let rightHipX,
 
 let n, v, e1, e2, A, vOrigo
 
-
-// leftHipX = -4.0
-// leftHipY = -8.0
-// leftHipZ = 6.0
-// leftKneeX = 1.0
-// leftKneeY = 1.0
-// leftKneeZ = 2.0
-// leftAnkleX = 4.0
-// leftAnkleY = 7.0
-// leftAnkleZ = 3.0
-
 const updateAngleHelper = (results) => {
   leftShoulderX = results.poseWorldLandmarks[11].x
   leftShoulderY = results.poseWorldLandmarks[11].y
@@ -93,7 +82,6 @@ const updateAngleHelper = (results) => {
   leftAnkleX = results.poseWorldLandmarks[27].x
   leftAnkleY = results.poseWorldLandmarks[27].y
   leftAnkleZ = results.poseWorldLandmarks[27].z
-
   leftHeelX = results.poseWorldLandmarks[29].x
   leftHeelY = results.poseWorldLandmarks[29].y
   leftHeelZ = results.poseWorldLandmarks[29].z
@@ -121,46 +109,42 @@ const updateAngleHelper = (results) => {
   rightFootIndexZ = results.poseWorldLandmarks[32].z
 
   //normaali vektori
-  // n = [rightHipX - leftHipX, rightHipY - leftHipY, rightHipZ - leftHipZ]
   n = [leftHipX - rightHipX, leftHipY - rightHipY, leftHipZ - rightHipZ]
+
   //apuvektori
   v = [1, 0, 0]
 
   e1 = mathjs.cross(v, n)
-
-  //e1 / mathjs.norm(e1, 'fro')  
   e1 = mathjs.divide(e1, mathjs.norm(e1))
-
 
   e2 = mathjs.cross(e1, n)
   e2 = mathjs.divide(e2, mathjs.norm(e2))
-
+  // console.log('e1: ' + e1 + ' e2: ' + e2)
   A = [e1, e2]
 
-  vOrigo = [(rightHipX + leftHipX) / 2, (rightHipY + leftHipY) / 2, (rightHipZ + leftHipZ) / 2]
+  // vOrigo = [(rightHipX + leftHipX) / 2, (rightHipY + leftHipY) / 2, (rightHipZ + leftHipZ) / 2]
 
   vLeftAnkle1 = [leftAnkleX - leftKneeX, leftAnkleY - leftKneeY, leftAnkleZ - leftKneeZ]
-  // vLeftAnkle2 = [rightHipX - leftKneeX, rightHipY - leftKneeY, rightHipZ - leftKneeZ]
   vLeftAnkle2 = [(rightHipX + leftHipX) / 2 - leftKneeX, (rightHipY + leftHipY) / 2 - leftKneeY, (rightHipZ + leftHipZ) / 2 - leftKneeZ]
-  //vLeftAnkle2 = [leftHipX - leftKneeX, leftHipY - leftKneeY, leftHipZ - leftKneeZ]
-  //vLeftAnkle2 = [leftKneeX, leftKneeY, leftKneeZ]
+  // vLeftAnkle2 = [rightHipX - leftKneeX, rightHipY - leftKneeY, rightHipZ - leftKneeZ]  
+  // vLeftAnkle2 = [leftHipX - leftKneeX, leftHipY - leftKneeY, leftHipZ - leftKneeZ]
+  // vLeftAnkle2 = [leftKneeX, leftKneeY, leftKneeZ]
 
   vRightAnkle1 = [rightAnkleX - rightKneeX, rightAnkleY - rightKneeY, rightAnkleZ - rightKneeZ]
   vRightAnkle2 = [(rightHipX + leftHipX) / 2 - rightKneeX, (rightHipY + leftHipY) / 2 - rightKneeY, (rightHipZ + leftHipZ) / 2 - rightKneeZ]
-  //vRightAnkle2 = [rightHipX - rightKneeX, rightHipY - rightKneeY, rightHipZ - rightKneeZ]
-  //vRightAnkle2 = [rightKneeX, rightKneeY, rightKneeZ]
+  // vRightAnkle2 = [rightHipX - rightKneeX, rightHipY - rightKneeY, rightHipZ - rightKneeZ]
+  // vRightAnkle2 = [rightKneeX, rightKneeY, rightKneeZ]
 
-  vLeftHip1 = [(rightShoulderX + leftShoulderX) / 2 - leftHipX, (rightShoulderY + leftShoulderY) / 2 - leftHipY, (rightShoulderZ + leftShoulderZ) / 2 - leftHipZ]
+  vLeftHip1 = [(rightShoulderX + leftShoulderX) / 2 - (rightHipX + leftHipX) / 2, (rightShoulderY + leftShoulderY) / 2 - (rightHipY + leftHipY) / 2, (rightShoulderZ + leftShoulderZ) / 2 - (rightHipZ + leftHipZ) / 2]
   vLeftHip2 = [leftKneeX - leftHipX, leftKneeY - leftHipY, leftKneeZ - leftHipZ]
 
-  vRightHip1 = [(rightShoulderX + leftShoulderX) / 2 - rightHipX, (rightShoulderY + leftShoulderY) / 2 - rightHipY, (rightShoulderZ + leftShoulderZ) / 2 - rightHipZ]
+  vRightHip1 = [(rightShoulderX + leftShoulderX) / 2 - (leftHipX + rightHipX) / 2, (rightShoulderY + leftShoulderY) / 2 - (leftHipY + rightHipY) / 2, (rightShoulderZ + leftShoulderZ) / 2 - (leftHipZ + rightHipZ) / 2]
   vRightHip2 = [rightKneeX - rightHipX, rightKneeY - rightHipY, rightKneeZ - rightHipZ]
 
-  vLeftFoot1 = [leftFootIndexX - leftHeelX, leftFootIndexY - leftHeelY, leftFootIndexZ - leftHeelZ]
+  vLeftFoot1 = [leftHeelX - leftFootIndexX, leftHeelY - leftFootIndexY, leftHeelZ - leftFootIndexZ]
   vLeftFoot2 = [leftKneeX - leftAnkleX, leftKneeY - leftAnkleY, leftKneeZ - leftAnkleZ]
-  // (Math.atan2(vLeftFoot1_proj[0], vLeftFoot1_proj[1]) - Math.atan2(vLeftFoot2_proj[0], vLeftFoot2_proj[1])) * 180 / Math.PI + 90
 
-  vRightFoot1 = [rightFootIndexX - rightHeelX, rightFootIndexY - rightHeelY, rightFootIndexZ - rightHeelZ]
+  vRightFoot1 = [rightHeelX - rightFootIndexX, rightHeelY - rightFootIndexY, rightHeelZ - rightFootIndexZ]
   vRightFoot2 = [rightKneeX - rightAnkleX, rightKneeY - rightAnkleY, rightKneeZ - rightAnkleZ]
 
   vLeftAnkle1_proj = mathjs.multiply(A, vLeftAnkle1)
@@ -180,80 +164,63 @@ const updateAngleHelper = (results) => {
 
   vRightFoot1_proj = mathjs.multiply(A, vRightFoot1)
   vRightFoot2_proj = mathjs.multiply(A, vRightFoot2)
-  // vLeftFoot1 = 
-
-  // leftShoulderHipDot = leftShoulderZ*leftHipZ
-  // leftHipKneeDot = leftHipZ*leftKneeZ
 
 }
-// const getLeftDepth = () => {
-//   return (Math.acos(((leftHipX - leftKneeX) * (leftAnkleX - leftKneeX) + (leftHipY - leftKneeY) * (leftAnkleY - leftKneeY) + (leftHipZ - leftKneeZ) * (leftAnkleZ - leftKneeZ)) / (Math.sqrt(Math.pow((leftHipX - leftKneeX), 2)) + Math.pow((leftHipY - leftKneeY), 2) + Math.pow((leftHipZ - leftKneeZ), 2)) * Math.sqrt(Math.pow((leftAnkleX - leftKneeX), 2) + Math.pow((leftAnkleY - leftKneeY), 2) + Math.pow((leftAnkleZ - leftKneeZ), 2)))) * (180 / Math.PI)
+
+// const getLeftZ = () => {
+//   return leftKneeZ
 // }
-const getLeftZ = () => {
-  return leftKneeZ
-}
 
-const getRightZ = () => {
-  return rightKneeZ
+// const getRightZ = () => {
+//   return rightKneeZ
+// }
+const getHipAngle = (side, direction) => {
+
+  if (side && direction) { // left & forward
+    return (Math.atan2(vLeftHip1_proj[0], vLeftHip1_proj[1]) - Math.atan2(vLeftHip2_proj[0], vLeftHip2_proj[1])) * 180 / Math.PI - 180
+
+  } else if (!side && direction) { // right & forward
+    return (Math.atan2(vRightHip1_proj[0], vRightHip1_proj[1]) - Math.atan2(vRightHip2_proj[0], vRightHip2_proj[1])) * 180 / Math.PI - 180
+
+  }
+  if (side && !direction) { // left & backward 
+    return ((Math.atan2(vLeftHip1_proj[0], vLeftHip1_proj[1]) - Math.atan2(vLeftHip2_proj[0], vLeftHip2_proj[1])) * 180 / Math.PI) - 180
+
+  } else if (!side && !direction) { // right & backward
+    return ((Math.atan2(vRightHip1_proj[0], vRightHip1_proj[1]) - Math.atan2(vRightHip2_proj[0], vRightHip2_proj[1])) * 180 / Math.PI) - 180
+  }
 }
 
 const getKneeAngle = (side, direction) => {
-  let temp
-  if (side && direction) {
 
-    return (Math.atan2(vLeftAnkle1_proj[1], vLeftAnkle1_proj[0]) - Math.atan2(vLeftAnkle2_proj[1], vLeftAnkle2_proj[0])) * 180 / Math.PI
-  } else if (!side && direction) {
+  if (side && direction) { // left & forward
+    return (Math.atan2(vLeftAnkle1_proj[0], vLeftAnkle1_proj[1]) - Math.atan2(vLeftAnkle2_proj[0], vLeftAnkle2_proj[1])) * 180 / Math.PI + 180
 
-    return (Math.atan2(vRightAnkle1_proj[1], vRightAnkle1_proj[0]) - Math.atan2(vRightAnkle2_proj[1], vRightAnkle2_proj[0])) * 180 / Math.PI
+  } else if (!side && direction) { // right & forward
+    return (Math.atan2(vRightAnkle1_proj[0], vRightAnkle1_proj[1]) - Math.atan2(vRightAnkle2_proj[0], vRightAnkle2_proj[1])) * 180 / Math.PI + 180
+
+  } else if (side && !direction) { // left & backward
+    return (Math.atan2(vLeftAnkle1_proj[0], vLeftAnkle1_proj[1]) - Math.atan2(vLeftAnkle2_proj[0], vLeftAnkle2_proj[1])) * 180 / Math.PI + 180
+
+  } else if (!side && !direction) { // right & backward
+    return (Math.atan2(vRightAnkle1_proj[0], vRightAnkle1_proj[1]) - Math.atan2(vRightAnkle2_proj[0], vRightAnkle2_proj[1])) * 180 / Math.PI + 180
   }
-  else if (side && !direction) {
-
-    return (Math.atan2(vLeftAnkle1_proj[1], vLeftAnkle1_proj[0]) - Math.atan2(vLeftAnkle2_proj[1], vLeftAnkle2_proj[0])) * 180 / Math.PI
-  } else if (!side && !direction) {
-
-    return (Math.atan2(vRightAnkle1_proj[1], vRightAnkle1_proj[0]) - Math.atan2(vRightAnkle2_proj[1], vRightAnkle2_proj[0])) * 180 / Math.PI
-  }
-
-
-}
-
-const getHipAngle = (side, direction) => {
-  let temp
-  if (side && direction) {
-
-
-    return (Math.atan2(vLeftHip1_proj[1], vLeftHip1_proj[0]) - Math.atan2(vLeftHip2_proj[1], vLeftHip2_proj[0])) * 180 / Math.PI
-
-  } else if (!side && direction) {
-
-    return (Math.atan2(vRightHip1_proj[1], vRightHip1_proj[0]) - Math.atan2(vRightHip2_proj[1], vRightHip2_proj[0])) * 180 / Math.PI
-  }
-  if (side && !direction) {
-
-    return ((Math.atan2(vLeftHip1_proj[1], vLeftHip1_proj[0]) - Math.atan2(vLeftHip2_proj[1], vLeftHip2_proj[0])) * 180 / Math.PI) - 180
-  } else if (!side && !direction) {
-
-    return ((Math.atan2(vRightHip1_proj[1], vRightHip1_proj[0]) - Math.atan2(vRightHip2_proj[1], vRightHip2_proj[0])) * 180 / Math.PI) - 180
-  }
-
 }
 
 const getAnkleAngle = (side, direction) => {
-  let temp
-  if (side && direction) {
 
-    return (Math.atan2(vLeftFoot1_proj[1], vLeftFoot1_proj[0]) - Math.atan2(vLeftFoot2_proj[1], vLeftFoot2_proj[0])) * 180 / Math.PI
-  } else if (!side && direction) {
+  if (side && direction) { // left & forward
+    return ((Math.atan2(vLeftFoot1_proj[0], vLeftFoot1_proj[1]) - Math.atan2(vLeftFoot2_proj[0], vLeftFoot2_proj[1])) * 180 / Math.PI + 90) * -1
 
-    return (Math.atan2(vRightFoot1_proj[1], vRightFoot1_proj[0]) - Math.atan2(vRightFoot2_proj[1], vRightFoot2_proj[0])) * 180 / Math.PI
-  } else if (side && !direction) {
+  } else if (!side && direction) { // right & forward
+    return ((Math.atan2(vRightFoot1_proj[0], vRightFoot1_proj[1]) - Math.atan2(vRightFoot2_proj[0], vRightFoot2_proj[1])) * 180 / Math.PI + 90) * -1
 
-    return ((Math.atan2(vLeftFoot1_proj[1], vLeftFoot1_proj[0]) - Math.atan2(vLeftFoot2_proj[1], vLeftFoot2_proj[0])) * 180 / Math.PI)
-  } else if (!side && !direction) {
+  } else if (side && !direction) { // left & backward 
+    return (((Math.atan2(vLeftFoot1_proj[0], vLeftFoot1_proj[1]) - Math.atan2(vLeftFoot2_proj[0], vLeftFoot2_proj[1])) * 180 / Math.PI) + 90) * -1
 
-    return ((Math.atan2(vRightFoot1_proj[1], vRightFoot1_proj[0]) - Math.atan2(vRightFoot2_proj[1], vRightFoot2_proj[0])) * 180 / Math.PI)
+  } else if (!side && !direction) {  // right & backward
+    return (((Math.atan2(vRightFoot1_proj[0], vRightFoot1_proj[1]) - Math.atan2(vRightFoot2_proj[0], vRightFoot2_proj[1])) * 180 / Math.PI) + 90) * -1
   }
-
 }
 
-export { updateAngleHelper, getHipAngle, getKneeAngle, getAnkleAngle, getLeftZ, getRightZ }
+export { updateAngleHelper, getHipAngle, getKneeAngle, getAnkleAngle }

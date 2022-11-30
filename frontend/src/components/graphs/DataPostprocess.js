@@ -1,4 +1,4 @@
-import * as angleH from "../home/AngleHelper3D"
+import * as angleH from "../home/AngleHelper2D"
 import * as resample from "./Resample"
 
 let leftHipRE = []
@@ -101,7 +101,7 @@ const processResults = (results) => {
   makeStepAngleArray(rightDirectionArray, results, rightHipRE, rightKneeRE, rightAnkleRE, false)
   makeStepAngleArray(leftDirectionArray, results, leftHipRE, leftKneeRE, leftAnkleRE, true)
 
-  // -------------- FILTTERI --------------------
+  //-------------- FILTTERI --------------------
   // for (let i = 0; i < 5; i++) {
   //   rightHipRE = filterArray(rightHipRE, 4)
   //   rightKneeRE = filterArray(rightKneeRE, 4)

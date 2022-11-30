@@ -25,15 +25,15 @@ let poseResults = []
 let calibrated = false
 let mediapipeCalibrated = false
 let didPlay = false
-let useAnkleFix = false
+let useAnkleFix = true
 let useHipFix = false
 let toeXOffsetValue = 0
 // let hipXOffsetMultiplier = 1.03
 // let hipYOffsetMultiplier = 0.95
-// let toeXOffSetMultiplier = 0.67
+let toeXOffSetMultiplier = 0.67
 let hipXOffsetMultiplier = 1
 let hipYOffsetMultiplier = 1
-let toeXOffSetMultiplier = 1
+// let toeXOffSetMultiplier = 1
 // let toeYOffset = -0.02   
 let toeYOffset = 0
 let startTime
@@ -117,7 +117,7 @@ function Home() {
         if (Date.now() - startTime > 5999) {
           console.log("calibration ticks: " + calibrationTick)
           if (calibrationTick / 303 > 0.1) {
-            videoRef.current.playbackRate = (calibrationTick / 303) * 1.5
+            videoRef.current.playbackRate = (calibrationTick / 303) * 1.3
             // videoRef.current.playbackRate = 1.1
             console.log("playbackrate adjusted to: " + videoRef.current.playbackRate)
             mediapipeCalibrated = true
@@ -312,7 +312,7 @@ function Home() {
     canvasCtxx2.current.font = "30px Segoe UI"
     canvasCtxx2.current.fillText((completeTime * 100).toFixed(2) + "%", canvasRef2.current.width * 0.10 + completeTime * canvasRef2.current.width * 0.8 - 27, 22)
 
-    canvasCtxx.current.fillStyle = "#000000"
+    canvasCtxx.current.fillStyle = "#ffffff"
 
     hipCircle.arc(
       ((results.poseLandmarks[23].x + results.poseLandmarks[24].x) / 2) *
@@ -509,14 +509,14 @@ function Home() {
     canvasCtxx.current.stroke()
 
     canvasCtxx.current.fill(shoulderCircle)
-    canvasCtxx.current.fill(hipCircle)
-    // canvasCtxx.current.fill(leftHipCircle)
+    // canvasCtxx.current.fill(hipCircle)
+    canvasCtxx.current.fill(leftHipCircle)
     canvasCtxx.current.fill(leftKneeCircle)
     canvasCtxx.current.fill(leftAnkleCircle)
     canvasCtxx.current.fill(leftHeelCircle)
     canvasCtxx.current.fill(leftFootCircle)
 
-    // canvasCtxx.current.fill(rightHipCircle)
+    canvasCtxx.current.fill(rightHipCircle)
     canvasCtxx.current.fill(rightKneeCircle)
     canvasCtxx.current.fill(rightAnkleCircle)
     canvasCtxx.current.fill(rightHeelCircle)
