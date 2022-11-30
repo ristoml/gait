@@ -120,9 +120,9 @@ function Graphs(props) {
             <Label value="Left Hip Angle" offset={320} position="top" />
           </XAxis>
           <YAxis
-            domain={[-30, 35]}
+            domain={[-45, 45]}
             allowDataOverflow={true}
-            ticks={[-30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30, 35]}
+            ticks={[-45, -40, -35, -30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30, 35, 40, 45]}
           />
           <CartesianGrid strokeDasharray="3 3" />
           <ReferenceLine x={leftSwing.current} stroke="red" label="Swing" strokeDasharray="3 3" strokeWidth={1}/>
@@ -161,10 +161,10 @@ function Graphs(props) {
             <Label value="Left Knee Angle" offset={320} position="top" />
           </XAxis>
           <YAxis
-            domain={[-25, 100]}
+            domain={[-30, 100]}
             allowDataOverflow={true}
             ticks={[
-              -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50,
+              -30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50,
               55, 60, 65, 70, 75, 80, 85, 90, 95, 100,
             ]}
           />
@@ -203,11 +203,11 @@ function Graphs(props) {
             <Label value="Left Ankle Joint" offset={320} position="top" />
           </XAxis>
           <YAxis
-            domain={[-40, 40]}
+            domain={[-45, 45]}
             allowDataOverflow={true}
             ticks={[
-              -40, -35, -30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30,
-              35, 40,
+              -45, -40, -35, -30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30,
+              35, 40, 45
             ]}
           />
           <CartesianGrid strokeDasharray="3 3" />
@@ -245,9 +245,9 @@ function Graphs(props) {
             <Label value="Right Hip Angle" offset={320} position="top" />
           </XAxis>
           <YAxis
-            domain={[-30, 35]}
+            domain={[-45, 45]}
             allowDataOverflow={true}
-            ticks={[-30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30, 35]}
+            ticks={[-45, -40, -35, -30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30, 35, 40, 45]}
           />
           <ReferenceLine x={rightSwing.current} stroke="red" label="Swing" strokeDasharray="3 3" strokeWidth={1}/>
           <CartesianGrid strokeDasharray="3 3" />
@@ -284,10 +284,10 @@ function Graphs(props) {
             <Label value="Right Knee Angle" offset={320} position="top" />
           </XAxis>
           <YAxis
-            domain={[-25, 100]}
+            domain={[-30, 100]}
             allowDataOverflow={true}
             ticks={[
-              -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50,
+              -30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50,
               55, 60, 65, 70, 75, 80, 85, 90, 95, 100,
             ]}
           />
@@ -326,11 +326,11 @@ function Graphs(props) {
             <Label value="Right Ankle Joint" offset={320} position="top" />
           </XAxis>
           <YAxis
-            domain={[-40, 40]}
+            domain={[-45, 45]}
             allowDataOverflow={true}
             ticks={[
-              -40, -35, -30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30,
-              35, 40,
+              -45, -40, -35, -30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30,
+              35, 40, 45
             ]}
           />
           <ReferenceLine x={rightSwing.current} stroke="red" label="Swing"  strokeDasharray="3 3" strokeWidth={1}/>

@@ -56,8 +56,7 @@ const getKneeAngle = (side, direction) => {
   let temp
   if (side && direction) {
     temp =
-      (Math.atan2(leftAnkleY - leftKneeY, leftAnkleX - leftKneeX) -
-        Math.atan2(
+      (Math.atan2(leftAnkleY - leftKneeY, leftAnkleX - leftKneeX) - Math.atan2(
           (leftHipY + rightHipY) / 2 - leftKneeY,
           (leftHipX + rightHipX) / 2 - leftKneeX
         )) *
@@ -115,8 +114,8 @@ const getHipAngle = (side, direction) => {
     // console.log("l: "+leftKneeX+" r: "+rightKneeX)
     temp =
       (Math.atan2(
-        (leftShoulderY + rightShoulderY) / 2 - (leftHipY + rightHipY) / 2,
-        (leftShoulderX + rightShoulderX) / 2 - (leftHipX + rightHipX) / 2
+        (leftHipY + rightHipY) / 2 - (leftShoulderY + rightShoulderY) / 2,
+        (leftHipX + rightHipX) / 2 - (leftShoulderX + rightShoulderX) / 2
       ) -
         Math.atan2(
           leftKneeY - leftHipY,
@@ -125,20 +124,21 @@ const getHipAngle = (side, direction) => {
     //console.log(temp)
     // if (temp >= 0) return 180 - temp
     // else return 180 + temp
-    return temp + 180
+    return temp 
   } else if (!side && direction) {
     temp =
       (Math.atan2(
-        (leftShoulderY + rightShoulderY) / 2 - rightHipY,
-        (leftShoulderX + rightShoulderX) / 2 - rightHipX
+        (leftHipY + rightHipY) / 2 - (leftShoulderY + rightShoulderY) / 2,
+        (leftHipX + rightHipX) / 2 - (leftShoulderX + rightShoulderX) / 2
       ) -
         Math.atan2(
           rightKneeY - rightHipY,
           rightKneeX - rightHipX)) *
       (180 / Math.PI)
     //console.log(temp)
-    if (temp >= 0) return 180 - temp
-    else return 180 + temp
+    // if (temp >= 0) return 180 - temp
+    // else return 180 + temp
+    return temp
     // temp =
     //   (Math.atan2(
     //     rightKneeY - (rightHipY + leftHipY) / 2,
@@ -203,27 +203,27 @@ const getAnkleAngle = (side, direction) => {
     temp =
       (Math.atan2(leftFootIndexY - leftHeelY, leftFootIndexX - leftHeelX) -
         Math.atan2(leftKneeY - leftAnkleY, leftKneeX - leftAnkleX)) *
-      (180 / Math.PI)
+      180 / Math.PI
     return 90 - temp
   } else if (!side && direction) {
     temp =
       (Math.atan2(rightFootIndexY - rightHeelY, rightFootIndexX - rightHeelX) -
         Math.atan2(rightKneeY - rightAnkleY, rightKneeX - rightAnkleX)) *
-      (180 / Math.PI)
+      180 / Math.PI
     if (temp >= 0) return 90 - temp
     else return 90 + temp
   } else if (side && !direction) {
     temp =
       (Math.atan2(leftFootIndexY - leftHeelY, leftFootIndexX - leftHeelX) -
         Math.atan2(leftKneeY - leftAnkleY, leftKneeX - leftAnkleX)) *
-      (180 / Math.PI)
+      180 / Math.PI
     if (temp >= 0) return temp - 270
     else return temp + 90
   } else if (!side && !direction) {
     temp =
       (Math.atan2(rightFootIndexY - rightHeelY, rightFootIndexX - rightHeelX) -
         Math.atan2(rightKneeY - rightAnkleY, rightKneeX - rightAnkleX)) *
-      (180 / Math.PI)
+      180 / Math.PI
     if (temp >= 0) return temp - 270
     else return 90 + temp
   }

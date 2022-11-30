@@ -1,23 +1,23 @@
 import { useEffect, useState, useRef } from "react"
-import { Pose, POSE_CONNECTIONS } from "@mediapipe/pose"
-import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils"
+import { Pose } from "@mediapipe/pose"
+// import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils"
 import Graphs from "../components/graphs/Graphs"
-import HomeGraphs from "../components/home/HomeGraphs"
+// import HomeGraphs from "../components/home/HomeGraphs"
 import * as dPp from "../components/graphs/DataPostprocess"
 //import * as angleH from "../components/home/AngleHelper"
 
-import {
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Label,
-  Legend,
-  LineChart,
-  Line,
-  ReferenceLine,
-} from "recharts"
+// import {
+//   ResponsiveContainer,
+//   XAxis,
+//   YAxis,
+//   CartesianGrid,
+//   Tooltip,
+//   Label,
+//   Legend,
+//   LineChart,
+//   Line,
+//   ReferenceLine,
+// } from "recharts"
 
 // const imageMimeType = /image\/(png|jpg|jpeg)/i
 let poseResults = []
@@ -30,17 +30,14 @@ let useHipFix = false
 let toeXOffsetValue = 0
 // let hipXOffsetMultiplier = 1.03
 // let hipYOffsetMultiplier = 0.95
+// let toeXOffSetMultiplier = 0.67
 let hipXOffsetMultiplier = 1
 let hipYOffsetMultiplier = 1
 let toeXOffSetMultiplier = 1
 // let toeYOffset = -0.02   
 let toeYOffset = 0
-let toeSet = false
 let startTime
 let calibrationTick = 0
-let rightMaxZ = -999
-let leftMaxZ = -999
-
 let completeTime = 0
 
 function Home() {
@@ -124,7 +121,7 @@ function Home() {
             // videoRef.current.playbackRate = 1.1
             console.log("playbackrate adjusted to: " + videoRef.current.playbackRate)
             mediapipeCalibrated = true
-            videoRef.current.currentTime = 3
+            videoRef.current.currentTime = 0
 
             setShowVid(true)
           } else {
@@ -132,7 +129,7 @@ function Home() {
             videoRef.current.playbackRate = 0.15
             console.log("playbackrate adjusted to: " + videoRef.current.playbackRate)
             mediapipeCalibrated = true
-            videoRef.current.currentTime = 3
+            videoRef.current.currentTime = 0
 
             setShowVid(true)
           }
@@ -315,14 +312,14 @@ function Home() {
     canvasCtxx2.current.font = "30px Segoe UI"
     canvasCtxx2.current.fillText((completeTime * 100).toFixed(2) + "%", canvasRef2.current.width * 0.10 + completeTime * canvasRef2.current.width * 0.8 - 27, 22)
 
-    canvasCtxx.current.fillStyle = "#e1f5fe"
+    canvasCtxx.current.fillStyle = "#000000"
 
     hipCircle.arc(
       ((results.poseLandmarks[23].x + results.poseLandmarks[24].x) / 2) *
       canvasRef.current.width,
       ((results.poseLandmarks[23].y + results.poseLandmarks[24].y) / 2) *
       canvasRef.current.height,
-      6,
+      4,
       0,
       2 * Math.PI
     )
@@ -331,38 +328,38 @@ function Home() {
       canvasRef.current.width,
       ((results.poseLandmarks[11].y + results.poseLandmarks[12].y) / 2) *
       canvasRef.current.height,
-      6,
+      4,
       0,
       2 * Math.PI
     )
 
-    leftHipCircle.arc(results.poseLandmarks[23].x * canvasRef.current.width, results.poseLandmarks[23].y * canvasRef.current.height, 6, 0, 2 * Math.PI)
-    rightHipCircle.arc(results.poseLandmarks[24].x * canvasRef.current.width, results.poseLandmarks[24].y * canvasRef.current.height, 6, 0, 2 * Math.PI)
+    leftHipCircle.arc(results.poseLandmarks[23].x * canvasRef.current.width, results.poseLandmarks[23].y * canvasRef.current.height, 4, 0, 2 * Math.PI)
+    rightHipCircle.arc(results.poseLandmarks[24].x * canvasRef.current.width, results.poseLandmarks[24].y * canvasRef.current.height, 4, 0, 2 * Math.PI)
     leftKneeCircle.arc(
       results.poseLandmarks[25].x * canvasRef.current.width,
       results.poseLandmarks[25].y * canvasRef.current.height,
-      6,
+      4,
       0,
       2 * Math.PI
     )
     leftAnkleCircle.arc(
       results.poseLandmarks[27].x * canvasRef.current.width,
       results.poseLandmarks[27].y * canvasRef.current.height,
-      6,
+      4,
       0,
       2 * Math.PI
     )
     leftHeelCircle.arc(
       results.poseLandmarks[29].x * canvasRef.current.width,
       results.poseLandmarks[29].y * canvasRef.current.height,
-      6,
+      4,
       0,
       2 * Math.PI
     )
     leftFootCircle.arc(
       results.poseLandmarks[31].x * canvasRef.current.width,
       results.poseLandmarks[31].y * canvasRef.current.height,
-      6,
+      4,
       0,
       2 * Math.PI
     )
@@ -371,21 +368,21 @@ function Home() {
     rightKneeCircle.arc(
       results.poseLandmarks[26].x * canvasRef.current.width,
       results.poseLandmarks[26].y * canvasRef.current.height,
-      6,
+      4,
       0,
       2 * Math.PI
     )
     rightAnkleCircle.arc(
       results.poseLandmarks[28].x * canvasRef.current.width,
       results.poseLandmarks[28].y * canvasRef.current.height,
-      6,
+      4,
       0,
       2 * Math.PI
     )
     rightHeelCircle.arc(
       results.poseLandmarks[30].x * canvasRef.current.width,
       results.poseLandmarks[30].y * canvasRef.current.height,
-      6,
+      4,
       0,
       2 * Math.PI
     )
@@ -394,7 +391,7 @@ function Home() {
     rightFootCircle.arc(
       results.poseLandmarks[32].x * canvasRef.current.width,
       results.poseLandmarks[32].y * canvasRef.current.height,
-      6,
+      4,
       0,
       2 * Math.PI
     )
@@ -410,6 +407,8 @@ function Home() {
     )
 
     //canvasCtxx.current.moveTo(results.poseLandmarks[23].x * canvasRef.current.width, results.poseLandmarks[23].y * canvasRef.current.height)
+    canvasCtxx.current.strokeStyle = "#2b2b2b"
+
     canvasCtxx.current.lineTo(
       results.poseLandmarks[25].x * canvasRef.current.width,
       results.poseLandmarks[25].y * canvasRef.current.height
@@ -510,18 +509,18 @@ function Home() {
     canvasCtxx.current.stroke()
 
     canvasCtxx.current.fill(shoulderCircle)
-    //canvasCtxx.current.fill(hipCircle)
-    canvasCtxx.current.fill(leftHipCircle)
+    canvasCtxx.current.fill(hipCircle)
+    // canvasCtxx.current.fill(leftHipCircle)
     canvasCtxx.current.fill(leftKneeCircle)
     canvasCtxx.current.fill(leftAnkleCircle)
     canvasCtxx.current.fill(leftHeelCircle)
     canvasCtxx.current.fill(leftFootCircle)
 
     // canvasCtxx.current.fill(rightHipCircle)
-    // canvasCtxx.current.fill(rightKneeCircle)
-    // canvasCtxx.current.fill(rightAnkleCircle)
-    // canvasCtxx.current.fill(rightHeelCircle)
-    // canvasCtxx.current.fill(rightFootCircle)
+    canvasCtxx.current.fill(rightKneeCircle)
+    canvasCtxx.current.fill(rightAnkleCircle)
+    canvasCtxx.current.fill(rightHeelCircle)
+    canvasCtxx.current.fill(rightFootCircle)
   }
 
   useEffect(() => {
