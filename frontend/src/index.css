@@ -5,6 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #F0F0F0;
 }
 
 code {
@@ -16,12 +17,11 @@ code {
   display: none;
 } */
 .homeContainer {
-  margin: 5vh;
+  margin: 2vh;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-
 
 }
 
@@ -40,15 +40,57 @@ code {
 }
 
 .loading {
-  margin-top: 40vh;
-  animation: 2s anim-flipY ease infinite;  
+  margin-top: 20vh;
+  font-weight: 100;
+  animation: 2s anim-flipY ease infinite;
   font-size: 300%;
 
-  
+
 }
+.reminder {
+  margin-top: 20vh;
+  font-size: 200%;
+  font-weight: 100;
+  color: rgb(55, 99, 219);  
+}
+.reminder2 {  
+  bottom: 0%;
+  text-align: center;  
+  font-weight: 100;
+  font-size: 150%;
+  color: rgb(221, 39, 39);  
+  -webkit-animation: fadeinout 2s linear forwards;
+    animation: fadeinout 2s linear forwards;
+    opacity: 0;
+    animation-iteration-count: 20
+}
+.reminder3 {    
+  margin-top: 75%;
+  text-align: center;  
+  font-size: 80%;     
+}
+.graphTitle {
+  font-weight: 100;
+}
+
+.error {
+  margin-top: 40vh;
+  font-size: 100%;
+}
+
+.errorText {
+  font-weight: 100;
+}
+
+
 @keyframes fadeIn {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
 
 @keyframes anim-flipX {
@@ -56,10 +98,12 @@ code {
     opacity: 0;
     transform: rotateX(90def);
   }
+
   50% {
     opacity: 1;
     transform: rotateX(720deg);
   }
+
   100% {
     /* animate nothing to pause animation at the end */
     opacity: 1;
@@ -106,10 +150,17 @@ code {
   }
 }
 
+@-webkit-keyframes fadeinout {
+  50% { opacity: 1; }
+}
+
+@keyframes fadeinout {
+  50% { opacity: 1; }
+}
 
 .videoLabel {
 
-  color: white;
+  color: white;  
   background-color: grey;
   margin-left: 40%;
   margin-right: 40%;
@@ -140,13 +191,46 @@ code {
 }
 
 .graphs {
-  display: flex;
+  display: flex;  
   flex-wrap: wrap;
   justify-content: center;
+  /* align-content: flex-start; */
   /* flex-direction: column; */
   height: 100vh;
+}
+.break {
+  flex-basis: 100%;
+  height: 0;
+}
+#graphBtns {
+  position: absolute;
+  top: 0px;
+  left: 0px;
 }
 
 input[type="file"] {
   display: none;
+}
+.btn {
+  /* border-radius: 50%; */
+  border-style: none;
+  /* border-width: 1px; */
+  margin: 0px;
+  height: 65px;
+  width: 65px;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.btn2 {
+  border-radius: 5%;
+  border-width: 1px;
+  align-items: center;
+  margin: 20px;
+  height: 35px;
+  width: 95px;
+  font-size: small;
+  font-weight: bold;
+  background-color: rgb(202, 202, 202);
+  animation: 2s anim-lineUp ease-out;
 }

@@ -32,6 +32,8 @@ let skippedFrames = 30
 
 let resampleTarget = 51
 
+let resultsOk = false
+
 //direction is true if you walk from left to right in video otherwise its false --- default true
 let directionRight = true
 
@@ -100,6 +102,7 @@ const processResults = (results) => {
   leftSwingIndex = getSwingIndex(leftDirectionArray)
   makeStepAngleArray(rightDirectionArray, results, rightHipRE, rightKneeRE, rightAnkleRE, false)
   makeStepAngleArray(leftDirectionArray, results, leftHipRE, leftKneeRE, leftAnkleRE, true)
+  resultsOk = checkArrayLengths(rightHipRE) && checkArrayLengths(leftHipRE)
 
   //-------------- FILTTERI --------------------
   // for (let i = 0; i < 5; i++) {
@@ -114,6 +117,23 @@ const processResults = (results) => {
   console.log(leftHipRE, leftKneeRE, leftAnkleRE, rightHipRE, rightKneeRE, rightAnkleRE)
 
   //formAvgRechartsArray(leftHipRE, steps)
+}
+
+const checkArrayLengths = (array) => {
+  let lenghtOk = true
+  let max = 0
+  for (let i = 0; i < array.length; i++) {
+    if (array[i].length > max) {
+      max = array[i].length
+    }
+  }
+  if (max < 65) lenghtOk = false
+  for (let i = 0; i < array.length; i++) {
+    if (array[i].length <= 0.9 * max) {
+      lenghtOk = false
+    }
+  }
+  return lenghtOk
 }
 
 const getDirectionChangeIndex = (toeDirArray, heelDirArray, ankleDirArray, dirArray) => {
@@ -325,7 +345,7 @@ const resampleAngleData = (array, target, median) => {
   let medianTemp = []
   if (median) {
     for (let i = 0; i < array.length; i++) {
-      array[i] = resample.resampleData(array[i], 200)
+      array[i] = resample.resampleData(array[i], target)
     }
     for (let j = 0; j < array[0].length; j++) {
       for (let i = 0; i < array.length; i++) {
@@ -518,6 +538,9 @@ const getLeftSwingIndex = () => {
 const getRightSwingIndex = () => {
   return rightSwingIndex
 }
+const getResultsOk = () => {
+  return resultsOk
+}
 
 export {
   processResults,
@@ -530,7 +553,8 @@ export {
   getSteps,
   getMedian,
   getLeftSwingIndex,
-  getRightSwingIndex
+  getRightSwingIndex,
+  getResultsOk
   // getLeftHipAvgAngle,
   // getLeftKneeAvgAngle,
   // getLeftAnkleAvgAngle,

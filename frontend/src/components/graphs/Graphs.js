@@ -10,6 +10,11 @@ import {
   ReferenceLine
 } from "recharts"
 
+import Button from "../home/Button";
+
+import * as html2canvas from 'html2canvas'
+import { saveAs } from 'file-saver';
+
 const lineNames = [
   "1st",
   "2nd",
@@ -76,8 +81,17 @@ const lineColours = [
   // "#f5a742",
   // "#00fffb",
 ]
+
 function refresh() {
   window.location.reload("Refresh")
+}
+
+function saveSshot() {
+  html2canvas(document.querySelector("#capture")).then(canvas => {
+    canvas.toBlob(function (blob) {
+      saveAs(blob, new Date().toLocaleString('en-GB'));
+    });
+  });
 }
 
 function Graphs(props) {
@@ -88,17 +102,12 @@ function Graphs(props) {
   const rightHipRe = useRef(props.rightHip)
   const rightKneeRe = useRef(props.rightKnee)
   const rightAnkleRe = useRef(props.rightAnkle)
-
+  const steps = useRef(props.steps)
   const median = useRef(props.median)
   if (median.current) steps.current = 1
-
-  const steps = useRef(props.steps)
+  
   const leftSwing = useRef(props.leftSwing)
   const rightSwing = useRef(props.rightSwing)
-
-
-
-  
   // console.log(leftHipRe.current)
 
   useEffect(() => {
@@ -108,16 +117,17 @@ function Graphs(props) {
 
   return (
     <div>
-      <h1>Time-normalized (per-cycle)</h1>
-      <div className="graphs">
+      <div id='graphBtns'><Button className='btn' text='&#128281;' onClick={() => refresh()}></Button><Button className='btn' text='&#x1F4BE;' onClick={() => saveSshot()}></Button></div>
+      <h1 className="graphTitle">Time-normalized (per-cycle)</h1>
+      <div className="graphs" id='capture'>
         <LineChart
-          width={590}
-          height={370}
+          width={570}
+          height={350}
           data={leftHipRe.current}
           margin={{ top: 25, right: 0, left: 0, bottom: 0 }}
         >
           <XAxis dataKey="sample" type="number">
-            <Label value="Left Hip Angle" offset={320} position="top" />
+            <Label value="Left Hip Flexion/Extension" offset={300} position="top" />
           </XAxis>
           <YAxis
             domain={[-45, 45]}
@@ -125,7 +135,7 @@ function Graphs(props) {
             ticks={[-45, -40, -35, -30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30, 35, 40, 45]}
           />
           <CartesianGrid strokeDasharray="3 3" />
-          <ReferenceLine x={leftSwing.current} stroke="red" label="Swing" strokeDasharray="3 3" strokeWidth={1}/>
+          <ReferenceLine x={leftSwing.current} stroke="red"  strokeDasharray="3 3" strokeWidth={1} />
           <Tooltip
             formatter={(value) => value.toFixed(2)}
             wrapperStyle={{ top: -120, left: 150 }}
@@ -149,16 +159,16 @@ function Graphs(props) {
             }
             return rows
           })()}
-          
+
         </LineChart>
         <LineChart
-          width={590}
-          height={370}
+         width={570}
+         height={350}
           data={leftKneeRe.current}
           margin={{ top: 25, right: 0, left: 0, bottom: 0 }}
         >
           <XAxis dataKey="sample" type="number">
-            <Label value="Left Knee Angle" offset={320} position="top" />
+            <Label value="Left Knee Flexion/Extension" offset={300} position="top" />
           </XAxis>
           <YAxis
             domain={[-30, 100]}
@@ -169,7 +179,7 @@ function Graphs(props) {
             ]}
           />
           <CartesianGrid strokeDasharray="3 3" />
-          <ReferenceLine x={leftSwing.current} stroke="red" label="Swing" strokeDasharray="3 3" strokeWidth={1}/>
+          <ReferenceLine x={leftSwing.current} stroke="red"  strokeDasharray="3 3" strokeWidth={1} />
           <Tooltip
             formatter={(value) => value.toFixed(2)}
             wrapperStyle={{ top: -120, left: 150 }}
@@ -194,13 +204,13 @@ function Graphs(props) {
           })()}
         </LineChart>
         <LineChart
-          width={590}
-          height={370}
+          width={570}
+          height={350}
           data={leftAnkleRe.current}
           margin={{ top: 25, right: 0, left: 0, bottom: 0 }}
         >
           <XAxis dataKey="sample" type="number">
-            <Label value="Left Ankle Joint" offset={320} position="top" />
+            <Label value="Left Ankle Dorsiflexion/Plantarflexion" offset={300} position="top" />
           </XAxis>
           <YAxis
             domain={[-45, 45]}
@@ -211,7 +221,7 @@ function Graphs(props) {
             ]}
           />
           <CartesianGrid strokeDasharray="3 3" />
-          <ReferenceLine x={leftSwing.current} stroke="red" label="Swing" strokeDasharray="3 3" strokeWidth={1}/>
+          <ReferenceLine x={leftSwing.current} stroke="red"  strokeDasharray="3 3" strokeWidth={1} />
           <Tooltip
             formatter={(value) => value.toFixed(2)}
             wrapperStyle={{ top: -120, left: 150 }}
@@ -234,22 +244,22 @@ function Graphs(props) {
             }
             return rows
           })()}
-        </LineChart>
+        </LineChart><div className="break"></div>
         <LineChart
-          width={590}
-          height={370}
+         width={570}
+         height={350}
           data={rightHipRe.current}
           margin={{ top: 25, right: 0, left: 0, bottom: 0 }}
         >
           <XAxis dataKey="sample" type="number">
-            <Label value="Right Hip Angle" offset={320} position="top" />
+            <Label value="Right Hip Flexion/Extension" offset={300} position="top" />
           </XAxis>
           <YAxis
             domain={[-45, 45]}
             allowDataOverflow={true}
             ticks={[-45, -40, -35, -30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30, 35, 40, 45]}
           />
-          <ReferenceLine x={rightSwing.current} stroke="red" label="Swing" strokeDasharray="3 3" strokeWidth={1}/>
+          <ReferenceLine x={rightSwing.current} stroke="red"  strokeDasharray="3 3" strokeWidth={1} />
           <CartesianGrid strokeDasharray="3 3" />
           <Tooltip
             formatter={(value) => value.toFixed(2)}
@@ -275,13 +285,13 @@ function Graphs(props) {
           })()}
         </LineChart>
         <LineChart
-          width={590}
-          height={370}
+          width={570}
+          height={350}
           data={rightKneeRe.current}
           margin={{ top: 25, right: 0, left: 0, bottom: 0 }}
         >
           <XAxis dataKey="sample" type="number">
-            <Label value="Right Knee Angle" offset={320} position="top" />
+            <Label value="Right Knee Flexion/Extension" offset={300} position="top" />
           </XAxis>
           <YAxis
             domain={[-30, 100]}
@@ -291,7 +301,7 @@ function Graphs(props) {
               55, 60, 65, 70, 75, 80, 85, 90, 95, 100,
             ]}
           />
-          <ReferenceLine x={rightSwing.current} stroke="red" label="Swing" strokeDasharray="3 3" strokeWidth={1}/>
+          <ReferenceLine x={rightSwing.current} stroke="red"  strokeDasharray="3 3" strokeWidth={1} />
           <CartesianGrid strokeDasharray="3 3" />
           <Tooltip
             formatter={(value) => value.toFixed(2)}
@@ -317,13 +327,13 @@ function Graphs(props) {
           })()}
         </LineChart>
         <LineChart
-          width={590}
-          height={370}
+         width={570}
+         height={350}
           data={rightAnkleRe.current}
           margin={{ top: 25, right: 0, left: 0, bottom: 0 }}
         >
           <XAxis dataKey="sample" type="number">
-            <Label value="Right Ankle Joint" offset={320} position="top" />
+            <Label value="Right Ankle Dorsiflexion/Plantarflexion" offset={300} position="top" />
           </XAxis>
           <YAxis
             domain={[-45, 45]}
@@ -333,7 +343,7 @@ function Graphs(props) {
               35, 40, 45
             ]}
           />
-          <ReferenceLine x={rightSwing.current} stroke="red" label="Swing"  strokeDasharray="3 3" strokeWidth={1}/>
+          <ReferenceLine x={rightSwing.current} stroke="red"  strokeDasharray="3 3" strokeWidth={1} />
           <CartesianGrid strokeDasharray="3 3" />
           <Tooltip
             formatter={(value) => value.toFixed(2)}
@@ -358,14 +368,7 @@ function Graphs(props) {
             return rows
           })()}
         </LineChart>
-      </div>
-      <input
-        type="button"
-        value="Go back"
-        onClick={() => {
-          refresh(this)
-        }}
-      />
+      </div>     
     </div>
   )
 }

@@ -4,6 +4,7 @@ import { Pose } from "@mediapipe/pose"
 import Graphs from "../components/graphs/Graphs"
 // import HomeGraphs from "../components/home/HomeGraphs"
 import * as dPp from "../components/graphs/DataPostprocess"
+import Button from "../components/home/Button"
 //import * as angleH from "../components/home/AngleHelper"
 
 // import {
@@ -47,8 +48,9 @@ function Home() {
   const [poseTest, setPose] = useState(null)
   const [showVid, setShowVid] = useState(false)
   const [showGraphs, setShowGraphs] = useState(false)
-  const [showGraphsButton, setShowGraphsButton] = useState(false)
-  const [showContinueBtn, setShowContinueBtn] = useState(false)
+  const [showLoading, setShowLoading] = useState(true)
+  // const [showGraphsButton, setShowGraphsButton] = useState(false)
+  // const [showContinueBtn, setShowContinueBtn] = useState(false)
 
   const counter = useRef(0)
   const canvasRef = useRef(null)
@@ -67,7 +69,9 @@ function Home() {
   const canvasCtxx2 = useRef()
 
 
-
+  function refresh() {
+    window.location.reload("Refresh")
+  }
   function onResults(results) {
     const canvasElement = canvasRef.current
     const canvasCtx = canvasElement.getContext("2d")
@@ -83,7 +87,6 @@ function Home() {
     //console.log(results)
     if (results.poseLandmarks) {
       if (!calibrated) {
-
         if (results.poseWorldLandmarks[30].visibility > 0.2) {
           if (useAnkleFix && results.poseLandmarks[32].y - results.poseLandmarks[30].y <= 0.03 && results.poseLandmarks[32].y - results.poseLandmarks[30].y >= -0.03) {
             toeXOffsetValue = (results.poseLandmarks[32].x - results.poseLandmarks[30].x) - toeXOffSetMultiplier * (results.poseLandmarks[32].x - results.poseLandmarks[30].x)
@@ -117,13 +120,14 @@ function Home() {
         if (Date.now() - startTime > 5999) {
           console.log("calibration ticks: " + calibrationTick)
           if (calibrationTick / 303 > 0.1) {
-            videoRef.current.playbackRate = (calibrationTick / 303) * 1.3
+            videoRef.current.playbackRate = (calibrationTick / 303) * 1.15
             // videoRef.current.playbackRate = 1.1
             console.log("playbackrate adjusted to: " + videoRef.current.playbackRate)
             mediapipeCalibrated = true
             videoRef.current.currentTime = 0
 
             setShowVid(true)
+            setShowLoading(false)
           } else {
             // videoRef.current.playbackRate = 0.1
             videoRef.current.playbackRate = 0.15
@@ -194,7 +198,7 @@ function Home() {
         //   rightAnkleRe.current.push({ angle: angleH.getAnkleAngle(false) })
         // }
       }
-    }
+    } 
   }
 
   const changeHandler = (e) => {
@@ -202,6 +206,7 @@ function Home() {
 
 
     setFile(file)
+
 
     videoRef.current = document.getElementsByClassName("input_video")[0]
 
@@ -219,9 +224,14 @@ function Home() {
         onFrame()
       } else if (videoRef.current.ended && didPlay) {
         dPp.processResults(poseResults)
-        setShowGraphsButton(true)
-        setShowContinueBtn(true)
-        //setShowGraphs(true);
+        // console.log(poseResults)
+        if (dPp.getResultsOk()) {
+          // setShowGraphsButton(true)
+          setShowGraphs(true)
+        } else {
+          setShowVid(false)
+        }
+
       } else {
         // calibrated=false tänne?
         setTimeout(onFrame, 500)
@@ -309,7 +319,7 @@ function Home() {
 
     canvasCtxx2.current.fillStyle = "#000000"
 
-    canvasCtxx2.current.font = "30px Segoe UI"
+    canvasCtxx2.current.font = "100 30px Segoe UI"
     canvasCtxx2.current.fillText((completeTime * 100).toFixed(2) + "%", canvasRef2.current.width * 0.10 + completeTime * canvasRef2.current.width * 0.8 - 27, 22)
 
     canvasCtxx.current.fillStyle = "#ffffff"
@@ -509,14 +519,14 @@ function Home() {
     canvasCtxx.current.stroke()
 
     canvasCtxx.current.fill(shoulderCircle)
-    // canvasCtxx.current.fill(hipCircle)
-    canvasCtxx.current.fill(leftHipCircle)
+    canvasCtxx.current.fill(hipCircle)
+    // canvasCtxx.current.fill(leftHipCircle)
     canvasCtxx.current.fill(leftKneeCircle)
     canvasCtxx.current.fill(leftAnkleCircle)
     canvasCtxx.current.fill(leftHeelCircle)
     canvasCtxx.current.fill(leftFootCircle)
 
-    canvasCtxx.current.fill(rightHipCircle)
+    // canvasCtxx.current.fill(rightHipCircle)
     canvasCtxx.current.fill(rightKneeCircle)
     canvasCtxx.current.fill(rightAnkleCircle)
     canvasCtxx.current.fill(rightHeelCircle)
@@ -585,14 +595,30 @@ function Home() {
               />
             </p>
           </form>
-          <div className="container">
-            <h1
-              className="loading"
-              style={{ display: file && !showVid ? "block" : "none" }}
+          <div className="homeContainer">
+            <div
+              style={{ display: file && (!showVid && showLoading) ? "block" : "none" }}
             >
-              Loading...{" "}
-            </h1>
-            <div className="homeContainer">
+              <h2 className="reminder">Keep this window focused at all times.</h2>
+              <h1
+                className="loading">
+                Loading...{" "}
+              </h1>
+              <p className="reminder3">(This shouldn't take longer than 10 seconds.)</p>
+            </div>
+            <div
+              className="error"
+              style={{ display: file && (!showVid && !showLoading) ? "block" : "none" }}>
+              <h1 className="errorText">Something went wrong.</h1><br/>Did you keep the window focused?<br/>
+            {file && (!showVid && !showLoading) &&
+              <Button
+                className='btn2'
+                text="Try again"
+                onClick={() => {
+                  refresh()
+                }}></Button>}
+                </div>
+            <div>
               <div className="canvasDiv">
                 <video
                   style={{ display: "none" }}
@@ -610,31 +636,33 @@ function Home() {
                   <canvas ref={canvasRef} className="output_canvas"></canvas>
                   <br />
                   <canvas ref={canvasRef2} className="output_canvas"></canvas>
+                  <h2 className="reminder2">Keep this window focused!</h2>
                 </div>
               </div>
 
-              <div style={{ display: showVid ? "block" : "none" }}>
-                {/* <HomeGraphs
+
+              {/* <div style={{ display: showVid ? "block" : "none" }}>
+                <HomeGraphs
                   leftHip={leftHipRe.current}
                   leftKnee={leftKneeRe.current}
                   leftAnkle={leftAnkleRe.current}
                   rightHip={rightHipRe.current}
                   rightKnee={rightKneeRe.current}
                   rightAnkle={rightAnkleRe.current}
-                ></HomeGraphs> */}
-              </div>
+                ></HomeGraphs>
+              </div> */}
             </div>
-            <br />
-            <div className="continueBtn">
-              <input
-                style={{ display: showContinueBtn ? "block" : "none" }}
-                type="button"
-                value="Continue"
+            {/* <div className="continueBtn" style={{ display: showContinueBtn ? "block" : "none" }}>
+              <Button
+                className='btn2'
+                text="Continue"
                 onClick={() => {
                   setShowGraphs(true)
                 }}
               />
-            </div>
+            </div> */}
+
+
           </div>
         </>
       ) : (
