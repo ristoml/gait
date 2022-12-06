@@ -26,9 +26,16 @@ code {
 }
 
 .output_canvas {
-  margin: 10px;
+  margin: 70px;
+  border-radius: 3px;  
   /* animation: 0.25s anim-lineUp ease-out; */
   animation: fadeIn 0.5s;
+}
+.output_canvas2 {
+  margin: 0px;
+  border-radius: 0px;
+  /* animation: 0.25s anim-lineUp ease-out; */
+  animation: 2s anim-lineUp ease-out;
 }
 
 .canvasDiv {
@@ -49,7 +56,7 @@ code {
 }
 .reminder {
   margin-top: 20vh;
-  font-size: 200%;
+  font-size: 150%;
   font-weight: 100;
   color: rgb(55, 99, 219);  
 }
@@ -57,7 +64,7 @@ code {
   bottom: 0%;
   text-align: center;  
   font-weight: 100;
-  font-size: 150%;
+  font-size: 100%;
   color: rgb(221, 39, 39);  
   -webkit-animation: fadeinout 2s linear forwards;
     animation: fadeinout 2s linear forwards;
@@ -65,7 +72,7 @@ code {
     animation-iteration-count: 20
 }
 .reminder3 {    
-  margin-top: 75%;
+  margin-top: 105%;
   text-align: center;  
   font-size: 80%;     
 }
@@ -79,6 +86,7 @@ code {
 }
 
 .errorText {
+  margin: 0px;
   font-weight: 100;
 }
 
@@ -174,8 +182,9 @@ code {
   align-items: center;
   cursor: pointer;
   border: 2px solid #333;
+  font-weight: 100;
   /* animation: 2s anim-lineUp ease-out; */
-  animation: fadeIn 1s;
+  animation: 2s anim-lineUp ease-out;
 }
 
 .videoLabel:hover {
@@ -226,11 +235,11 @@ input[type="file"] {
   border-radius: 5%;
   border-width: 1px;
   align-items: center;
-  margin: 20px;
+  margin: 40px;
   height: 35px;
   width: 95px;
   font-size: small;
-  font-weight: bold;
+  font-weight: 100;
   background-color: rgb(202, 202, 202);
   animation: 2s anim-lineUp ease-out;
 }

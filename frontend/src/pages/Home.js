@@ -57,13 +57,13 @@ function Home() {
   const canvasRef2 = useRef(null)
   const videoRef = useRef(null)
 
-  const leftHipRe = useRef([])
-  const leftKneeRe = useRef([])
-  const leftAnkleRe = useRef([])
+  // const leftHipRe = useRef([])
+  // const leftKneeRe = useRef([])
+  // const leftAnkleRe = useRef([])
 
-  const rightHipRe = useRef([])
-  const rightKneeRe = useRef([])
-  const rightAnkleRe = useRef([])
+  // const rightHipRe = useRef([])
+  // const rightKneeRe = useRef([])
+  // const rightAnkleRe = useRef([])
 
   const canvasCtxx = useRef()
   const canvasCtxx2 = useRef()
@@ -94,6 +94,7 @@ function Home() {
             startTime = Date.now()
             calibrated = true
             videoRef.current.currentTime = 0
+            console.log(videoRef.current.framerate)
             console.log("Mediapipe initialized")
             // return
           } else if (!useAnkleFix) {
@@ -108,9 +109,11 @@ function Home() {
       if (calibrated && !mediapipeCalibrated) {
         const videoWidth = videoRef.current.videoWidth
         const videoHeight = videoRef.current.videoHeight
-        canvasRef.current.width = videoWidth <= 600 ? videoWidth / 1.4 : videoWidth / 2.66
-        canvasRef.current.height = videoWidth <= 600 ? videoHeight / 1.4 : videoHeight / 2.66
-        canvasRef2.current.width = 1000
+        // canvasRef.current.width = videoWidth <= 600 ? videoWidth / 1.4 : videoWidth / 2.66
+        // canvasRef.current.height = videoWidth <= 600 ? videoHeight / 1.4 : videoHeight / 2.66
+        canvasRef.current.height = 600
+        canvasRef.current.width = 600 / (videoHeight/videoWidth)
+        canvasRef2.current.width = 800
         canvasRef2.current.height = 100
         // canvasCtx.clearRect(0, 0, videoWidth, videoHeight)
         completeTime = 0
@@ -609,7 +612,7 @@ function Home() {
             <div
               className="error"
               style={{ display: file && (!showVid && !showLoading) ? "block" : "none" }}>
-              <h1 className="errorText">Something went wrong.</h1><br/>Did you keep the window focused?<br/>
+              <h1 className="errorText">Something went wrong.</h1><br/>Bad video or window focus was lost during analysis.<br/>
             {file && (!showVid && !showLoading) &&
               <Button
                 className='btn2'
@@ -635,7 +638,7 @@ function Home() {
                 >
                   <canvas ref={canvasRef} className="output_canvas"></canvas>
                   <br />
-                  <canvas ref={canvasRef2} className="output_canvas"></canvas>
+                  <canvas ref={canvasRef2} className="output_canvas2"></canvas>
                   <h2 className="reminder2">Keep this window focused!</h2>
                 </div>
               </div>
