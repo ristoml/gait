@@ -35,7 +35,7 @@ code {
   margin: 0px;
   border-radius: 0px;
   /* animation: 0.25s anim-lineUp ease-out; */
-  animation: 2s anim-lineUp ease-out;
+  animation: 1s anim-lineUp ease-out;
 }
 
 .canvasDiv {
@@ -56,7 +56,7 @@ code {
 }
 .reminder {
   margin-top: 20vh;
-  font-size: 150%;
+  font-size: 125%;
   font-weight: 100;
   color: rgb(55, 99, 219);  
 }
@@ -72,7 +72,7 @@ code {
     animation-iteration-count: 20
 }
 .reminder3 {    
-  margin-top: 105%;
+  margin-top: 95%;
   text-align: center;  
   font-size: 80%;     
 }

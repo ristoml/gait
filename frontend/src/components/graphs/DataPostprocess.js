@@ -105,14 +105,14 @@ const processResults = (results) => {
   resultsOk = checkArrayLengths(rightHipRE) && checkArrayLengths(leftHipRE)
 
   //-------------- FILTTERI --------------------
-  // for (let i = 0; i < 5; i++) {
-  //   rightHipRE = filterArray(rightHipRE, 4)
-  //   rightKneeRE = filterArray(rightKneeRE, 4)
-  //   rightAnkleRE = filterArray(rightAnkleRE, 4)
-  //   leftHipRE = filterArray(leftHipRE, 4)
-  //   leftKneeRE = filterArray(leftKneeRE, 4)
-  //   leftAnkleRE = filterArray(leftAnkleRE, 4)
-  // }
+  for (let i = 0; i < 5; i++) {
+    rightHipRE = filterArray(rightHipRE, 4)
+    rightKneeRE = filterArray(rightKneeRE, 4)
+    rightAnkleRE = filterArray(rightAnkleRE, 4)
+    leftHipRE = filterArray(leftHipRE, 4)
+    leftKneeRE = filterArray(leftKneeRE, 4)
+    leftAnkleRE = filterArray(leftAnkleRE, 4)
+  }
 
   console.log(leftHipRE, leftKneeRE, leftAnkleRE, rightHipRE, rightKneeRE, rightAnkleRE)
 
@@ -127,7 +127,7 @@ const checkArrayLengths = (array) => {
       max = array[i].length
     }
   }
-  if (max < 65) lenghtOk = false
+  if (max < resampleTarget + 1) lenghtOk = false
   for (let i = 0; i < array.length; i++) {
     if (array[i].length <= 0.9 * max) {
       lenghtOk = false
@@ -163,6 +163,7 @@ const getDirectionChangeIndex = (toeDirArray, heelDirArray, ankleDirArray, dirAr
     //eteenpäin, kantapää
     if (certainty && forward) {
       if (heelDirArray[i] === -1 && ankleDirArray[i] === -1) {
+        // if (heelDirArray[i] === -1) {
         let battle = 0
         // if (toeDirArray[i + 1] === -1 && ankleDirArray[i + 1] === -1) battle--
         if (toeDirArray[i + 2] === -1 && ankleDirArray[i + 2] === -1) battle--
@@ -213,6 +214,7 @@ const getDirectionChangeIndex = (toeDirArray, heelDirArray, ankleDirArray, dirAr
     if (certainty && !forward) {
       dirChangePending = false
       if (toeDirArray[i] === 1 && ankleDirArray[i] === 1) {
+        // if (toeDirArray[i] === 1) {
         let battle = 0
         // if (toeDirArray[i + 1] === 1 && ankleDirArray[i + 1] === 1) battle++
         if (toeDirArray[i + 2] === 1 && ankleDirArray[i + 2] === 1) battle++

@@ -117,7 +117,7 @@ function Graphs(props) {
 
   return (
     <div>
-      <div id='graphBtns'><Button className='btn' text='&#128281;' onClick={() => refresh()}></Button><Button className='btn' text='&#x1F4BE;' onClick={() => saveSshot()}></Button></div>
+      <div id='graphBtns'><Button className='btn' text='&#128281;' onClick={() => refresh()} alt='Go Back'></Button><Button className='btn' text='&#x1F4BE;' onClick={() => saveSshot()}></Button></div>
       <h1 className="graphTitle">Time-normalized (per-cycle)</h1>
       <div className="graphs" id='capture'>
         <LineChart

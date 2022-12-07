@@ -31,7 +31,7 @@ let useHipFix = false
 let toeXOffsetValue = 0
 // let hipXOffsetMultiplier = 1.03
 // let hipYOffsetMultiplier = 0.95
-let toeXOffSetMultiplier = 0.67
+let toeXOffSetMultiplier = 0.33
 let hipXOffsetMultiplier = 1
 let hipYOffsetMultiplier = 1
 // let toeXOffSetMultiplier = 1
@@ -40,6 +40,7 @@ let toeYOffset = 0
 let startTime
 let calibrationTick = 0
 let completeTime = 0
+let coordinates = []
 
 function Home() {
   const [file, setFile] = useState(null)
@@ -88,13 +89,12 @@ function Home() {
     if (results.poseLandmarks) {
       if (!calibrated) {
         if (results.poseWorldLandmarks[30].visibility > 0.2) {
-          if (useAnkleFix && results.poseLandmarks[32].y - results.poseLandmarks[30].y <= 0.03 && results.poseLandmarks[32].y - results.poseLandmarks[30].y >= -0.03) {
-            toeXOffsetValue = (results.poseLandmarks[32].x - results.poseLandmarks[30].x) - toeXOffSetMultiplier * (results.poseLandmarks[32].x - results.poseLandmarks[30].x)
+          if (useAnkleFix && results.poseLandmarks[32].y - results.poseLandmarks[30].y <= 0.03 && results.poseLandmarks[32].y - results.poseLandmarks[30].y >= -0.03) {           
+            toeXOffsetValue =  toeXOffSetMultiplier * (results.poseLandmarks[32].x - results.poseLandmarks[30].x)
             console.log("ToeXOffset: " + toeXOffsetValue)
             startTime = Date.now()
             calibrated = true
-            videoRef.current.currentTime = 0
-            console.log(videoRef.current.framerate)
+            videoRef.current.currentTime = 0            
             console.log("Mediapipe initialized")
             // return
           } else if (!useAnkleFix) {
@@ -123,12 +123,11 @@ function Home() {
         if (Date.now() - startTime > 5999) {
           console.log("calibration ticks: " + calibrationTick)
           if (calibrationTick / 303 > 0.1) {
-            videoRef.current.playbackRate = (calibrationTick / 303) * 1.15
-            // videoRef.current.playbackRate = 1.1
+            videoRef.current.playbackRate = (calibrationTick / 303) * 1.2
+            // videoRef.current.playbackRate = 1
             console.log("playbackrate adjusted to: " + videoRef.current.playbackRate)
             mediapipeCalibrated = true
             videoRef.current.currentTime = 0
-
             setShowVid(true)
             setShowLoading(false)
           } else {
@@ -137,8 +136,8 @@ function Home() {
             console.log("playbackrate adjusted to: " + videoRef.current.playbackRate)
             mediapipeCalibrated = true
             videoRef.current.currentTime = 0
-
             setShowVid(true)
+            setShowLoading(false)
           }
         }
       }
@@ -179,6 +178,7 @@ function Home() {
         }
         drawCircles(results)
         poseResults.push({ data: results, time: Date.now() })
+        // coordinates.push(results.poseWorldLandmarks)
         // if (counter.current % 5 === 0) {
         // angleH.updateAngleHelper(results)
         // if (angleH.getLeftZ() > leftMaxZ) {
@@ -207,9 +207,7 @@ function Home() {
   const changeHandler = (e) => {
     const file = e.target.files[0]
 
-
     setFile(file)
-
 
     videoRef.current = document.getElementsByClassName("input_video")[0]
 
@@ -228,6 +226,7 @@ function Home() {
       } else if (videoRef.current.ended && didPlay) {
         dPp.processResults(poseResults)
         // console.log(poseResults)
+        // console.log(coordinates)
         if (dPp.getResultsOk()) {
           // setShowGraphsButton(true)
           setShowGraphs(true)
@@ -602,7 +601,7 @@ function Home() {
             <div
               style={{ display: file && (!showVid && showLoading) ? "block" : "none" }}
             >
-              <h2 className="reminder">Keep this window focused at all times.</h2>
+              <h2 className="reminder">Please keep this window focused during operation.</h2>
               <h1
                 className="loading">
                 Loading...{" "}
