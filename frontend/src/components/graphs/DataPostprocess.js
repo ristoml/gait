@@ -129,7 +129,7 @@ const checkArrayLengths = (array) => {
   }
   if (max < resampleTarget + 1) lenghtOk = false
   for (let i = 0; i < array.length; i++) {
-    if (array[i].length <= 0.9 * max) {
+    if (array[i].length <= 0.6 * max) {
       lenghtOk = false
     }
   }
