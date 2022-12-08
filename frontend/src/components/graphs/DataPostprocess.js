@@ -297,8 +297,7 @@ const filterArray = (array, tresh) => {
                 array[i][j + 1] = (array[i][j] + array[i][j + 4]) / 2
               } else {
                 array[i][j + 1] = (array[i][j] + array[i][j + 3]) / 2
-              }
-              array[i][j + 1] = (array[i][j] + array[i][j + 3]) / 2
+              }             
             } else {
               array[i][j + 1] = (array[i][j] + array[i][j + 2]) / 2
             }
