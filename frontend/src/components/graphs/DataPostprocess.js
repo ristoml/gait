@@ -286,14 +286,14 @@ const makeStepAngleArray = (cycleArray, resultData, recHip, recKnee, recAnkle, s
 }
 
 const filterArray = (array, tresh) => {
-  let treshold = tresh
+  let threshold = tresh
   for (let i = 0; i < array.length; i++) {
     for (let j = 0; j < array[i].length; j++) {
       if (array[i][j] - array[i][j + 1] < 0) {
-        if (array[i][j] - array[i][j + 1] < treshold * -1) {
+        if (array[i][j] - array[i][j + 1] < threshold * -1) {
           if (j < array.length - 4) {
-            if (array[i][j] - (array[i][j] + array[i][j + 2]) / 2 < treshold * -1) {
-              if (array[i][j] - (array[i][j] + array[i][j + 3]) / 2 < treshold * -1) {
+            if (array[i][j] - (array[i][j] + array[i][j + 2]) / 2 < threshold * -1) {
+              if (array[i][j] - (array[i][j] + array[i][j + 3]) / 2 < threshold * -1) {
                 array[i][j + 1] = (array[i][j] + array[i][j + 4]) / 2
               } else {
                 array[i][j + 1] = (array[i][j] + array[i][j + 3]) / 2
@@ -304,10 +304,10 @@ const filterArray = (array, tresh) => {
             }
           }
         }
-      } else if (array[i][j] - array[i][j + 1] > treshold) {
+      } else if (array[i][j] - array[i][j + 1] > threshold) {
         if (j < array.length - 4) {
-          if (array[i][j] - (array[i][j] + array[i][j + 2]) / 2 > treshold) {
-            if (array[i][j] - (array[i][j] + array[i][j + 3]) / 2 < treshold) {
+          if (array[i][j] - (array[i][j] + array[i][j + 2]) / 2 > threshold) {
+            if (array[i][j] - (array[i][j] + array[i][j + 3]) / 2 > threshold) {
               array[i][j + 1] = (array[i][j] + array[i][j + 4]) / 2
             } else {
               array[i][j + 1] = (array[i][j] + array[i][j + 3]) / 2
@@ -417,7 +417,7 @@ const formAvgRechartsArray = (array) => {
   let avgTemp2 = []
   let medianTemp = []
   let temp = []
-  let treshhold = 10
+  let threshold = 10
   let angles = 0
   let median = 0
 
@@ -427,7 +427,7 @@ const formAvgRechartsArray = (array) => {
     }
     median = calculateMedian(medianTemp)
     for (let j = 0; j < medianTemp.length; j++) {
-      if (Math.abs(medianTemp[j] - median) < treshhold) {
+      if (Math.abs(medianTemp[j] - median) < threshold) {
         avgTemp.push(medianTemp[j])
       }
     }

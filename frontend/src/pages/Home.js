@@ -36,7 +36,6 @@ function Home() {
   const canvasCtxx = useRef()
   const canvasCtxx2 = useRef()
 
-
   function refresh() {
     window.location.reload("Refresh")
   }
@@ -391,12 +390,11 @@ function Home() {
       results.poseLandmarks[30].x * canvasRef.current.width,
       results.poseLandmarks[30].y * canvasRef.current.height
     )
-
+    
     canvasCtxx.current.lineTo(
       results.poseLandmarks[32].x * canvasRef.current.width,
       results.poseLandmarks[32].y * canvasRef.current.height
     )
-
 
     canvasCtxx.current.moveTo(
       ((results.poseLandmarks[23].x + results.poseLandmarks[24].x) / 2) *
