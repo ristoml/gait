@@ -1,4 +1,5 @@
-import * as angleH from "../home/AngleHelper2D"
+import * as angle2D from "../home/AngleHelper2D"
+import * as angle3D from "../home/AngleHelper3D"
 import * as resample from "./Resample"
 
 let leftHipRE = []
@@ -25,13 +26,16 @@ let rightSwingIndex = -1
 let skippedFrames = 30
 let resampleTarget = 51
 let resultsOk = false
+let angleH
 
 //direction is true if you walk from left to right in video otherwise its false --- default true
 let directionRight = true
 
-const processResults = (results) => {
+const processResults = (results, use3D) => {
   let forwardCount = 0
   let backwardCount = 0
+  use3D ? angleH = angle3D : angleH = angle2D
+
   //for (let i = 30; i < results.length; i++) {                   <------
   for (let i = skippedFrames; i < results.length; i++) {
     if (results[i].data.poseLandmarks[31].x > results[i - 1].data.poseLandmarks[31].x) {
@@ -486,11 +490,9 @@ const getRightKneeAngleAvg = () => {
 const getRightAnkleAngleAvg = () => {
   return formAvgRechartsArray(rightAnkleRE)
 }
-
 const getSteps = () => {
   return steps
 }
-
 const getLeftSwingIndex = () => {
   return leftSwingIndex
 }

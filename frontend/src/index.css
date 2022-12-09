@@ -250,4 +250,128 @@ input[type="file"] {
   font-weight: 100;
   background-color: rgb(202, 202, 202);
   animation: 2s anim-lineUp ease-out;
+} 
+.btn3 {
+  border-radius: 5%;
+  border-width: 1px;
+  align-items: center;
+  margin: 0px;
+  height: 35px;
+  width: 95px;
+  font-size: small;
+  font-weight: 100;
+  background-color: rgb(202, 202, 202);
+  animation: 0.5s anim-lineUp ease-out;
+} 
+.fileDiv {  
+  /* display: flex; */
+  justify-content: center;
+  align-items: center;
+}
+#settingsToggle {
+  margin-top: 50px;  
+  margin-left: 2%; 
+  font-size: 110%;
+  animation: 2s anim-lineUp ease-out; 
+}
+
+#settings {
+  /* display: flex; */
+  /* width: 100vh; */
+  font-size: large;
+  margin: 20px;
+  justify-content: center;
+  align-items: center;
+  animation: 0.5s anim-lineUp ease-out;
+}
+#advSettings {
+  margin: 5px;  
+  /* animation: 0.5s anim-lineUp ease-out; */
+}
+#settingsBtn {
+  justify-content: center;
+  align-items: center;
+}
+#videoTimes {
+  justify-content: left;
+  margin: 8px;
+}
+
+#videoStartTime {
+  width: 4.3em;
+  margin-bottom: 1px;
+}
+#videoEndTime {
+  width: 4.3em;
+  margin-bottom: 10px;
+  margin-left: 2px;
+}
+#videoSpeed {
+  width: 4.3em;
+  margin-bottom: 1px;
+  margin-left: 28px;
+}
+#modelComp {
+  width: 4.1em;
+  margin-bottom: 1px;
+  margin-left: 28px;
+}
+#detectionConf {
+  width: 4.1em;
+  margin-bottom: 1px;
+}
+#trackingConf {
+  width: 4.1em;
+  margin-bottom: 1px;
+  margin-left: 12px;
+} 
+#use3D {
+  width: 4em;
+  margin-bottom: 1px;
+  margin-left: 0px;
+}
+.toggle-switch {
+  display: inline-block;
+  position: relative;
+  margin: 1px;
+  height: 24px;
+  width: 40px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  height: 0;
+  width: 0;
+}
+
+.slider {
+  position: absolute;
+  background-color: rgb(216, 216, 216);
+  border-radius: 34px;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+}
+
+.slider:before {
+  position: absolute;
+  background-color: gray;
+  border-radius: 50%;
+  content: "";
+  transition: 0.2s;
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  bottom: 4px;
+}
+input:checked + .slider {
+  background-color: white;
+}
+
+input:checked + .slider:before {
+  transform: translateX(16px);
+  
 }

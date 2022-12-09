@@ -3,6 +3,7 @@ import { Pose } from "@mediapipe/pose"
 import Graphs from "../components/graphs/Graphs"
 import * as dPp from "../components/graphs/DataPostprocess"
 import Button from "../components/home/Button"
+import Toggle from "../components/home/Toggle"
 
 let poseResults = []
 let calibrated = false
@@ -21,6 +22,13 @@ let calibrationTick = 0
 let completeTime = 0
 // let coordinates = []
 
+let videoStartTime = 0
+let videoEndTime = 0
+let modelC = 2
+let minDetectionConf = 0.5
+let minTrackingConf = 0.5
+let use3D = false
+
 function Home() {
   const [file, setFile] = useState(null)
   const [videoSrc, setVideoSrc] = useState(null)
@@ -28,8 +36,8 @@ function Home() {
   const [showVid, setShowVid] = useState(false)
   const [showGraphs, setShowGraphs] = useState(false)
   const [showLoading, setShowLoading] = useState(true)
-
-  const counter = useRef(0)
+  const [showSettings, setShowSettings] = useState(false)
+  
   const canvasRef = useRef(null)
   const canvasRef2 = useRef(null)
   const videoRef = useRef(null)
@@ -82,8 +90,8 @@ function Home() {
         if (Date.now() - startTime > 5999) {
           console.log("calibration ticks: " + calibrationTick)
           if (calibrationTick / 303 > 0.1) {
-            videoRef.current.playbackRate = (calibrationTick / 303) * 1
-            // videoRef.current.playbackRate = 1
+            videoRef.current.playbackRate = (calibrationTick / 303) * 1.15
+            // videoRef.current.playbackRate = 10
             console.log("playbackrate adjusted to: " + videoRef.current.playbackRate)
             mediapipeCalibrated = true
             videoRef.current.currentTime = 0
@@ -101,8 +109,7 @@ function Home() {
         }
       }
       if (calibrated && mediapipeCalibrated) {
-        didPlay = true
-        counter.current++
+        didPlay = true        
         canvasCtx.drawImage(
           results.image,
           0,
@@ -162,7 +169,8 @@ function Home() {
         }
         onFrame()
       } else if (videoRef.current.ended && didPlay) {
-        dPp.processResults(poseResults)
+        console.log(use3D)
+        dPp.processResults(poseResults, use3D)
         // console.log(poseResults)
         // console.log(coordinates)
         if (dPp.getResultsOk()) {
@@ -390,7 +398,7 @@ function Home() {
       results.poseLandmarks[30].x * canvasRef.current.width,
       results.poseLandmarks[30].y * canvasRef.current.height
     )
-    
+
     canvasCtxx.current.lineTo(
       results.poseLandmarks[32].x * canvasRef.current.width,
       results.poseLandmarks[32].y * canvasRef.current.height
@@ -434,12 +442,12 @@ function Home() {
     })
 
     pose.setOptions({
-      modelComplexity: 2,
+      modelComplexity: modelC,
       smoothLandmarks: true,
       enableSegmentation: false,
       smoothSegmentation: false,
-      minDetectionConfidence: 0.5,
-      minTrackingConfidence: 0.5
+      minDetectionConfidence: minDetectionConf,
+      minTrackingConfidence: minTrackingConf
     })
 
     setPose(pose)
@@ -471,21 +479,70 @@ function Home() {
     <>
       {!showGraphs ? (
         <>
-          <form>
-            <p style={{ display: file ? "none" : "block" }}>
-              <label className="videoLabel" htmlFor="video">
-                Select video
-              </label>
-              <input
-                style={{ display: "none" }}
-                className="videoLabel"
-                type="file"
-                id="video"
-                accept=".mp4, .ogg, .webm"
-                onChange={changeHandler}
-              />
-            </p>
-          </form>
+          <div className='fileDiv' style={{ display: file ? "none" : "block" }}>
+            <label className="videoLabel" htmlFor="video">
+              Select video
+            </label>
+            <input
+              style={{ display: "none" }}
+              className="videoLabel"
+              type="file"
+              id="video"
+              accept=".mp4, .ogg, .webm"
+              onChange={changeHandler}
+            /><div id='settingsToggle'>
+              <Toggle
+                // disabled={showSettings ? false : true}
+                onChange={() => setShowSettings(!showSettings)}
+                checked={!showSettings}
+              /> &#128295;</div>
+            <div id='settings' style={{ display: showSettings ? "flex" : "none" }}>
+              <fieldset>
+                <legend>Video</legend>
+                <div id='videoTimes'>                  
+                    <label>
+                      Speed:&nbsp;
+                      <input id="videoSpeed" type="number" step="0.1" min="0" max="10" placeholder="auto" name="videospeed" />
+                    </label><br />
+                    <label>
+                      Start time:&nbsp;
+                      <input id="videoStartTime" type="number" step="0.1" min="0" max="65535" placeholder="default" name="videostarttime"  />
+                    </label><br />
+                    <label>
+                      End time:&nbsp;&nbsp;
+                      <input id="videoEndTime" type="number" placeholder="default" max="65535" name="videoendtime"  />
+                    </label><br />                 
+                </div>
+              </fieldset>
+              <div id="advSettings">
+                <fieldset>
+                  <legend>Mediapipe</legend>
+                  <div>
+                  </div>
+                  <div>
+                    <label>
+                      Model complexity:&nbsp;
+                      <input id="modelComp" type="number" min="0" max="2" defaultValue="2" name="modelcomp" />
+                    </label><br />
+                    <label>
+                      Detection confidence:&nbsp;
+                      <input id="detectionConf" type="number" step="0.1" min="0" max="0.9" defaultValue="0.5" name="detectionConf"/>
+                    </label><br /><label>
+                      Tracking confidence:&nbsp;
+                      <input id="trackingConf" type="number" step="0.1" min="0" max="0.9" defaultValue="0.5" name="trackingConf" />
+                    </label><br />
+                    <label>
+                      Use 3D (experimental):&nbsp;
+                      <input id="use3D" type="checkbox" name="use3d"  />
+                    </label><br />
+                  </div>
+                </fieldset>
+              </div></div><div id='settingsBtn' style={{ display: showSettings ? "flex" : "none" }}><Button
+                  className='btn3'
+                  text="Apply"
+                  onClick={() => {
+                    refresh()
+                  }}></Button></div></div>
           <div className="homeContainer">
             <div
               style={{ display: file && (!showVid && showLoading) ? "block" : "none" }}
@@ -504,7 +561,7 @@ function Home() {
               {file && (!showVid && !showLoading) &&
                 <Button
                   className='btn2'
-                  text="Try again"
+                  text="Ok"
                   onClick={() => {
                     refresh()
                   }}></Button>}
