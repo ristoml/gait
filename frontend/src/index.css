@@ -66,10 +66,10 @@ code {
   font-weight: 100;
   font-size: 100%;
   color: rgb(221, 39, 39);  
-  -webkit-animation: fadeinout 2s linear forwards;
+  /* -webkit-animation: fadeinout 2s linear forwards;
     animation: fadeinout 2s linear forwards;
     opacity: 0;
-    animation-iteration-count: 20
+    animation-iteration-count: 20 */
 }
 .reminder3 {    
   margin-top: 95%;
@@ -177,7 +177,7 @@ code {
   padding-right: 4ch;
   padding-bottom: 2ch;
   padding-top: 2ch;
-  margin-top: 40vh;
+  margin-top: 45vh;
   justify-content: center;
   align-items: center;
   cursor: pointer;
@@ -270,8 +270,8 @@ input[type="file"] {
 }
 #settingsToggle {
   margin-top: 50px;  
-  margin-left: 2%; 
-  font-size: 110%;
+  /* margin-left: 2%;  */
+  font-size: 175%;
   animation: 2s anim-lineUp ease-out; 
 }
 

@@ -124,7 +124,7 @@ const getHipAngle = (side, direction) => {
     //console.log(temp)
     // if (temp >= 0) return 180 - temp
     // else return 180 + temp
-    return temp 
+    return temp
   } else if (!side && direction) {
     temp =
       (Math.atan2(
@@ -151,6 +151,32 @@ const getHipAngle = (side, direction) => {
     //   (180 / Math.PI)
     // if (temp >= 0) return 180 - temp
     // else return 180 + temp
+  } else if (!side && !direction) {
+    temp =
+      (Math.atan2(
+        (leftHipY + rightHipY) / 2 - (leftShoulderY + rightShoulderY) / 2,
+        (leftHipX + rightHipX) / 2 - (leftShoulderX + rightShoulderX) / 2
+      ) -
+        Math.atan2(
+          rightKneeY - rightHipY,
+          rightKneeX - rightHipX)) *
+      (180 / Math.PI)
+    return temp * -1
+  } else if (side && !direction) {
+    // console.log("l: "+leftKneeX+" r: "+rightKneeX)
+    temp =
+      (Math.atan2(
+        (leftHipY + rightHipY) / 2 - (leftShoulderY + rightShoulderY) / 2,
+        (leftHipX + rightHipX) / 2 - (leftShoulderX + rightShoulderX) / 2
+      ) -
+        Math.atan2(
+          leftKneeY - leftHipY,
+          leftKneeX - leftHipX)) *
+      180 / Math.PI
+    //console.log(temp)
+    // if (temp >= 0) return 180 - temp
+    // else return 180 + temp
+    return temp * -1
   }
   // if (side && !direction) {
   //   temp =

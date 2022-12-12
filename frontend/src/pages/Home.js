@@ -8,6 +8,9 @@ import Toggle from "../components/home/Toggle"
 let poseResults = []
 let calibrated = false
 let mediapipeCalibrated = false
+let customPlaybackspeed = false
+let customStartTime = false
+let customEndTime = false
 let didPlay = false
 let useAnkleFix = true
 let useHipFix = false
@@ -21,13 +24,11 @@ let startTime
 let calibrationTick = 0
 let completeTime = 0
 // let coordinates = []
+let playbackSpeedV = undefined
+let videoStartTimeV = undefined
+let videoEndTimeV = undefined
 
-let videoStartTime = 0
-let videoEndTime = 0
-let modelC = 2
-let minDetectionConf = 0.5
-let minTrackingConf = 0.5
-let use3D = false
+let dirRight
 
 function Home() {
   const [file, setFile] = useState(null)
@@ -37,16 +38,29 @@ function Home() {
   const [showGraphs, setShowGraphs] = useState(false)
   const [showLoading, setShowLoading] = useState(true)
   const [showSettings, setShowSettings] = useState(false)
-  
+  const [playbackSpeed, setPlaybackSpeed] = useState(undefined)
+  const [videoStartTime, setVideoStartTime] = useState(undefined)
+  const [videoEndTime, setVideoEndTime] = useState(undefined)
+  const [modelComplexity, setModelComplexity] = useState(2)
+  const [detectionConfidence, setDetectionConfidence] = useState(0.5)
+  const [trackingConfidence, setTrackingConfidence] = useState(0.5)
+  const [use3D, setUse3D] = useState(false)
+
+
   const canvasRef = useRef(null)
   const canvasRef2 = useRef(null)
   const videoRef = useRef(null)
   const canvasCtxx = useRef()
   const canvasCtxx2 = useRef()
 
+  // console.log('model complexity: ' + modelComplexity)
+  // console.log('detection confidence: '+detectionConfidence)
+  // console.log('tracking confidence: ' + trackingConfidence)  
+
   function refresh() {
     window.location.reload("Refresh")
   }
+
   function onResults(results) {
     const canvasElement = canvasRef.current
     const canvasCtx = canvasElement.getContext("2d")
@@ -57,10 +71,15 @@ function Home() {
     canvasCtxx.current = canvasCtx
     canvasCtxx2.current = canvasCtx2
 
-    if (results.poseLandmarks) {
+    if (results.poseLandmarks) {   
       if (!calibrated) {
         if (results.poseWorldLandmarks[30].visibility > 0.2) {
           if (useAnkleFix && results.poseLandmarks[32].y - results.poseLandmarks[30].y <= 0.03 && results.poseLandmarks[32].y - results.poseLandmarks[30].y >= -0.03) {
+            if (results.poseLandmarks[32].x >= results.poseLandmarks[30].x && results.poseLandmarks[31].x >= results.poseLandmarks[29].x) {
+              dirRight = true
+            } else {
+              dirRight = false
+            }
             toeXOffsetValue = toeXOffSetMultiplier * (results.poseLandmarks[32].x - results.poseLandmarks[30].x)
             console.log("ToeXOffset: " + toeXOffsetValue)
             startTime = Date.now()
@@ -83,18 +102,33 @@ function Home() {
         canvasRef.current.width = 600 / (videoHeight / videoWidth)
         canvasRef2.current.width = 800
         canvasRef2.current.height = 100
-        completeTime = 0
+        completeTime = 0        
+       
+        if (videoEndTimeV >= videoRef.current.duration) videoEndTimeV = videoRef.current.duration
+        if (customStartTime) {
+          if ((videoStartTimeV >= videoRef.current.duration) || videoStartTimeV >= videoEndTimeV) videoStartTimeV = 0
+        }   
+
+        if (customPlaybackspeed) {
+          console.log('custom playbackspeed')
+          mediapipeCalibrated = true
+          videoRef.current.currentTime = videoStartTimeV
+          setShowVid(true)
+          setShowLoading(false)
+          videoRef.current.playbackRate = playbackSpeedV
+        }
+
         if (Date.now() - startTime > 2999) {
           calibrationTick++
         }
         if (Date.now() - startTime > 5999) {
           console.log("calibration ticks: " + calibrationTick)
           if (calibrationTick / 303 > 0.1) {
-            videoRef.current.playbackRate = (calibrationTick / 303) * 1.15
+            videoRef.current.playbackRate = (calibrationTick / 303) * 1.4
             // videoRef.current.playbackRate = 10
             console.log("playbackrate adjusted to: " + videoRef.current.playbackRate)
             mediapipeCalibrated = true
-            videoRef.current.currentTime = 0
+            videoRef.current.currentTime = videoStartTimeV
             setShowVid(true)
             setShowLoading(false)
           } else {
@@ -102,14 +136,14 @@ function Home() {
             videoRef.current.playbackRate = 0.15
             console.log("playbackrate adjusted to: " + videoRef.current.playbackRate)
             mediapipeCalibrated = true
-            videoRef.current.currentTime = 0
+            videoRef.current.currentTime = videoStartTimeV
             setShowVid(true)
             setShowLoading(false)
           }
         }
       }
       if (calibrated && mediapipeCalibrated) {
-        didPlay = true        
+        didPlay = true
         canvasCtx.drawImage(
           results.image,
           0,
@@ -135,12 +169,22 @@ function Home() {
         if (useAnkleFix) {
           results.poseLandmarks[31].y -= toeYOffset
           results.poseLandmarks[32].y -= toeYOffset
-          if (results.poseLandmarks[27].x < results.poseLandmarks[25].x) {
-            results.poseLandmarks[31].x -= toeXOffsetValue
+          if (dirRight) {
+            if (results.poseLandmarks[27].x < results.poseLandmarks[25].x) {
+              results.poseLandmarks[31].x -= toeXOffsetValue
+            }
+            if (results.poseLandmarks[28].x < results.poseLandmarks[26].x) {
+              results.poseLandmarks[32].x -= toeXOffsetValue
+            }
+          } else {
+            if (results.poseLandmarks[27].x > results.poseLandmarks[25].x) {
+              results.poseLandmarks[31].x -= toeXOffsetValue
+            }
+            if (results.poseLandmarks[28].x > results.poseLandmarks[26].x) {
+              results.poseLandmarks[32].x -= toeXOffsetValue
+            }
           }
-          if (results.poseLandmarks[28].x < results.poseLandmarks[26].x) {
-            results.poseLandmarks[32].x -= toeXOffsetValue
-          }
+
         }
         drawCircles(results)
         poseResults.push({ data: results, time: Date.now() })
@@ -151,26 +195,40 @@ function Home() {
 
   const changeHandler = (e) => {
     const file = e.target.files[0]
-
     setFile(file)
 
     videoRef.current = document.getElementsByClassName("input_video")[0]
+    if (videoStartTime !== undefined) {
+      customStartTime = true
+      videoStartTimeV = parseFloat(videoStartTime)
+    } else {
+      videoStartTimeV = 0
+    }
+
+    videoEndTime === undefined ? videoEndTimeV = 999 : videoEndTimeV = videoEndTime
+
+    if (playbackSpeed !== undefined && playbackSpeed !== 0) {
+      customPlaybackspeed = true
+      playbackSpeedV = playbackSpeed      
+    }
 
     async function onFrame() {
-      if (!videoRef.current.ended) {
+      if (!videoRef.current.ended && videoRef.current.currentTime <= videoEndTimeV) {
         await poseTest.send({
           image: videoRef.current,
         })
         await new Promise(requestAnimationFrame)
-        if (videoRef.current.currentTime / videoRef.current.duration > 0.99) {
+        if (videoRef.current.currentTime / videoEndTimeV > 0.99) {
           completeTime = 1
         } else {
-          completeTime = videoRef.current.currentTime / videoRef.current.duration
+          completeTime = videoRef.current.currentTime / videoEndTimeV
+
         }
         onFrame()
-      } else if (videoRef.current.ended && didPlay) {
-        console.log(use3D)
-        dPp.processResults(poseResults, use3D)
+      } else if ((videoRef.current.ended || videoRef.current.currentTime >= videoEndTimeV) && didPlay) {
+        // console.log(use3D)        
+        dPp.processResults(poseResults, use3D, dirRight)
+        videoRef.current.pause();
         // console.log(poseResults)
         // console.log(coordinates)
         if (dPp.getResultsOk()) {
@@ -209,6 +267,7 @@ function Home() {
     const hipCircle = new Path2D()
     const shoulderCircle = new Path2D()
 
+    // Progress bar
     canvasCtxx2.current.fillStyle = "#e1f5fe"
     beginProgressArc.arc(canvasRef2.current.width * 0.10, 50, 25, 0, 2 * Math.PI)
     endProgressArc.arc(canvasRef2.current.width * 0.10 + canvasRef2.current.width * 0.80, 50, 25, 0, 2 * Math.PI)
@@ -442,16 +501,24 @@ function Home() {
     })
 
     pose.setOptions({
-      modelComplexity: modelC,
+      modelComplexity: modelComplexity,
       smoothLandmarks: true,
       enableSegmentation: false,
       smoothSegmentation: false,
-      minDetectionConfidence: minDetectionConf,
-      minTrackingConfidence: minTrackingConf
+      minDetectionConfidence: detectionConfidence,
+      minTrackingConfidence: trackingConfidence
     })
+    // pose.setOptions({
+    //   modelComplexity: 2,
+    //   smoothLandmarks: true,
+    //   enableSegmentation: false,
+    //   smoothSegmentation: false,
+    //   minDetectionConfidence: 0.5,
+    //   minTrackingConfidence: 0.5
+    // })
 
     setPose(pose)
-    pose.onResults(onResults)
+    pose.onResults(onResults)  
 
     let fileReader,
       isCancel = false
@@ -473,7 +540,7 @@ function Home() {
         fileReader.abort()
       }
     }
-  }, [file])
+  }, [modelComplexity, trackingConfidence, detectionConfidence, file])
 
   return (
     <>
@@ -490,28 +557,28 @@ function Home() {
               id="video"
               accept=".mp4, .ogg, .webm"
               onChange={changeHandler}
-            /><div id='settingsToggle'>
+            /><div id='settingsToggle'>&#128736;<br />
               <Toggle
                 // disabled={showSettings ? false : true}
                 onChange={() => setShowSettings(!showSettings)}
                 checked={!showSettings}
-              /> &#128295;</div>
+              /></div>
             <div id='settings' style={{ display: showSettings ? "flex" : "none" }}>
               <fieldset>
                 <legend>Video</legend>
-                <div id='videoTimes'>                  
-                    <label>
-                      Speed:&nbsp;
-                      <input id="videoSpeed" type="number" step="0.1" min="0" max="10" placeholder="auto" name="videospeed" />
-                    </label><br />
-                    <label>
-                      Start time:&nbsp;
-                      <input id="videoStartTime" type="number" step="0.1" min="0" max="65535" placeholder="default" name="videostarttime"  />
-                    </label><br />
-                    <label>
-                      End time:&nbsp;&nbsp;
-                      <input id="videoEndTime" type="number" placeholder="default" max="65535" name="videoendtime"  />
-                    </label><br />                 
+                <div id='videoTimes'>
+                  <label>
+                    Speed:&nbsp;
+                    <input id="videoSpeed" type="number" step="0.1" min="0" max="10" value={playbackSpeed} placeholder='auto' name="videospeed" onChange={(e) => setPlaybackSpeed(parseFloat(e.target.value.replace(/,/g, '.')))} />
+                  </label><br />
+                  <label>
+                    Start time:&nbsp;
+                    <input id="videoStartTime" type="number" min="0" max="65535" value={videoStartTime} placeholder='default' name="videostarttime" onChange={(e) => setVideoStartTime(e.target.value)} />
+                  </label><br />
+                  <label>
+                    End time:&nbsp;&nbsp;
+                    <input id="videoEndTime" type="number" value={videoEndTime} min="10" max="65535" placeholder='default' name="videoendtime" onChange={(e) => setVideoEndTime(e.target.value)} />
+                  </label><br />
                 </div>
               </fieldset>
               <div id="advSettings">
@@ -522,27 +589,27 @@ function Home() {
                   <div>
                     <label>
                       Model complexity:&nbsp;
-                      <input id="modelComp" type="number" min="0" max="2" defaultValue="2" name="modelcomp" />
+                      <input id="modelComp" type="number" min="0" max="2" value={modelComplexity} name="modelcomp" onChange={(e) => setModelComplexity(parseFloat(e.target.value))} />
                     </label><br />
                     <label>
                       Detection confidence:&nbsp;
-                      <input id="detectionConf" type="number" step="0.1" min="0" max="0.9" defaultValue="0.5" name="detectionConf"/>
+                      <input id="detectionConf" type="number" step="0.1" min="0.1" max="0.9" value={detectionConfidence} name="detectionConf" onChange={(e) => setDetectionConfidence(parseFloat(e.target.value.replace(/,/g, '.')))} />
                     </label><br /><label>
                       Tracking confidence:&nbsp;
-                      <input id="trackingConf" type="number" step="0.1" min="0" max="0.9" defaultValue="0.5" name="trackingConf" />
+                      <input id="trackingConf" type="number" step="0.1" min="0.1" max="0.9" value={trackingConfidence} name="trackingConf" onChange={(e) => setTrackingConfidence(parseFloat(e.target.value.replace(/,/g, '.')))} />
                     </label><br />
                     <label>
                       Use 3D (experimental):&nbsp;
-                      <input id="use3D" type="checkbox" name="use3d"  />
+                      <input id="use3D" checked={use3D} type="checkbox" name="use3d" onChange={(e) => setUse3D(!use3D)} />
                     </label><br />
                   </div>
                 </fieldset>
               </div></div><div id='settingsBtn' style={{ display: showSettings ? "flex" : "none" }}><Button
-                  className='btn3'
-                  text="Apply"
-                  onClick={() => {
-                    refresh()
-                  }}></Button></div></div>
+                className='btn3'
+                text="Reset"
+                onClick={() => {
+                  refresh()
+                }}></Button></div></div>
           <div className="homeContainer">
             <div
               style={{ display: file && (!showVid && showLoading) ? "block" : "none" }}
@@ -605,7 +672,8 @@ function Home() {
           rightKneeAvg={dPp.getRightKneeAngleAvg()}
           rightAnkleAvg={dPp.getRightAnkleAngleAvg()}
 
-          steps={dPp.getSteps()}
+          rightSteps={dPp.getRightSteps()}
+          leftSteps={dPp.getLeftSteps()}
           leftSwing={dPp.getLeftSwingIndex()}
           rightSwing={dPp.getRightSwingIndex()}
         ></Graphs>

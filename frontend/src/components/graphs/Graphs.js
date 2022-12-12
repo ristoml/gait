@@ -111,7 +111,9 @@ function Graphs(props) {
   const rightKneeReAvg = useRef(props.rightKneeAvg)
   const rightAnkleReAvg = useRef(props.rightAnkleAvg)
 
-  const steps = useRef(props.steps)
+  const leftSteps = useRef(props.leftSteps)
+  const rightSteps = useRef(props.rightSteps)  
+ 
   const [showAverages, setShowAverages] = useState(true)
 
   const leftSwing = useRef(props.leftSwing)
@@ -125,7 +127,7 @@ function Graphs(props) {
   return (
     <div>
       <div id='graphBtns'><Button className='btn' text='&#128281;' onClick={() => refresh()}></Button><Button className='btn' text='&#x1F4BE;' onClick={() => saveSshot()}></Button></div>
-      <div id='avgTickBox'><input type="checkbox" id="showAvgs" value="showAverages" checked={showAverages} onChange={() => setShowAverages(!showAverages)}></input><label> show averages</label></div>
+      <div id='avgTickBox'><input type="checkbox" id="showAvgs" value="showAverages" checked={showAverages} onChange={() => setShowAverages(!showAverages)}></input><label> draw averages</label></div>
       <h1 className="graphTitle">Time-normalized (per-cycle)</h1>
       <div className="graphs" id='capture'>
         {showAverages ? (
@@ -153,7 +155,7 @@ function Graphs(props) {
 
               {(() => {
                 let rows = []
-                for (let i = 0; i < steps.current; i++) {
+                for (let i = 0; i < leftSteps.current; i++) {
                   rows.push(
                     <Line
                       key={lineNames[i]}
@@ -197,7 +199,7 @@ function Graphs(props) {
 
               {(() => {
                 let rows = []
-                for (let i = 0; i < steps.current; i++) {
+                for (let i = 0; i < leftSteps.current; i++) {
                   rows.push(
                     <Line
                       key={lineNames[i]}
@@ -240,7 +242,7 @@ function Graphs(props) {
 
               {(() => {
                 let rows = []
-                for (let i = 0; i < steps.current; i++) {
+                for (let i = 0; i < leftSteps.current; i++) {
                   rows.push(
                     <Line
                       key={lineNames[i]}
@@ -280,7 +282,7 @@ function Graphs(props) {
 
               {(() => {
                 let rows = []
-                for (let i = 0; i < steps.current; i++) {
+                for (let i = 0; i < rightSteps.current; i++) {
                   rows.push(
                     <Line
                       key={lineNames[i]}
@@ -323,7 +325,7 @@ function Graphs(props) {
 
               {(() => {
                 let rows = []
-                for (let i = 0; i < steps.current; i++) {
+                for (let i = 0; i < rightSteps.current; i++) {
                   rows.push(
                     <Line
                       key={lineNames[i]}
@@ -366,7 +368,7 @@ function Graphs(props) {
 
               {(() => {
                 let rows = []
-                for (let i = 0; i < steps.current; i++) {
+                for (let i = 0; i < rightSteps.current; i++) {
                   rows.push(
                     <Line
                       key={lineNames[i]}
@@ -409,7 +411,7 @@ function Graphs(props) {
 
               {(() => {
                 let rows = []
-                for (let i = 0; i < steps.current; i++) {
+                for (let i = 0; i < leftSteps.current; i++) {
                   rows.push(
                     <Line
                       key={lineNames[i]}
@@ -453,7 +455,7 @@ function Graphs(props) {
 
               {(() => {
                 let rows = []
-                for (let i = 0; i < steps.current; i++) {
+                for (let i = 0; i < leftSteps.current; i++) {
                   rows.push(
                     <Line
                       key={lineNames[i]}
@@ -495,7 +497,7 @@ function Graphs(props) {
 
               {(() => {
                 let rows = []
-                for (let i = 0; i < steps.current; i++) {
+                for (let i = 0; i < leftSteps.current; i++) {
                   rows.push(
                     <Line
                       key={lineNames[i]}
@@ -534,7 +536,7 @@ function Graphs(props) {
 
               {(() => {
                 let rows = []
-                for (let i = 0; i < steps.current; i++) {
+                for (let i = 0; i < rightSteps.current; i++) {
                   rows.push(
                     <Line
                       key={lineNames[i]}
@@ -576,7 +578,7 @@ function Graphs(props) {
 
               {(() => {
                 let rows = []
-                for (let i = 0; i < steps.current; i++) {
+                for (let i = 0; i < rightSteps.current; i++) {
                   rows.push(
                     <Line
                       key={lineNames[i]}
@@ -618,7 +620,7 @@ function Graphs(props) {
 
               {(() => {
                 let rows = []
-                for (let i = 0; i < steps.current; i++) {
+                for (let i = 0; i < rightSteps.current; i++) {
                   rows.push(
                     <Line
                       key={lineNames[i]}
