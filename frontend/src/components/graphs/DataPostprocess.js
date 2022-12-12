@@ -29,61 +29,76 @@ let resultsOk = false
 //direction is true if you walk from left to right in video otherwise its false --- default true
 let directionRight = true
 
-const processResults = (results) => {
+const processResults = (results, dirRight) => {
+  directionRight = dirRight
   let forwardCount = 0
   let backwardCount = 0
   //for (let i = 30; i < results.length; i++) {                   <------
   for (let i = skippedFrames; i < results.length; i++) {
     if (results[i].data.poseLandmarks[31].x > results[i - 1].data.poseLandmarks[31].x) {
-      leftToeDirectionArray.push(1)
+      dirRight ? leftToeDirectionArray.push(1) : leftToeDirectionArray.push(-1)
+      // leftToeDirectionArray.push(1)
     } else {
-      leftToeDirectionArray.push(-1)
+      dirRight ? leftToeDirectionArray.push(-1) : leftToeDirectionArray.push(1)
+      // leftToeDirectionArray.push(-1)
     }
     if (results[i].data.poseLandmarks[29].x > results[i - 1].data.poseLandmarks[29].x) {
-      leftHeelDirectionArray.push(1)
+      dirRight ? leftHeelDirectionArray.push(1) : leftHeelDirectionArray.push(-1)
+      // leftHeelDirectionArray.push(1)
     } else {
-      leftHeelDirectionArray.push(-1)
+      dirRight ? leftHeelDirectionArray.push(-1) : leftHeelDirectionArray.push(1)
+      // leftHeelDirectionArray.push(-1)
     }
     if (results[i].data.poseLandmarks[27].x > results[i - 1].data.poseLandmarks[27].x) {
-      leftAnkleDirectionArray.push(1)
+      dirRight ? leftAnkleDirectionArray.push(1) : leftAnkleDirectionArray.push(-1)
+      // leftAnkleDirectionArray.push(1)
     } else {
-      leftAnkleDirectionArray.push(-1)
+      dirRight ? leftAnkleDirectionArray.push(-1) : leftAnkleDirectionArray.push(1)
+      // leftAnkleDirectionArray.push(-1)
     }
     if (results[i].data.poseLandmarks[32].x > results[i - 1].data.poseLandmarks[32].x) {
-      rightToeDirectionArray.push(1)
+      dirRight ? rightToeDirectionArray.push(1) : rightToeDirectionArray.push(-1)
+      // rightToeDirectionArray.push(1)
     } else {
-      rightToeDirectionArray.push(-1)
+      dirRight ? rightToeDirectionArray.push(-1) : rightToeDirectionArray.push(1)
+      // rightToeDirectionArray.push(-1)
     }
     if (results[i].data.poseLandmarks[30].x > results[i - 1].data.poseLandmarks[30].x) {
-      rightHeelDirectionArray.push(1)
+      dirRight ? rightHeelDirectionArray.push(1) : rightHeelDirectionArray.push(-1)
+      // rightHeelDirectionArray.push(1)
     } else {
-      rightHeelDirectionArray.push(-1)
+      dirRight ? rightHeelDirectionArray.push(-1) : rightHeelDirectionArray.push(1)
+      // rightHeelDirectionArray.push(-1)
     }
     if (results[i].data.poseLandmarks[28].x > results[i - 1].data.poseLandmarks[28].x) {
-      rightAnkleDirectionArray.push(1)
+      dirRight ? rightAnkleDirectionArray.push(1) : rightAnkleDirectionArray.push(-1)
+      // rightAnkleDirectionArray.push(1)
     } else {
-      rightAnkleDirectionArray.push(-1)
+      dirRight ? rightAnkleDirectionArray.push(-1) : rightAnkleDirectionArray.push(1)
+      // rightAnkleDirectionArray.push(-1)
     }
   }
-  for (let i = 0; i < rightHeelDirectionArray.length; i++) {
-    if (rightHeelDirectionArray[i] === 1) {
-      forwardCount++
-    } else {
-      backwardCount++
-    }
-  }
-  if (forwardCount > backwardCount) {
-    directionRight = false
-    for (let i = 0; i < rightHeelDirectionArray.length; i++) {
-      rightHeelDirectionArray[i] *= -1
-      rightToeDirectionArray[i] *= -1
-      leftHeelDirectionArray[i] *= -1
-      leftToeDirectionArray[i] *= -1
-      leftAnkleDirectionArray[i] *= -1
-      rightAnkleDirectionArray[i] *= -1
-    }
 
-  }
+  // direction check
+  //
+  // for (let i = 0; i < rightHeelDirectionArray.length; i++) {
+  //   if (rightHeelDirectionArray[i] === 1) {
+  //     forwardCount++
+  //   } else {
+  //     backwardCount++
+  //   }
+  // }
+  // if (forwardCount > backwardCount) {
+  //   directionRight = false
+  //   for (let i = 0; i < rightHeelDirectionArray.length; i++) {
+  //     rightHeelDirectionArray[i] *= -1
+  //     rightToeDirectionArray[i] *= -1
+  //     leftHeelDirectionArray[i] *= -1
+  //     leftToeDirectionArray[i] *= -1
+  //     leftAnkleDirectionArray[i] *= -1
+  //     rightAnkleDirectionArray[i] *= -1
+  //   }
+  // }
   // console.log(leftToeDirectionArray, leftHeelDirectionArray, rightToeDirectionArray, rightHeelDirectionArray)
   // console.log(leftDirectionArray, rightDirectionArray)
   // console.log(leftHeelDirectionArray, leftAnkleDirectionArray)
@@ -104,14 +119,14 @@ const processResults = (results) => {
   leftAnkleRE = fixArrayLengths(leftAnkleRE)
 
   // -------------- FILTTERI --------------------
-  for (let i = 0; i < 50; i++) {    
-    rightHipRE = filterArray(rightHipRE, 2)
-    rightKneeRE = filterArray(rightKneeRE, 2)
-    rightAnkleRE = filterArray(rightAnkleRE, 2)
-    leftHipRE = filterArray(leftHipRE, 2)
-    leftKneeRE = filterArray(leftKneeRE, 2)
-    leftAnkleRE = filterArray(leftAnkleRE, 2)
-  }
+  // for (let i = 0; i < 50; i++) {    
+  //   rightHipRE = filterArray(rightHipRE, 2)
+  //   rightKneeRE = filterArray(rightKneeRE, 2)
+  //   rightAnkleRE = filterArray(rightAnkleRE, 2)
+  //   leftHipRE = filterArray(leftHipRE, 2)
+  //   leftKneeRE = filterArray(leftKneeRE, 2)
+  //   leftAnkleRE = filterArray(leftAnkleRE, 2)
+  // }
   console.log(leftHipRE, leftKneeRE, leftAnkleRE, rightHipRE, rightKneeRE, rightAnkleRE)
 }
 
@@ -134,13 +149,13 @@ const checkArrayLengths = (array) => {
 
 const fixArrayLengths = (array) => {
   let max = 0
-  let temp = []  
+  let temp = []
   // console.log(array)
   for (let i = 0; i < array.length; i++) {
     if (array[i].length > max) {
       max = array[i].length
     }
-  }  
+  }
   for (let i = 0; i < array.length; i++) {
     if (array[i].length <= 0.6 * max && i < array.length - 2) {
       if (array[i].length + array[i + 1].length <= 0.7 * max) {
@@ -297,7 +312,7 @@ const filterArray = (array, tresh) => {
                 array[i][j + 1] = (array[i][j] + array[i][j + 4]) / 2
               } else {
                 array[i][j + 1] = (array[i][j] + array[i][j + 3]) / 2
-              }             
+              }
             } else {
               array[i][j + 1] = (array[i][j] + array[i][j + 2]) / 2
             }
@@ -342,7 +357,7 @@ const resampleAngleData = (array, target, median) => {
       if (i < temp.length - 1) {
         temp2.push((temp[i] + temp[i + 1]) / 2)
       }
-    }    
+    }
     temp = temp2
   } else {
     for (let i = 0; i < array.length; i++) {
@@ -357,7 +372,7 @@ const resampleAngleData = (array, target, median) => {
       }
       temp.push(temp2)
       temp2 = []
-    }   
+    }
   }
   return temp
 }

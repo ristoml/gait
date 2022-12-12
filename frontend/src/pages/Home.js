@@ -20,6 +20,7 @@ let startTime
 let calibrationTick = 0
 let completeTime = 0
 // let coordinates = []
+let dirRight
 
 function Home() {
   const [file, setFile] = useState(null)
@@ -53,6 +54,11 @@ function Home() {
       if (!calibrated) {
         if (results.poseWorldLandmarks[30].visibility > 0.2) {
           if (useAnkleFix && results.poseLandmarks[32].y - results.poseLandmarks[30].y <= 0.03 && results.poseLandmarks[32].y - results.poseLandmarks[30].y >= -0.03) {
+            if (results.poseLandmarks[32].x >= results.poseLandmarks[30].x && results.poseLandmarks[31].x >= results.poseLandmarks[29].x) {
+              dirRight = true
+            } else {
+              dirRight = false
+            }
             toeXOffsetValue = toeXOffSetMultiplier * (results.poseLandmarks[32].x - results.poseLandmarks[30].x)
             console.log("ToeXOffset: " + toeXOffsetValue)
             startTime = Date.now()
@@ -82,7 +88,7 @@ function Home() {
         if (Date.now() - startTime > 5999) {
           console.log("calibration ticks: " + calibrationTick)
           if (calibrationTick / 303 > 0.1) {
-            videoRef.current.playbackRate = (calibrationTick / 303) * 1
+            videoRef.current.playbackRate = (calibrationTick / 303) * 1.15
             // videoRef.current.playbackRate = 1
             console.log("playbackrate adjusted to: " + videoRef.current.playbackRate)
             mediapipeCalibrated = true
@@ -128,12 +134,22 @@ function Home() {
         if (useAnkleFix) {
           results.poseLandmarks[31].y -= toeYOffset
           results.poseLandmarks[32].y -= toeYOffset
-          if (results.poseLandmarks[27].x < results.poseLandmarks[25].x) {
-            results.poseLandmarks[31].x -= toeXOffsetValue
+          if (dirRight) {
+            if (results.poseLandmarks[27].x < results.poseLandmarks[25].x) {
+              results.poseLandmarks[31].x -= toeXOffsetValue
+            }
+            if (results.poseLandmarks[28].x < results.poseLandmarks[26].x) {
+              results.poseLandmarks[32].x -= toeXOffsetValue
+            }
+          } else {
+            if (results.poseLandmarks[27].x > results.poseLandmarks[25].x) {
+              results.poseLandmarks[31].x -= toeXOffsetValue
+            }
+            if (results.poseLandmarks[28].x > results.poseLandmarks[26].x) {
+              results.poseLandmarks[32].x -= toeXOffsetValue
+            }
           }
-          if (results.poseLandmarks[28].x < results.poseLandmarks[26].x) {
-            results.poseLandmarks[32].x -= toeXOffsetValue
-          }
+
         }
         drawCircles(results)
         poseResults.push({ data: results, time: Date.now() })
@@ -162,7 +178,7 @@ function Home() {
         }
         onFrame()
       } else if (videoRef.current.ended && didPlay) {
-        dPp.processResults(poseResults)
+        dPp.processResults(poseResults, dirRight)
         // console.log(poseResults)
         // console.log(coordinates)
         if (dPp.getResultsOk()) {
@@ -390,7 +406,7 @@ function Home() {
       results.poseLandmarks[30].x * canvasRef.current.width,
       results.poseLandmarks[30].y * canvasRef.current.height
     )
-    
+
     canvasCtxx.current.lineTo(
       results.poseLandmarks[32].x * canvasRef.current.width,
       results.poseLandmarks[32].y * canvasRef.current.height
