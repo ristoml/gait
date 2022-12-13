@@ -124,8 +124,8 @@ function Home() {
         if (Date.now() - startTime > 5999) {
           console.log("calibration ticks: " + calibrationTick)
           if (calibrationTick / 303 > 0.1) {
-            videoRef.current.playbackRate = (calibrationTick / 303) * 1.4
-            // videoRef.current.playbackRate = 10
+            videoRef.current.playbackRate = (calibrationTick / 303) * 1.3
+            // videoRef.current.playbackRate = 1
             console.log("playbackrate adjusted to: " + videoRef.current.playbackRate)
             mediapipeCalibrated = true
             videoRef.current.currentTime = videoStartTimeV
@@ -226,10 +226,11 @@ function Home() {
         }
         onFrame()
       } else if ((videoRef.current.ended || videoRef.current.currentTime >= videoEndTimeV) && didPlay) {
-        // console.log(use3D)        
+        // console.log(use3D)      
+        console.log(poseResults)  
         dPp.processResults(poseResults, use3D, dirRight)
         videoRef.current.pause();
-        // console.log(poseResults)
+       
         // console.log(coordinates)
         if (dPp.getResultsOk()) {
           setShowGraphs(true)
@@ -652,7 +653,7 @@ function Home() {
                   <br />
                   <canvas ref={canvasRef2} className="output_canvas2"></canvas>
                   <h2 className="reminder2">Keep this window focused!</h2>
-                </div>
+                </div> 
               </div>
             </div>
           </div>

@@ -33,7 +33,7 @@ let angleH
 let directionRight = true
 
 const processResults = (results, use3D, dirRight) => {
-  directionRight = dirRight  
+  directionRight = dirRight
   use3D ? angleH = angle3D : angleH = angle2D
 
   //for (let i = 30; i < results.length; i++) {                   <------
@@ -88,7 +88,7 @@ const processResults = (results, use3D, dirRight) => {
 
   getDirectionChangeIndex(rightToeDirectionArray, rightHeelDirectionArray, rightAnkleDirectionArray, rightDirectionArray)
   getDirectionChangeIndex(leftToeDirectionArray, leftHeelDirectionArray, leftAnkleDirectionArray, leftDirectionArray)
- 
+
   rightSwingIndex = getSwingIndex(rightDirectionArray)
   leftSwingIndex = getSwingIndex(leftDirectionArray)
   makeStepAngleArray(rightDirectionArray, results, rightHipRE, rightKneeRE, rightAnkleRE, false)
@@ -103,7 +103,7 @@ const processResults = (results, use3D, dirRight) => {
   leftAnkleRE = fixArrayLengths(leftAnkleRE)
 
   // -------------- FILTTERI --------------------
-  for (let i = 0; i < 50; i++) {    
+  for (let i = 0; i < 50; i++) {
     rightHipRE = filterArray(rightHipRE, 2)
     rightKneeRE = filterArray(rightKneeRE, 2)
     rightAnkleRE = filterArray(rightAnkleRE, 2)
@@ -124,11 +124,11 @@ const checkArrayLengths = (array) => {
   }
   if (max < resampleTarget + 1) {
     lengthOk = false
-    
-  } 
+
+  }
   for (let i = 0; i < array.length; i++) {
     if (array[i].length <= 0.6 * max || array[i].length >= 135) {
-     
+
       lengthOk = false
     }
   }
@@ -137,13 +137,13 @@ const checkArrayLengths = (array) => {
 
 const fixArrayLengths = (array) => {
   let max = 0
-  let temp = []  
+  let temp = []
   // console.log(array)
   for (let i = 0; i < array.length; i++) {
     if (array[i].length > max) {
       max = array[i].length
     }
-  }  
+  }
   for (let i = 0; i < array.length; i++) {
     if (array[i].length <= 0.6 * max && i < array.length - 2) {
       if (array[i].length + array[i + 1].length <= 0.7 * max) {
@@ -285,7 +285,7 @@ const makeStepAngleArray = (cycleArray, resultData, recHip, recKnee, recAnkle, s
       tempAnkleArray.push(angleH.getAnkleAngle(side, directionRight))
     }
   }
-  side ? rightSteps = stepcount : leftSteps = stepcount
+  side ? leftSteps = stepcount : rightSteps = stepcount
 }
 
 const filterArray = (array, tresh) => {
@@ -300,7 +300,7 @@ const filterArray = (array, tresh) => {
                 array[i][j + 1] = (array[i][j] + array[i][j + 4]) / 2
               } else {
                 array[i][j + 1] = (array[i][j] + array[i][j + 3]) / 2
-              }             
+              }
             } else {
               array[i][j + 1] = (array[i][j] + array[i][j + 2]) / 2
             }
@@ -324,59 +324,33 @@ const filterArray = (array, tresh) => {
   return array
 }
 
-const resampleAngleData = (array, target, median) => {
+const resampleAngleData = (array, target) => {
   let temp = []
   let temp2 = []
-  let medianTemp = []
-  if (median) {
-    for (let i = 0; i < array.length; i++) {
-      array[i] = resample.resampleData(array[i], target)
+  for (let i = 0; i < array.length; i++) {
+    array[i] = resample.resampleData(array[i], target)
+  }
+  for (let i = 0; i < array.length; i++) {
+    for (let j = 0; j < array[i].length; j++) {
+      temp2.push(array[i][j])
+
     }
-    for (let j = 0; j < array[0].length; j++) {
-      for (let i = 0; i < array.length; i++) {
-        medianTemp.push(array[i][j])
-      }
-      temp.push(calculateMedian(medianTemp))
-      medianTemp = []
-    }
-    temp = resample.resampleData(temp, target)
-    for (let i = 0; i < temp.length; i++) {
-      temp2.push(temp[i])
-      if (i < temp.length - 1) {
-        temp2.push((temp[i] + temp[i + 1]) / 2)
-      }
-    }    
-    temp = temp2
-  } else {
-    for (let i = 0; i < array.length; i++) {
-      array[i] = resample.resampleData(array[i], target)
-    }
-    for (let i = 0; i < array.length; i++) {
-      for (let j = 0; j < array[i].length; j++) {
-        temp2.push(array[i][j])
-        if (j < array[i].length - 1) {
-          temp2.push((array[i][j] + array[i][j + 1]) / 2)
-        }
-      }
-      temp.push(temp2)
-      temp2 = []
-    }   
+    temp.push(temp2)
+    temp2 = []
+
   }
   return temp
 }
-
 const formRechartsArray = (array, steps) => {
-  console.log(steps)
-
   let reArray = resampleAngleData(array, resampleTarget)
-  let temp = []
+  let temp = [] 
 
-  for (let i = steps - 2; i <= maxSteps; i++) {
+  for (let i = steps - 1; i < maxSteps; i++) {
     reArray[i] = reArray[0]
   }
-  for (let i = 0; i < 101; i++) {
+  for (let i = 0; i < resampleTarget; i++) {
     temp.push({
-      sample: i,
+      sample: i * 102 / resampleTarget,
       first: reArray[0][i],
       second: reArray[1][i],
       third: reArray[2][i],
@@ -424,7 +398,7 @@ const formAvgRechartsArray = (array) => {
   let angles = 0
   let median = 0
 
-  for (let i = 0; i < 101; i++) {
+  for (let i = 0; i < resampleTarget; i++) {
     for (let j = 0; j < array.length; j++) {
       medianTemp.push(array[j][i])
     }
@@ -443,9 +417,9 @@ const formAvgRechartsArray = (array) => {
     medianTemp = []
     median = 0
   }
-  for (let i = 0; i < 101; i++) {
+  for (let i = 0; i < resampleTarget; i++) {
     temp.push({
-      sample: i,
+      sample: i * 102 / resampleTarget,
       first: avgTemp2[i],
     })
   }
@@ -491,11 +465,9 @@ const getRightAnkleAngleAvg = () => {
   return formAvgRechartsArray(rightAnkleRE)
 }
 const getRightSteps = () => {
-  console.log(rightSteps)
   return rightSteps
 }
 const getLeftSteps = () => {
-  console.log(leftSteps)
   return leftSteps
 }
 const getLeftSwingIndex = () => {
