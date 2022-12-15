@@ -82,7 +82,7 @@ function Home() {
               dirRight = false
             }
             toeXOffsetValue = toeXOffSetMultiplier * (results.poseLandmarks[32].x - results.poseLandmarks[30].x)
-            console.log("ToeXOffset: " + toeXOffsetValue)
+            // console.log("ToeXOffset: " + toeXOffsetValue)
             startTime = Date.now()
             calibrated = true
             videoRef.current.currentTime = 0
@@ -111,7 +111,7 @@ function Home() {
         }   
 
         if (customPlaybackspeed) {
-          console.log('custom playbackspeed')
+          console.log('using custom playbackrate: ' + playbackSpeedV)
           mediapipeCalibrated = true
           videoRef.current.currentTime = videoStartTimeV
           setShowVid(true)
@@ -123,7 +123,7 @@ function Home() {
           calibrationTick++
         }
         if (Date.now() - startTime > 5999) {
-          console.log("calibration ticks: " + calibrationTick)
+          // console.log("calibration ticks: " + calibrationTick)
           if (calibrationTick / 303 > 0.1) {
             videoRef.current.playbackRate = (calibrationTick / 303) * 1.3
             // videoRef.current.playbackRate = 1
@@ -228,7 +228,7 @@ function Home() {
         onFrame()
       } else if ((videoRef.current.ended || videoRef.current.currentTime >= videoEndTimeV) && didPlay) {
         // console.log(use3D)      
-        console.log(poseResults)  
+        // console.log(poseResults)  
         dPp.processResults(poseResults, use3D, dirRight)
         videoRef.current.pause();
        

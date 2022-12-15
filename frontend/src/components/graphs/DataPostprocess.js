@@ -111,7 +111,7 @@ const processResults = (results, use3D, dirRight) => {
     leftKneeRE = filterArray(leftKneeRE, 2)
     leftAnkleRE = filterArray(leftAnkleRE, 2)
   }
-  console.log(leftHipRE, leftKneeRE, leftAnkleRE, rightHipRE, rightKneeRE, rightAnkleRE)
+  // console.log(leftHipRE, leftKneeRE, leftAnkleRE, rightHipRE, rightKneeRE, rightAnkleRE)
 }
 
 const checkArrayLengths = (array) => {
@@ -423,7 +423,7 @@ const formAvgRechartsArray = (array) => {
       first: avgTemp2[i],
     })
   }
-  console.log(avgTemp2)
+  // console.log(avgTemp2)
   return temp
 }
 
