@@ -547,8 +547,9 @@ function Home() {
   return (
     <>
       {!showGraphs ? (
-        <><img id='walker' src={walker} alt='Logo'width="200" height="130" />
-          <div className='fileDiv' style={{ display: file ? "none" : "block" }}>               
+        <>
+          <div className='fileDiv' style={{ display: file ? "none" : "block" }}>  
+          <img id='walker' src={walker} alt='Logo'width="200" height="130" />             
             <label className="videoLabel" htmlFor="video">
               Select video
             </label>

@@ -27,10 +27,11 @@ code {
 
 .output_canvas {
   margin: 70px;
-  border-radius: 3px;  
+  border-radius: 3px;
   /* animation: 0.25s anim-lineUp ease-out; */
   animation: fadeIn 0.5s;
 }
+
 .output_canvas2 {
   margin: 0px;
   border-radius: 0px;
@@ -45,14 +46,19 @@ code {
   /* height: 100vh; */
 
 }
-#walker {
+
+#walker {  
   margin-top: 25vh;
   margin-bottom: 10px;
-  border-radius: 2%;
+  border-radius: 5%;
   border-width: 3px;
   border-color: white;
-  border-style:inset
+  border-style: inset;
+  animation: fadeIn 1.5s linear forwards;
+  /* animation: 2s anim-lineUp ease-out; */
+  /* opacity: 0; */
 }
+
 .loading {
   margin-top: 20vh;
   font-weight: 100;
@@ -61,28 +67,32 @@ code {
 
 
 }
+
 .reminder {
   margin-top: 20vh;
   font-size: 125%;
   font-weight: 100;
-  color: rgb(55, 99, 219);  
+  color: rgb(55, 99, 219);
 }
-.reminder2 {  
+
+.reminder2 {
   bottom: 0%;
-  text-align: center;  
+  text-align: center;
   font-weight: 100;
   font-size: 100%;
-  color: rgb(221, 39, 39);  
+  color: rgb(221, 39, 39);
   /* -webkit-animation: fadeinout 2s linear forwards;
     animation: fadeinout 2s linear forwards;
     opacity: 0;
     animation-iteration-count: 20 */
 }
-.reminder3 {    
+
+.reminder3 {
   margin-top: 95%;
-  text-align: center;  
-  font-size: 80%;     
+  text-align: center;
+  font-size: 80%;
 }
+
 .graphTitle {
   font-weight: 100;
   margin: 10px;
@@ -167,16 +177,20 @@ code {
 }
 
 @-webkit-keyframes fadeinout {
-  50% { opacity: 1; }
+  50% {
+    opacity: 1;
+  }
 }
 
 @keyframes fadeinout {
-  50% { opacity: 1; }
+  50% {
+    opacity: 1;
+  }
 }
 
 .videoLabel {
-  color: white;  
-  background-color:rgb(20, 74, 253);
+  color: white;
+  background-color: rgb(20, 74, 253);
   margin-left: 40%;
   margin-right: 40%;
   display: flex;
@@ -207,22 +221,25 @@ code {
 }
 
 .graphs {
-  display: flex;  
+  display: flex;
   flex-wrap: wrap;
   justify-content: center;
   /* align-content: flex-start; */
   /* flex-direction: column; */
   height: 100vh;
 }
+
 .break {
   flex-basis: 100%;
   height: 0;
 }
+
 #graphBtns {
   position: absolute;
   top: 0px;
   left: 0px;
 }
+
 #avgTickBox {
   font-size: 125%;
   font-weight: 100;
@@ -235,6 +252,7 @@ code {
 input[type="file"] {
   display: none;
 }
+
 .btn {
   /* border-radius: 50%; */
   border-style: none;
@@ -257,7 +275,8 @@ input[type="file"] {
   font-weight: 100;
   background-color: rgb(202, 202, 202);
   animation: 2s anim-lineUp ease-out;
-} 
+}
+
 .btn3 {
   border-radius: 5%;
   border-width: 1px;
@@ -269,17 +288,19 @@ input[type="file"] {
   font-weight: 100;
   background-color: rgb(202, 202, 202);
   animation: 0.5s anim-lineUp ease-out;
-} 
-.fileDiv {  
+}
+
+.fileDiv {
   /* display: flex; */
   justify-content: center;
   align-items: center;
 }
+
 #settingsToggle {
-  margin-top: 50px;  
+  margin-top: 50px;
   /* margin-left: 2%;  */
   font-size: 175%;
-  animation: 2s anim-lineUp ease-out; 
+  animation: 2s anim-lineUp ease-out;
 }
 
 #settings {
@@ -291,14 +312,17 @@ input[type="file"] {
   align-items: center;
   animation: 0.5s anim-lineUp ease-out;
 }
+
 #advSettings {
-  margin: 5px;  
+  margin: 5px;
   /* animation: 0.5s anim-lineUp ease-out; */
 }
+
 #settingsBtn {
   justify-content: center;
   align-items: center;
 }
+
 #videoTimes {
   justify-content: left;
   margin: 8px;
@@ -308,35 +332,42 @@ input[type="file"] {
   width: 4.3em;
   margin-bottom: 1px;
 }
+
 #videoEndTime {
   width: 4.3em;
   margin-bottom: 10px;
   margin-left: 2px;
 }
+
 #videoSpeed {
   width: 4.3em;
   margin-bottom: 1px;
   margin-left: 28px;
 }
+
 #modelComp {
   width: 4.1em;
   margin-bottom: 1px;
   margin-left: 28px;
 }
+
 #detectionConf {
   width: 4.1em;
   margin-bottom: 1px;
 }
+
 #trackingConf {
   width: 4.1em;
   margin-bottom: 1px;
   margin-left: 12px;
-} 
+}
+
 #use3D {
   width: 4em;
   margin-bottom: 1px;
   margin-left: 0px;
 }
+
 .toggle-switch {
   display: inline-block;
   position: relative;
@@ -374,11 +405,12 @@ input[type="file"] {
   left: 4px;
   bottom: 4px;
 }
-input:checked + .slider {
+
+input:checked+.slider {
   background-color: white;
 }
 
-input:checked + .slider:before {
+input:checked+.slider:before {
   transform: translateX(16px);
-  
+
 }
