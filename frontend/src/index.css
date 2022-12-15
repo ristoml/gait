@@ -46,9 +46,10 @@ code {
 
 }
 #walker {
-  margin-top: 30vh;
-  border-radius: 5%;
-  border-width: 8px;
+  margin-top: 25vh;
+  margin-bottom: 10px;
+  border-radius: 2%;
+  border-width: 3px;
   border-color: white;
   border-style:inset
 }
@@ -175,7 +176,7 @@ code {
 
 .videoLabel {
   color: white;  
-  background-color:rgb(55, 99, 219);
+  background-color:rgb(20, 74, 253);
   margin-left: 40%;
   margin-right: 40%;
   display: flex;
