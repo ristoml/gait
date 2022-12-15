@@ -45,7 +45,13 @@ code {
   /* height: 100vh; */
 
 }
-
+#walker {
+  margin-top: 30vh;
+  border-radius: 5%;
+  border-width: 8px;
+  border-color: white;
+  border-style:inset
+}
 .loading {
   margin-top: 20vh;
   font-weight: 100;
@@ -169,7 +175,7 @@ code {
 
 .videoLabel {
   color: white;  
-  background-color: grey;
+  background-color:rgb(55, 99, 219);
   margin-left: 40%;
   margin-right: 40%;
   display: flex;
@@ -177,7 +183,7 @@ code {
   padding-right: 4ch;
   padding-bottom: 2ch;
   padding-top: 2ch;
-  margin-top: 45vh;
+  margin-top: 3vh;
   justify-content: center;
   align-items: center;
   cursor: pointer;
@@ -188,7 +194,7 @@ code {
 }
 
 .videoLabel:hover {
-  background-color: #555;
+  background-color: blue;
 }
 
 .continueBtn {

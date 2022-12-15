@@ -4,6 +4,7 @@ import Graphs from "../components/graphs/Graphs"
 import * as dPp from "../components/graphs/DataPostprocess"
 import Button from "../components/home/Button"
 import Toggle from "../components/home/Toggle"
+import walker from "../assets/walker.gif"
 
 let poseResults = []
 let calibrated = false
@@ -546,8 +547,8 @@ function Home() {
   return (
     <>
       {!showGraphs ? (
-        <>
-          <div className='fileDiv' style={{ display: file ? "none" : "block" }}>
+        <><img id='walker' src={walker} alt='Logo'width="200" height="130" />
+          <div className='fileDiv' style={{ display: file ? "none" : "block" }}>               
             <label className="videoLabel" htmlFor="video">
               Select video
             </label>
