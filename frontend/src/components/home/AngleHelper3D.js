@@ -125,13 +125,13 @@ const updateAngleHelper = (results) => {
   // vOrigo = [(rightHipX + leftHipX) / 2, (rightHipY + leftHipY) / 2, (rightHipZ + leftHipZ) / 2]
 
   vLeftAnkle1 = [leftAnkleX - leftKneeX, leftAnkleY - leftKneeY, leftAnkleZ - leftKneeZ]
-  vLeftAnkle2 = [(rightHipX + leftHipX) / 2 - leftKneeX, (rightHipY + leftHipY) / 2 - leftKneeY, (rightHipZ + leftHipZ) / 2 - leftKneeZ]
+  vLeftAnkle2 = [leftHipX - leftKneeX, leftHipY - leftKneeY,leftHipZ - leftKneeZ]
   // vLeftAnkle2 = [rightHipX - leftKneeX, rightHipY - leftKneeY, rightHipZ - leftKneeZ]  
   // vLeftAnkle2 = [leftHipX - leftKneeX, leftHipY - leftKneeY, leftHipZ - leftKneeZ]
   // vLeftAnkle2 = [leftKneeX, leftKneeY, leftKneeZ]
 
   vRightAnkle1 = [rightAnkleX - rightKneeX, rightAnkleY - rightKneeY, rightAnkleZ - rightKneeZ]
-  vRightAnkle2 = [(rightHipX + leftHipX) / 2 - rightKneeX, (rightHipY + leftHipY) / 2 - rightKneeY, (rightHipZ + leftHipZ) / 2 - rightKneeZ]
+  vRightAnkle2 = [rightHipX  - rightKneeX, rightHipY - rightKneeY, rightHipZ- rightKneeZ]
   // vRightAnkle2 = [rightHipX - rightKneeX, rightHipY - rightKneeY, rightHipZ - rightKneeZ]
   // vRightAnkle2 = [rightKneeX, rightKneeY, rightKneeZ]
 

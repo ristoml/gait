@@ -11,14 +11,10 @@ let calibrated = false
 let mediapipeCalibrated = false
 let customPlaybackspeed = false
 let customStartTime = false
-let customEndTime = false
 let didPlay = false
-let useAnkleFix = true
-let useHipFix = false
-let toeXOffsetValue = 0
+let useAnkleHack = false
+let toeXOffsetValue = undefined
 let toeXOffSetMultiplier = 0.33
-let hipXOffsetMultiplier = 1
-let hipYOffsetMultiplier = 1
 // let toeXOffSetMultiplier = 1
 let toeYOffset = 0
 let startTime
@@ -29,7 +25,7 @@ let playbackSpeedV = undefined
 let videoStartTimeV = undefined
 let videoEndTimeV = undefined
 
-let dirRight
+let dirRight = undefined
 
 function Home() {
   const [file, setFile] = useState(null)
@@ -47,16 +43,12 @@ function Home() {
   const [trackingConfidence, setTrackingConfidence] = useState(0.5)
   const [use3D, setUse3D] = useState(false)
 
-
   const canvasRef = useRef(null)
   const canvasRef2 = useRef(null)
   const videoRef = useRef(null)
   const canvasCtxx = useRef()
   const canvasCtxx2 = useRef()
-
-  // console.log('model complexity: ' + modelComplexity)
-  // console.log('detection confidence: '+detectionConfidence)
-  // console.log('tracking confidence: ' + trackingConfidence)  
+ 
 
   function refresh() {
     window.location.reload("Refresh")
@@ -72,22 +64,12 @@ function Home() {
     canvasCtxx.current = canvasCtx
     canvasCtxx2.current = canvasCtx2
 
-    if (results.poseLandmarks) {   
+    if (results.poseLandmarks) {
       if (!calibrated) {
-        if (results.poseWorldLandmarks[30].visibility > 0.2) {
-          if (useAnkleFix && results.poseLandmarks[32].y - results.poseLandmarks[30].y <= 0.03 && results.poseLandmarks[32].y - results.poseLandmarks[30].y >= -0.03) {
-            if (results.poseLandmarks[32].x >= results.poseLandmarks[30].x && results.poseLandmarks[31].x >= results.poseLandmarks[29].x) {
-              dirRight = true
-            } else {
-              dirRight = false
-            }
+        if (results.poseLandmarks[30].visibility > 0.2) {
+          if (results.poseLandmarks[32].y - results.poseLandmarks[30].y <= 0.03 && results.poseLandmarks[32].y - results.poseLandmarks[30].y >= -0.03) {
             toeXOffsetValue = toeXOffSetMultiplier * (results.poseLandmarks[32].x - results.poseLandmarks[30].x)
-            // console.log("ToeXOffset: " + toeXOffsetValue)
-            startTime = Date.now()
-            calibrated = true
-            videoRef.current.currentTime = 0
-            console.log("Mediapipe initialized")
-          } else if (!useAnkleFix) {
+            toeXOffsetValue > 0 ? dirRight = true : dirRight = false
             startTime = Date.now()
             calibrated = true
             videoRef.current.currentTime = 0
@@ -103,12 +85,12 @@ function Home() {
         canvasRef.current.width = 600 / (videoHeight / videoWidth)
         canvasRef2.current.width = 800
         canvasRef2.current.height = 100
-        completeTime = 0        
-       
+        completeTime = 0
+
         if (videoEndTimeV >= videoRef.current.duration) videoEndTimeV = videoRef.current.duration
         if (customStartTime) {
           if ((videoStartTimeV >= videoRef.current.duration) || videoStartTimeV >= videoEndTimeV) videoStartTimeV = 0
-        }   
+        }
 
         if (customPlaybackspeed) {
           console.log('using custom playbackrate: ' + playbackSpeedV)
@@ -153,21 +135,8 @@ function Home() {
           canvasElement.height
         )
         canvasCtx2.clearRect(0, 0, 1000, 100)
-        // drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {
-        //   color: "#77bdff",
-        //   lineWidth: 2,
-        // });
-        // drawLandmarks(canvasCtx, results.poseLandmarks, {
-        //   color: "#bd77ff",
-        //   lineWidth: 1,
-        // });
-        if (useHipFix) {
-          results.poseLandmarks[23].x *= hipXOffsetMultiplier
-          results.poseLandmarks[23].y *= hipYOffsetMultiplier
-          results.poseLandmarks[24].x *= hipXOffsetMultiplier
-          results.poseLandmarks[24].y *= hipYOffsetMultiplier
-        }
-        if (useAnkleFix) {
+
+        if (!use3D && useAnkleHack) {
           results.poseLandmarks[31].y -= toeYOffset
           results.poseLandmarks[32].y -= toeYOffset
           if (dirRight) {
@@ -210,7 +179,7 @@ function Home() {
 
     if (playbackSpeed !== undefined && playbackSpeed !== 0) {
       customPlaybackspeed = true
-      playbackSpeedV = playbackSpeed      
+      playbackSpeedV = playbackSpeed
     }
 
     async function onFrame() {
@@ -226,20 +195,16 @@ function Home() {
 
         }
         onFrame()
-      } else if ((videoRef.current.ended || videoRef.current.currentTime >= videoEndTimeV) && didPlay) {
-        // console.log(use3D)      
+      } else if ((videoRef.current.ended || videoRef.current.currentTime >= videoEndTimeV) && didPlay) {          
         // console.log(poseResults)  
         dPp.processResults(poseResults, use3D, dirRight)
-        videoRef.current.pause();
-       
-        // console.log(coordinates)
+        videoRef.current.pause();   
         if (dPp.getResultsOk()) {
           setShowGraphs(true)
         } else {
           setShowVid(false)
         }
-      } else {
-        // calibrated=false tänne?
+      } else {        
         setTimeout(onFrame, 500)
       }
     }
@@ -510,17 +475,9 @@ function Home() {
       minDetectionConfidence: detectionConfidence,
       minTrackingConfidence: trackingConfidence
     })
-    // pose.setOptions({
-    //   modelComplexity: 2,
-    //   smoothLandmarks: true,
-    //   enableSegmentation: false,
-    //   smoothSegmentation: false,
-    //   minDetectionConfidence: 0.5,
-    //   minTrackingConfidence: 0.5
-    // })
 
     setPose(pose)
-    pose.onResults(onResults)  
+    pose.onResults(onResults)
 
     let fileReader,
       isCancel = false
@@ -548,8 +505,8 @@ function Home() {
     <>
       {!showGraphs ? (
         <>
-          <div className='fileDiv' style={{ display: file ? "none" : "block" }}>  
-          <img id='walker' src={walker} alt='Logo'width="200" height="130" />             
+          <div className='fileDiv' style={{ display: file ? "none" : "block" }}>
+            <img id='walker' src={walker} alt='Logo' width="200" height="130" />
             <label className="videoLabel" htmlFor="video">
               Select video
             </label>
@@ -561,8 +518,7 @@ function Home() {
               accept=".mp4, .ogg, .webm"
               onChange={changeHandler}
             /><div id='settingsToggle'>&#128736;<br />
-              <Toggle
-                // disabled={showSettings ? false : true}
+              <Toggle                
                 onChange={() => setShowSettings(!showSettings)}
                 checked={!showSettings}
               /></div>
@@ -655,7 +611,7 @@ function Home() {
                   <br />
                   <canvas ref={canvasRef2} className="output_canvas2"></canvas>
                   <h2 className="reminder2">Keep this window focused!</h2>
-                </div> 
+                </div>
               </div>
             </div>
           </div>
