@@ -2,6 +2,8 @@ import * as angle2D from "../home/AngleHelper2D"
 import * as angle3D from "../home/AngleHelper3D"
 import * as resample from "./Resample"
 
+//This component post-processes the data from MediaPipe
+
 let leftHipRE = []
 let leftKneeRE = []
 let leftAnkleRE = []
@@ -32,12 +34,13 @@ let angleH
 //direction is true if you walk from left to right in video otherwise its false --- default true
 let directionRight = true
 
+//Result processing
 const processResults = (results, use3D, dirRight) => {
   directionRight = dirRight
   use3D ? angleH = angle3D : angleH = angle2D
 
   //for (let i = 30; i < results.length; i++) {                   <------
-  for (let i = skippedFrames; i < results.length; i++) {
+  for (let i = skippedFrames; i < results.length; i++) { //This loop makes direction arrays based of x-landmarks. 1 = forward, 2 = backward
     if (results[i].data.poseLandmarks[31].x > results[i - 1].data.poseLandmarks[31].x) {
       dirRight ? leftToeDirectionArray.push(1) : leftToeDirectionArray.push(-1)
       // leftToeDirectionArray.push(1)
@@ -102,7 +105,7 @@ const processResults = (results, use3D, dirRight) => {
   leftKneeRE = fixArrayLengths(leftKneeRE)
   leftAnkleRE = fixArrayLengths(leftAnkleRE)
 
-  // -------------- FILTTERI --------------------
+  // Filter loop
   for (let i = 0; i < 50; i++) {
     rightHipRE = filterArray(rightHipRE, 2)
     rightKneeRE = filterArray(rightKneeRE, 2)
@@ -114,6 +117,7 @@ const processResults = (results, use3D, dirRight) => {
   // console.log(leftHipRE, leftKneeRE, leftAnkleRE, rightHipRE, rightKneeRE, rightAnkleRE)
 }
 
+//This function checks step array lengths.
 const checkArrayLengths = (array) => {
   let lengthOk = true
   let max = 0
@@ -135,6 +139,7 @@ const checkArrayLengths = (array) => {
   return lengthOk
 }
 
+//This function tries to fix arrays if they are cut too early if step detection fails.
 const fixArrayLengths = (array) => {
   let max = 0
   let temp = []
@@ -161,6 +166,7 @@ const fixArrayLengths = (array) => {
   return temp
 }
 
+//This function goes through every direction array to make one final direction array for both sides. Step detection happens here.
 const getDirectionChangeIndex = (toeDirArray, heelDirArray, ankleDirArray, dirArray) => {
   let certainty = false
   let forward = true
@@ -170,6 +176,7 @@ const getDirectionChangeIndex = (toeDirArray, heelDirArray, ankleDirArray, dirAr
   let dirChangePending = false
   let gaitDelayValue = 7
 
+  //Step detection
   for (let i = 0; i < heelDirArray.length; i++) {
     if (!certainty) {
       if (
@@ -184,7 +191,7 @@ const getDirectionChangeIndex = (toeDirArray, heelDirArray, ankleDirArray, dirAr
         dirArray.push({ state: "unknown", cycleCount: cycleCount - 1 })
       }
     }
-    //eteenpäin, kantapää
+    //Forward
     if (certainty && forward) {
       if (heelDirArray[i] === -1 && ankleDirArray[i] === -1) {
         let battle = 0
@@ -210,7 +217,7 @@ const getDirectionChangeIndex = (toeDirArray, heelDirArray, ankleDirArray, dirAr
         dirArray.push({ state: "ready", cycleCount: cycleCount - 1 })
       }
     }
-    //taaksepäin, varpaat
+    //Backward
     if (certainty && !forward) {
       dirChangePending = false
       if (toeDirArray[i] === 1 && ankleDirArray[i] === 1) {
@@ -229,6 +236,7 @@ const getDirectionChangeIndex = (toeDirArray, heelDirArray, ankleDirArray, dirAr
   }
 }
 
+//This function gets the swing index from direction arrays
 const getSwingIndex = (array) => {
   let groundTemp = []
   let airTemp = []
@@ -259,6 +267,7 @@ const getSwingIndex = (array) => {
   return Math.floor(avg * 100)
 }
 
+//This loop goes through cycle arrays and creates angle arrays for steps
 const makeStepAngleArray = (cycleArray, resultData, recHip, recKnee, recAnkle, side) => {
   let stepcount = -1
   let tempHipArray = []
@@ -288,6 +297,7 @@ const makeStepAngleArray = (cycleArray, resultData, recHip, recKnee, recAnkle, s
   side ? leftSteps = stepcount : rightSteps = stepcount
 }
 
+//This function filters angle data with given threshold
 const filterArray = (array, tresh) => {
   let threshold = tresh
   for (let i = 0; i < array.length; i++) {
@@ -324,6 +334,7 @@ const filterArray = (array, tresh) => {
   return array
 }
 
+//This function resamples data length to target
 const resampleAngleData = (array, target) => {
   let temp = []
   let temp2 = []
@@ -341,9 +352,10 @@ const resampleAngleData = (array, target) => {
   }
   return temp
 }
+//This function forms arrays for Recharts
 const formRechartsArray = (array, steps) => {
   let reArray = resampleAngleData(array, resampleTarget)
-  let temp = [] 
+  let temp = []
 
   for (let i = steps - 1; i < maxSteps; i++) {
     reArray[i] = reArray[0]
@@ -376,6 +388,7 @@ const formRechartsArray = (array, steps) => {
   return temp
 }
 
+//This function calculates median out of values
 const calculateMedian = (values) => {
   values.sort(function (a, b) {
     return a - b;
@@ -388,6 +401,7 @@ const calculateMedian = (values) => {
     return (values[half - 1] + values[half]) / 2.0;
 }
 
+//This function forms average angle array for Recharts
 const formAvgRechartsArray = (array) => {
   array = resampleAngleData(array, resampleTarget, false)
   let avgTemp = []
@@ -423,7 +437,6 @@ const formAvgRechartsArray = (array) => {
       first: avgTemp2[i],
     })
   }
-  // console.log(avgTemp2)
   return temp
 }
 

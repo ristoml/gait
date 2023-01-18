@@ -1,3 +1,5 @@
+//Gait calculations of 2d landmarks
+
 let leftHipX,
   leftHipY,
   leftKneeX,
@@ -24,6 +26,7 @@ let rightHipX,
   rightShoulderY,
   rightShoulderX
 
+// Updates coordinates every time MediaPipe gets result
 const updateAngleHelper = (results) => {
   leftHipX = results.poseLandmarks[23].x
   leftHipY = results.poseLandmarks[23].y
@@ -52,6 +55,9 @@ const updateAngleHelper = (results) => {
   rightShoulderY = results.poseLandmarks[12].y
 }
 
+// Knee angle calculation parameters:
+// side: Boolean, true=left false=right
+// direction: Boolean, true=right false=left
 const getKneeAngle = (side, direction) => {
   let temp
   if (side && direction) {
@@ -101,6 +107,9 @@ const getKneeAngle = (side, direction) => {
 
 }
 
+// Hip angle calculation parameters:
+// side: Boolean, true=left false=right
+// direction: Boolean, true=right false=left
 const getHipAngle = (side, direction) => {
   let temp
   if (side && direction) {
@@ -155,6 +164,9 @@ const getHipAngle = (side, direction) => {
   }
 }
 
+// Ankle angle calculation parameters:
+// side: Boolean, true=left false=right
+// direction: Boolean, true=right false=left
 const getAnkleAngle = (side, direction) => {
   let temp
   if (side && direction) {

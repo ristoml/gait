@@ -6,6 +6,8 @@ import Button from "../components/home/Button"
 import Toggle from "../components/home/Toggle"
 import walker from "../assets/walker.gif"
 
+// This component is the home/first page on the app. This component holds MediaPipe functionality
+
 let poseResults = []
 let calibrated = false
 let mediapipeCalibrated = false
@@ -48,12 +50,13 @@ function Home() {
   const videoRef = useRef(null)
   const canvasCtxx = useRef()
   const canvasCtxx2 = useRef()
- 
+
 
   function refresh() {
     window.location.reload("Refresh")
   }
 
+  //This function is called when MediaPipe gets result and this function holds logic of video calibration and drawing pose lines to video 
   function onResults(results) {
     const canvasElement = canvasRef.current
     const canvasCtx = canvasElement.getContext("2d")
@@ -163,6 +166,7 @@ function Home() {
     }
   }
 
+  //This function handles and starts the video
   const changeHandler = (e) => {
     const file = e.target.files[0]
     setFile(file)
@@ -195,16 +199,16 @@ function Home() {
 
         }
         onFrame()
-      } else if ((videoRef.current.ended || videoRef.current.currentTime >= videoEndTimeV) && didPlay) {          
+      } else if ((videoRef.current.ended || videoRef.current.currentTime >= videoEndTimeV) && didPlay) {
         // console.log(poseResults)  
         dPp.processResults(poseResults, use3D, dirRight)
-        videoRef.current.pause();   
+        videoRef.current.pause();
         if (dPp.getResultsOk()) {
           setShowGraphs(true)
         } else {
           setShowVid(false)
         }
-      } else {        
+      } else {
         setTimeout(onFrame, 500)
       }
     }
@@ -215,7 +219,7 @@ function Home() {
     }
   }
 
-  //first version of drawing pose
+  //Pose and progress bar drawing function
   const drawCircles = (results) => {
     const leftHipCircle = new Path2D()
     const leftKneeCircle = new Path2D()
@@ -460,6 +464,7 @@ function Home() {
     canvasCtxx.current.fill(rightFootCircle)
   }
 
+  //Pose initialization and sets the video src when video is chosen.
   useEffect(() => {
     const pose = new Pose({
       locateFile: (file) => {
@@ -518,7 +523,7 @@ function Home() {
               accept=".mp4, .ogg, .webm"
               onChange={changeHandler}
             /><div id='settingsToggle'>&#128736;<br />
-              <Toggle                
+              <Toggle
                 onChange={() => setShowSettings(!showSettings)}
                 checked={!showSettings}
               /></div>

@@ -5,6 +5,8 @@
 // let rightShoulderHipMag, rightHipKneeMag, rightKneeMag, rightAnkleFootMag
 import * as mathjs from 'mathjs'
 
+//Gait calculations of 3D landmarks & 3D to 2D projektion
+
 let leftHipX,
   leftHipY,
   leftHipZ,
@@ -69,6 +71,8 @@ let rightHipX,
 
 let n, v, e1, e2, A, vOrigo
 
+// Updates coordinates every time MediaPipe gets result
+
 const updateAngleHelper = (results) => {
   leftShoulderX = results.poseWorldLandmarks[11].x
   leftShoulderY = results.poseWorldLandmarks[11].y
@@ -108,10 +112,10 @@ const updateAngleHelper = (results) => {
   rightFootIndexY = results.poseWorldLandmarks[32].y
   rightFootIndexZ = results.poseWorldLandmarks[32].z
 
-  //normaali vektori
+  //Normal Vector
   n = [leftHipX - rightHipX, leftHipY - rightHipY, leftHipZ - rightHipZ]
 
-  //apuvektori
+  //One vector / help vector
   v = [1, 0, 0]
 
   e1 = mathjs.cross(v, n)
@@ -125,13 +129,13 @@ const updateAngleHelper = (results) => {
   // vOrigo = [(rightHipX + leftHipX) / 2, (rightHipY + leftHipY) / 2, (rightHipZ + leftHipZ) / 2]
 
   vLeftAnkle1 = [leftAnkleX - leftKneeX, leftAnkleY - leftKneeY, leftAnkleZ - leftKneeZ]
-  vLeftAnkle2 = [leftHipX - leftKneeX, leftHipY - leftKneeY,leftHipZ - leftKneeZ]
+  vLeftAnkle2 = [leftHipX - leftKneeX, leftHipY - leftKneeY, leftHipZ - leftKneeZ]
   // vLeftAnkle2 = [rightHipX - leftKneeX, rightHipY - leftKneeY, rightHipZ - leftKneeZ]  
   // vLeftAnkle2 = [leftHipX - leftKneeX, leftHipY - leftKneeY, leftHipZ - leftKneeZ]
   // vLeftAnkle2 = [leftKneeX, leftKneeY, leftKneeZ]
 
   vRightAnkle1 = [rightAnkleX - rightKneeX, rightAnkleY - rightKneeY, rightAnkleZ - rightKneeZ]
-  vRightAnkle2 = [rightHipX  - rightKneeX, rightHipY - rightKneeY, rightHipZ- rightKneeZ]
+  vRightAnkle2 = [rightHipX - rightKneeX, rightHipY - rightKneeY, rightHipZ - rightKneeZ]
   // vRightAnkle2 = [rightHipX - rightKneeX, rightHipY - rightKneeY, rightHipZ - rightKneeZ]
   // vRightAnkle2 = [rightKneeX, rightKneeY, rightKneeZ]
 
@@ -174,6 +178,10 @@ const updateAngleHelper = (results) => {
 // const getRightZ = () => {
 //   return rightKneeZ
 // }
+
+// Hip angle calculation parameters:
+// side: Boolean, true=left false=right
+// direction: Boolean, true=right false=left
 const getHipAngle = (side, direction) => {
 
   if (side && direction) { // left & forward
@@ -191,6 +199,9 @@ const getHipAngle = (side, direction) => {
   }
 }
 
+// Knee angle calculation parameters:
+// side: Boolean, true=left false=right
+// direction: Boolean, true=right false=left
 const getKneeAngle = (side, direction) => {
 
   if (side && direction) { // left & forward
@@ -207,6 +218,9 @@ const getKneeAngle = (side, direction) => {
   }
 }
 
+// Ankle angle calculation parameters:
+// side: Boolean, true=left false=right
+// direction: Boolean, true=right false=left
 const getAnkleAngle = (side, direction) => {
 
   if (side && direction) { // left & forward

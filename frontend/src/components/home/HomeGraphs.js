@@ -12,6 +12,8 @@ import {
   ReferenceLine,
 } from "recharts";
 
+//This component is the chart page and it does the charts with Recharts
+
 function HomeGraphs(props) {
   const leftHipRe = useRef(props.leftHip);
   const leftKneeRe = useRef(props.leftKnee);
